@@ -1,0 +1,52 @@
+version: '3'
+services:
+  bsites-api:
+    container_name: bsites-api
+    image: bsites-api:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mongo
+      - redis
+    command: npm run start:dev
+    ports:
+      - '${APP_PORT}:4000'
+      - '9229:9229'
+    networks:
+      - bsitesapi
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+  mongo:
+    image: mongo
+    container_name: bsites-mongo
+    restart: always
+    ports:
+      - '${MONGO_PORT}:27017'
+    environment:
+      MONGO_INITDB_DATABASE: '${DATABASE}'
+      MONGO_INITDB_ROOT_USERNAME: '${DATABASE_USER}'
+      MONGO_INITDB_ROOT_PASSWORD: '${DATABASE_PASSWORD}'
+    volumes:
+      - bsitesmongo:/data/db
+    networks:
+      - bsitesapi
+  redis:
+    image: redis:alpine
+    container_name: bsites-redis
+    ports:
+      - '${REDIS_PORT}:${REDIS_PORT_LOCAL}'
+    volumes:
+      - bsitesredis:/data
+    networks:
+      - bsitesapi
+networks:
+  bsitesapi:
+    driver: 'bridge'
+volumes:
+  bsitesredis:
+    driver: 'local'
+  bsitesmongo:
+    driver: 'local'
