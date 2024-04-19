@@ -63,8 +63,11 @@ export class UrlSiteService {
   }
 
   findOne(id: ObjectId) {
-    const siteId = Types.ObjectId.createFromHexString(this.request.params.siteId)
-    return this.urlSiteModel.findOne({_id: id, site: siteId}).populate('site').exec();
+    return this.urlSiteModel.findOne({_id: id, site: this.request.params.siteId}).populate('site').exec();
+  }
+
+  findBySiteId(id: string){
+    return this.urlSiteModel.find({ site: id}).exec()
   }
 
   update(

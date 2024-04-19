@@ -50,6 +50,7 @@ const onCreateUpdate = async () => {
       description: siteDescription.value,
       ip: siteIp.value,
       siteUrl: siteUrl.value,
+      ctr: ctr.value,
     });
   } else {
     emit("onCreate", {
@@ -57,6 +58,7 @@ const onCreateUpdate = async () => {
       description: siteDescription.value,
       ip: siteIp.value,
       siteUrl: siteUrl.value,
+      ctr: ctr.value,
     });
   }
 };
@@ -65,6 +67,7 @@ const siteName = ref(prop.itemDetail?.name || "");
 const siteDescription = ref(prop.itemDetail?.description || "");
 const siteUrl = ref(prop.itemDetail?.siteUrl || "");
 const siteIp = ref(prop.itemDetail?.ip || "");
+const ctr = ref(prop.itemDetail?.ctr || 4);
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>
@@ -88,17 +91,16 @@ const siteIp = ref(prop.itemDetail?.ip || "");
               :rules="formRules.requiredRule"
               placeholder="Enter site name"
           />
-
-          <h6 class="mb-2">Home url</h6>
-          <v-text-field
-              variant="solo"
-              class="text-field-component"
-              density="compact"
-              v-model="siteUrl"
-              :rules="formRules.requiredRule"
-              placeholder="Enter home url"
-          />
-          <v-row class="mt-2">
+            <h6 class="mb-2">Home url</h6>
+            <v-text-field
+                variant="solo"
+                class="text-field-component"
+                density="compact"
+                v-model="siteUrl"
+                :rules="formRules.requiredRule"
+                placeholder="Enter home url"
+            />
+          <v-row>
             <v-col>
               <h6 class="mb-2">Ip</h6>
               <v-text-field
@@ -111,16 +113,24 @@ const siteIp = ref(prop.itemDetail?.ip || "");
               />
             </v-col>
             <v-col>
-              <h6 class="mb-2">Description</h6>
+              <h6 class="mb-2">CTR</h6>
               <v-text-field
                   variant="solo"
                   class="text-field-component"
                   density="compact"
-                  v-model="siteDescription"
-                  placeholder="Enter description"
+                  v-model="ctr"
+                  placeholder="Enter CTR"
               />
             </v-col>
           </v-row>
+          <h6 class="mb-2">Description</h6>
+          <v-text-field
+              variant="solo"
+              class="text-field-component"
+              density="compact"
+              v-model="siteDescription"
+              placeholder="Enter description"
+          />
         </v-card-text>
         <v-card-actions class="me-3 mb-2">
           <v-spacer />

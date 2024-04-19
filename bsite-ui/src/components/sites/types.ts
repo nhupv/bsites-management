@@ -9,7 +9,8 @@ export type SiteType = {
   id?: string;
   _id?: string;
   name: string;
-  description: string;
+  description?: string;
+  ctr?: number;
   ip: string;
   siteUrl: string;
 

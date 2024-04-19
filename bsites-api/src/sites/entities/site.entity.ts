@@ -26,6 +26,9 @@ export class Site extends Document {
     @Prop({ type: String, required: true })
     siteUrl: string;
 
+    @Prop({ type: Number, required: false, default: 4 })
+    ctr: number;
+
     @Prop({ type: String, required: true })
     ip: string;
 

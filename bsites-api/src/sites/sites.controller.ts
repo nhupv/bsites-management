@@ -9,7 +9,7 @@ import {
   HttpCode,
   Request,
   UseInterceptors,
-  NotFoundException, ValidationPipe, UsePipes
+  NotFoundException, ValidationPipe, UsePipes, BadRequestException
 } from '@nestjs/common';
 import { SitesService } from './sites.service';
 import { CreateSiteDto } from './dto/create-site.dto';
@@ -26,13 +26,19 @@ import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
 import {FindByUrlDto} from "./dto/find-by-url.dto";
 import {ContextParamsInterceptor} from "../common/interceptors/context-params.interceptor";
 import {StripContextPipe} from "../common/pipes/strip.context.pipe";
+import { HttpService } from '@nestjs/axios';
+import {UrlSite} from "../url-site/entities/url-site.entity";
+import {UrlSiteService} from "../url-site/url-site.service";
 
 @UseInterceptors(PaginationInterceptor)
 @Roles(Role.Admin, Role.SuperUser)
 @Controller('sites')
 @UseInterceptors(ContextParamsInterceptor)
 export class SitesController {
-  constructor(private readonly sitesService: SitesService) {}
+  constructor(private readonly sitesService: SitesService,
+              private readonly http: HttpService,
+              private readonly urlSiteService: UrlSiteService// private readonly sessionService: SessionService,
+  ) {}
 
   @HttpCode(201)
   @Post()
@@ -54,6 +60,38 @@ export class SitesController {
   @Get(':id')
   findOne(@Param('id', ParseObjectIdPipe) id: ObjectId) {
     return this.sitesService.findOne(id);
+  }
+
+  @Get(':id/push')
+  async pushData(@Param('id', ParseObjectIdPipe) id: ObjectId) {
+    const site = await this.sitesService.findOne(id);
+
+    if(!site) {
+      throw new NotFoundException(`Site with id ${id} was not found!`);
+    }
+
+    const urls = await this.urlSiteService.findBySiteId(site._id)
+
+    try {
+      const { data } = await this.http
+          .post(
+              `http://${site.ip}:5000/push_data`,
+              {
+                ctr: site.ctr,
+                site_url: site.siteUrl,
+                list_url: urls.map(url => url.url)
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              },
+          )
+          .toPromise();
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString())
+    }
+
   }
 
   @Patch(':id')

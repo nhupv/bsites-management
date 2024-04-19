@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import {forwardRef, Module} from '@nestjs/common';
 import { UrlSiteService } from './url-site.service';
 import { UrlSiteController } from './url-site.controller';
 import {MongooseModule} from "@nestjs/mongoose";
@@ -14,9 +14,10 @@ import {SitesModule} from "../sites/sites.module";
           return schema
         } },
     ]),
-      SitesModule
+    forwardRef(() => SitesModule),
   ],
   controllers: [UrlSiteController],
   providers: [UrlSiteService],
+  exports: [UrlSiteService]
 })
 export class UrlSiteModule {}

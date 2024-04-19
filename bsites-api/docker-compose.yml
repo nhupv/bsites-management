@@ -1,5 +1,17 @@
 version: '3'
 services:
+#  bsites-ui:
+#    container_name: bsites-ui
+#    image: bsites-ui:latest
+#    ports:
+#      - '3000:80'
+#    environment:
+#      - BASE_API_URL=http://bsites-api:4000
+#    networks:
+#      - bsitesapi
+#    restart: always
+#    stdin_open: true
+#    tty: true
   bsites-api:
     container_name: bsites-api
     image: bsites-api:latest
@@ -11,8 +23,8 @@ services:
       - redis
     command: npm run start:dev
     ports:
-      - '${APP_PORT}:4000'
-      - '9229:9229'
+      - '4001:4000'
+#      - '9229:9229'
     networks:
       - bsitesapi
     volumes:
@@ -20,11 +32,11 @@ services:
       - /usr/src/app/node_modules
     restart: unless-stopped
   mongo:
-    image: mongo
+    image: mongo:4.4
     container_name: bsites-mongo
     restart: always
     ports:
-      - '${MONGO_PORT}:27017'
+      - '28017:27017'
     environment:
       MONGO_INITDB_DATABASE: '${DATABASE}'
       MONGO_INITDB_ROOT_USERNAME: '${DATABASE_USER}'
@@ -37,7 +49,7 @@ services:
     image: redis:alpine
     container_name: bsites-redis
     ports:
-      - '${REDIS_PORT}:${REDIS_PORT_LOCAL}'
+      - '6389:${REDIS_PORT_LOCAL}'
     volumes:
       - bsitesredis:/data
     networks:
