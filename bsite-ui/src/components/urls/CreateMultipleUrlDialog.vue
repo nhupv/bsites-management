@@ -63,7 +63,7 @@ const onCreateUpdate = async () => {
 
 const urlDescription = ref(prop.itemDetail?.description || "");
 const url = ref(prop.itemDetail?.url || "");
-const urls = ref<string[]>([]);
+const urls = ref<string>('');
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>

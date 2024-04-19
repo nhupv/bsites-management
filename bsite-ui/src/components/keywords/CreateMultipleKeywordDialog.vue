@@ -63,7 +63,7 @@ const onCreateUpdate = async () => {
 
 const description = ref(prop.itemDetail?.description || "");
 const keyword = ref(prop.itemDetail?.keyword || "");
-const keywords = ref<string[]>([]);
+const keywords = ref<string>('');
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>

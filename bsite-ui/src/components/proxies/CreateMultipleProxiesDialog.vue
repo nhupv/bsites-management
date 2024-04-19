@@ -63,7 +63,7 @@ const onCreateUpdate = async () => {
 
 const proxyDescription = ref(prop.itemDetail?.description || "");
 const proxy = ref(prop.itemDetail?.proxy || "");
-const proxies = ref<string[]>([]);
+const proxies = ref<string>('');
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>

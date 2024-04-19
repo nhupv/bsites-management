@@ -36,7 +36,7 @@ const headers = ref([
   { title: 'Description', key: 'description', align: 'start' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
-])
+]) as any
 
 const itemsPerPage = ref<number>(10)
 const tableOptions = ref({})
@@ -190,10 +190,10 @@ const onConfirmDeleteAll = async () => {
           item-value="name"
           @update:options="loadItems"
       >
-        <template v-slot:item.createdAt="{item}">
+        <template v-slot:item.createdAt="{item}: any">
           <span class="text-muted">{{ format(item.createdAt, 'MM-dd-yyyy HH:mm')}}</span>
         </template>
-        <template v-slot:item.proxy="{item}">
+        <template v-slot:item.proxy="{item}: any">
           <span class="text-primary text-decoration-underline">{{item.proxy}}</span>
         </template>
         <template v-slot:item.action="{item}">

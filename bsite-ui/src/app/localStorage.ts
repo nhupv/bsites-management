@@ -5,7 +5,7 @@ export default class LocalStorage {
     this.key = key;
   }
 
-  getItems() {
+  getItems() : any {
     return window.localStorage.getItem(this.key) || ''
   }
 
