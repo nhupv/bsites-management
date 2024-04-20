@@ -87,11 +87,12 @@ watch(confirmationDialog, (dialog: boolean) => {
   }
 });
 
-const onPushData = async (data: SiteType) => {
+const onPushData = async (site: SiteType) => {
   try {
     loading.value = true
-    await httpService.get(`/sites/${data._id}/push`)
-    $toast.success('Push data successfully!')
+    const data = await httpService.get(`/sites/${site._id}/push`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
   } catch (e) {
     handleError(e)
   } finally {

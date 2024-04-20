@@ -88,6 +88,7 @@ export class SitesController {
               },
           )
           .toPromise();
+      return data
     } catch (e) {
       throw new BadRequestException(e.message || e.toString())
     }
