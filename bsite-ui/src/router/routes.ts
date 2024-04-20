@@ -160,12 +160,6 @@ export const routes = [
     meta: { title: "Home", authRequired: true, layout: DefaultLayout },
   },
   {
-    path: "/chat",
-    name: "Chat",
-    component: import("@/views/pages/Maintenance.vue"),
-    meta: { title: "Chat", authRequired: true, layout: DefaultLayout },
-  },
-  {
     path: "/sites",
     name: "Site",
     component: () => import("@/views/site/index.vue"),
@@ -177,30 +171,30 @@ export const routes = [
     component: () => import("@/views/user/index.vue"),
     meta: { title: "Site", authRequired: true, layout: DefaultLayout },
   },
-  {
-    path: "/bots",
-    name: "Bots",
-    component: () => import("@/views/bots/index.vue"),
-    meta: { title: "Bots", authRequired: true, layout: DefaultLayout },
-  },
+  // {
+  //   path: "/bots",
+  //   name: "Bots",
+  //   component: () => import("@/views/bots/index.vue"),
+  //   meta: { title: "Bots", authRequired: true, layout: DefaultLayout },
+  // },
   {
     path: "/urls",
     name: "Urls",
     component: () => import("@/views/urls/index.vue"),
     meta: { title: "Urls", authRequired: true, layout: DefaultLayout },
   },
-  {
-    path: "/proxies",
-    name: "Proxies",
-    component: () => import("@/views/proxies/index.vue"),
-    meta: { title: "Proxies", authRequired: true, layout: DefaultLayout },
-  },
-  {
-    path: "/keywords",
-    name: "Keywords",
-    component: () => import("@/views/keywords/index.vue"),
-    meta: { title: "Keywords", authRequired: true, layout: DefaultLayout },
-  },
+  // {
+  //   path: "/proxies",
+  //   name: "Proxies",
+  //   component: () => import("@/views/proxies/index.vue"),
+  //   meta: { title: "Proxies", authRequired: true, layout: DefaultLayout },
+  // },
+  // {
+  //   path: "/keywords",
+  //   name: "Keywords",
+  //   component: () => import("@/views/keywords/index.vue"),
+  //   meta: { title: "Keywords", authRequired: true, layout: DefaultLayout },
+  // },
   ...authRoutes,
   ...pagesRoutes,
   {

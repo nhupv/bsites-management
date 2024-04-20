@@ -50,13 +50,13 @@ export const menuItems: MenuItemType[] = [
     id: "sidebarPages",
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
-  {
-    label: "bot",
-    icon: "ph-robot",
-    id: "sidebarBot",
-    link: "/bots",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
+  // {
+  //   label: "bot",
+  //   icon: "ph-robot",
+  //   id: "sidebarBot",
+  //   link: "/bots",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
   {
     label: "url",
     icon: "ph-link",
@@ -65,20 +65,20 @@ export const menuItems: MenuItemType[] = [
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
 
-  {
-    label: "proxy",
-    icon: "ph-line-segments",
-    id: "sidebarProxy",
-    link: "/proxies",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
-  {
-    label: "keyword",
-    icon: "ph-key",
-    id: "sidebarKeyword",
-    link: "/keywords",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
+  // {
+  //   label: "proxy",
+  //   icon: "ph-line-segments",
+  //   id: "sidebarProxy",
+  //   link: "/proxies",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
+  // {
+  //   label: "keyword",
+  //   icon: "ph-key",
+  //   id: "sidebarKeyword",
+  //   link: "/keywords",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
   // {
   //   label: "authentication",
   //   icon: "ph-user-circle",
