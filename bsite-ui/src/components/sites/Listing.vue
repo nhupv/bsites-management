@@ -68,6 +68,8 @@ const onSelect = (option: string, data: any) => {
   } else if (option === "remove") {
     confirmationDialog.value = true;
     confirmationSite.value = data._id;
+  } else if (option === "push") {
+    onPushData(data)
   }
 }
 
@@ -84,6 +86,18 @@ watch(confirmationDialog, (dialog: boolean) => {
     confirmationSite.value = '';
   }
 });
+
+const onPushData = async (data: SiteType) => {
+  try {
+    loading.value = true
+    await httpService.get(`/sites/${data._id}/push`)
+    $toast.success('Push data successfully!')
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
 
 const onUpdate = async (updatedVal: SiteType) => {
   try {

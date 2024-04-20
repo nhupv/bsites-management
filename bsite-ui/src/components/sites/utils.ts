@@ -72,6 +72,11 @@ export const sitesAction: OptionType[] = [
   //   to: "/ecommerce/product-details",
   // },
   {
+    title: "Push data",
+    icon: "ph-paper-plane-tilt",
+    value: "push",
+  },
+  {
     title: "Edit",
     icon: "ph-pencil",
     value: "edit",
