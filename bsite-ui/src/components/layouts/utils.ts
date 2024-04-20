@@ -31,6 +31,13 @@ export const menuItems: MenuItemType[] = [
     show: true
   },
   {
+    label: "proxy",
+    icon: "ph-line-segments",
+    id: "sidebarProxy",
+    link: "/proxy",
+    show: true
+  },
+  {
     label: "user",
     icon: "ph-users",
     id: "UserSidebar",

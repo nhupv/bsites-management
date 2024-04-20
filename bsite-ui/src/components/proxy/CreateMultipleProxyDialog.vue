@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
+import { v4 as uuidv4 } from "uuid";
+import { formateDate } from "@/app/common/dateFormate";
 import TextArea from "@/app/common/validationComponents/TextArea.vue";
 
 const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
@@ -48,18 +50,15 @@ const onCreateUpdate = async () => {
   if (!isCreate.value) {
     emit("onUpdate", {
       ...prop.itemDetail,
-      description: proxyDescription.value,
       proxy: proxy.value,
     });
   } else {
     emit("onCreate", {
-      description: proxyDescription.value,
       proxies: proxies.value,
     });
   }
 };
 
-const proxyDescription = ref(prop.itemDetail?.description || "");
 const proxy = ref(prop.itemDetail?.proxy || "");
 const proxies = ref<string>('');
 </script>
@@ -76,7 +75,7 @@ const proxies = ref<string>('');
           />
         </template>
         <v-card-text data-simplebar style="max-height: 500px">
-          <h6 class="mb-2">Proxies</h6>
+          <h6 class="mb-2">Proxy</h6>
           <v-text-field
               v-if="!isCreate"
               variant="solo"
@@ -88,15 +87,7 @@ const proxies = ref<string>('');
           />
           <TextArea v-else v-model="proxies"
                     :rules="formRules.requiredRule"
-                    rows="20" placeholder="Paste your proxies here" />
-          <h6 class="mb-2">Description</h6>
-          <v-text-field
-              variant="solo"
-              class="text-field-component"
-              density="compact"
-              v-model="proxyDescription"
-              placeholder="Enter description"
-          />
+                    rows="20" placeholder="Paste your proxy here" />
         </v-card-text>
         <v-card-actions class="me-3 mb-2">
           <v-spacer />

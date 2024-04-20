@@ -183,6 +183,12 @@ export const routes = [
     component: () => import("@/views/urls/index.vue"),
     meta: { title: "Urls", authRequired: true, layout: DefaultLayout },
   },
+  {
+    path: "/proxy",
+    name: "Proxy",
+    component: () => import("@/views/proxy/index.vue"),
+    meta: { title: "Proxy", authRequired: true, layout: DefaultLayout },
+  },
   // {
   //   path: "/proxies",
   //   name: "Proxies",

@@ -31,9 +31,9 @@ export default class HttpService {
     }
   }
 
-  async delete(path: string) {
+  async delete(path: string, options: any) {
     try {
-      const { data } = await axios.delete(`${path}`);
+      const { data } = await axios.delete(`${path}`, options);
       return data;
     } catch (error: any) {
       throw error;

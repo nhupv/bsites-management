@@ -27,6 +27,7 @@ import {SiteKeywordController} from "./site-keyword/site-keyword.controller";
 import {UrlSiteController} from "./url-site/url-site.controller";
 import {SiteProxyController} from "./site-proxy/site-proxy.controller";
 import { BotModule } from './bot/bot.module';
+import { ProxyModule } from './proxy/proxy.module';
 
 @Global()
 @Module({
@@ -99,7 +100,8 @@ import { BotModule } from './bot/bot.module';
         ]
       },
     ]),
-    BotModule
+    BotModule,
+    ProxyModule
     // MailModule,
   ],
   controllers: [AppController],
