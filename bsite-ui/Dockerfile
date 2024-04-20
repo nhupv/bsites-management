@@ -12,7 +12,7 @@ RUN yarn build
 
 FROM --platform=linux/amd64 nginx as production-stage
 RUN mkdir -p /app
-COPY --from=build-stage /app/build /app
+COPY --from=build-stage /app/dist /app
 
 COPY nginx/ /etc/nginx/templates
 ENV BASE_API_URL=http://localhost

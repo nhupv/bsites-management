@@ -1,1 +1,1 @@
-docker build -t bsite-ui .
+docker build -t bsites-ui:latest .
