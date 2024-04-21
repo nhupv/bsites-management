@@ -1,5 +1,17 @@
 version: '3'
 services:
+  bsites-ui:
+    container_name: bsites-ui
+    image: bsites-ui:latest
+    ports:
+      - '3030:80'
+    environment:
+      - BASE_API_URL=http://bsites-api:4000/
+    networks:
+      - bsitesapi
+    restart: always
+    stdin_open: true
+    tty: true
   bsites-api:
     container_name: bsites-api
     image: bsites-api:latest
