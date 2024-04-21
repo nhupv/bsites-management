@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
   NotFoundException,
-  BadRequestException
+  BadRequestException, Req
 } from '@nestjs/common';
 import { BotService } from './bot.service';
 import { CreateBotDto } from './dto/create-bot.dto';
@@ -31,15 +31,9 @@ export class BotController {
   // }
 
   @Get('list')
-  async findAll(@Param('siteId', ParseObjectIdPipe) siteId: string) {
-    const site = await this.siteService.findOne(siteId)
-
-    if(!site) {
-      throw new NotFoundException(`Site ${siteId} not found`);
-    }
-
+  async findAll(@Param('siteId', ParseObjectIdPipe) siteId: string, @Req() req) {
     try {
-      const { data } = await this.botService.findAll(site.ip);
+      const { data } = await this.botService.findAll(req.site.ip);
       return data
     } catch (e) {
       throw new BadRequestException(e.message || e.toString());

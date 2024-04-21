@@ -66,7 +66,7 @@ import { ProxyModule } from './proxy/proxy.module';
     }),
     ConsoleModule,
     TelegramBotModule,
-    // DashboardModule,
+    DashboardModule,
     // JobsModule,
     CsvModule,
     MulterModule.register({
@@ -96,6 +96,10 @@ import { ProxyModule } from './proxy/proxy.module';
           {
             path: 'bots',
             module: BotModule,
+          },
+          {
+            path: 'dashboard',
+            module: DashboardModule,
           },
         ]
       },

@@ -14,12 +14,13 @@ import {SitesService} from "../../sites/sites.service";
 export class SiteIdGuard implements CanActivate {
   constructor(private readonly sitesService: SitesService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const { params } = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest();
 
-    const site = await this.sitesService.findOne(params.siteId)
+    const site = await this.sitesService.findOne(request.params.siteId)
     if(!site) {
       throw new NotFoundException(`Site was not found!`);
     }
+    request['site'] = site
     return true
   }
 }

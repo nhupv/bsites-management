@@ -36,14 +36,14 @@ export class UrlSiteController {
 
   @HttpCode(201)
   @Post()
-  async create(@Param('siteId', ParseObjectIdPipe) siteId: String, @Body() createUrlSiteDto: CreateUrlSiteDto) {
+  async create(@Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createUrlSiteDto: CreateUrlSiteDto) {
     createUrlSiteDto.site = siteId
     return this.urlSiteService.create(createUrlSiteDto);
   }
 
   @HttpCode(201)
   @Post('create-bulk')
-  async createBulk(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: String, @Body() createBulkSiteUrlDto: CreateBulkSiteUrlDto) {
+  async createBulk(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createBulkSiteUrlDto: CreateBulkSiteUrlDto) {
 
     const urlList : CreateUrlSiteDto[] = createBulkSiteUrlDto.urls.map(url => ({
       url : url,

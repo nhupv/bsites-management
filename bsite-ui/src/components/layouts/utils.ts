@@ -58,6 +58,13 @@ export const menuItems: MenuItemType[] = [
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
   {
+    label: "dashboards",
+    icon: "ph-gauge",
+    id: "sidebarDashboards",
+    link: "/site-stats",
+    show: !!localStorage.getItem(LS_KEY_SITE)
+  },
+  {
     label: "bot",
     icon: "ph-robot",
     id: "sidebarBot",

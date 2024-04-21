@@ -166,6 +166,12 @@ export const routes = [
     meta: { title: "Site", authRequired: true, layout: DefaultLayout },
   },
   {
+    path: "/site-stats",
+    name: "Site Stats",
+    component: () => import("@/views/dashboard/SiteStats.vue"),
+    meta: { title: "Site Stats", authRequired: true, layout: DefaultLayout },
+  },
+  {
     path: "/users",
     name: "User",
     component: () => import("@/views/user/index.vue"),
