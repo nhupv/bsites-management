@@ -6,6 +6,7 @@ import {firstValueFrom, Observable} from "rxjs";
 import {Bot} from "./entities/bot.entity";
 import { AxiosResponse, AxiosError } from 'axios'
 import {map, catchError } from 'rxjs/operators';
+import {ResetBotDto} from "./dto/reset-bot.dto";
 
 @Injectable()
 export class BotService {
@@ -19,6 +20,20 @@ export class BotService {
     return this.httpService
         .get(
             `http://${ip}:5000/list_processes`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+        )
+        .toPromise();
+  }
+
+  resetBot(ip: string, resetBotDto: ResetBotDto) {
+    return this.httpService
+        .post(
+            `http://${ip}:5000/reset_bot`,
+            resetBotDto,
             {
               headers: {
                 'Content-Type': 'application/json',

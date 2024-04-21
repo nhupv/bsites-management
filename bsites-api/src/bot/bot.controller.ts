@@ -18,6 +18,7 @@ import {SitesService} from "../sites/sites.service";
 import {SiteIdGuard} from "../common/guard/siteId.guard";
 import {Roles} from "../common/decorator/roles.decorator";
 import {Role} from "../roles/role.enum";
+import {ResetBotDto} from "./dto/reset-bot.dto";
 
 @Roles(Role.Admin, Role.User, Role.SuperUser)
 @UseGuards(SiteIdGuard)
@@ -39,6 +40,17 @@ export class BotController {
       throw new BadRequestException(e.message || e.toString());
     }
   }
+
+  @Post('reset')
+  async restBot(@Param('siteId', ParseObjectIdPipe) siteId: string, @Req() req, @Body() resetBotDto: ResetBotDto) {
+    try {
+      const { data } = await this.botService.resetBot(req.site.ip, resetBotDto);
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
+  }
+
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

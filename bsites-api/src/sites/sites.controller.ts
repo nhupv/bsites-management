@@ -72,6 +72,11 @@ export class SitesController {
 
     const urls = await this.urlSiteService.findBySiteId(site._id)
 
+    console.log({
+      ctr: site.ctr,
+      site_url: site.siteUrl,
+      list_url: urls.map(url => url.url)
+    })
     try {
       const { data } = await this.http
           .post(

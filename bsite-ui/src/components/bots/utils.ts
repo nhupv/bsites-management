@@ -71,14 +71,14 @@ export const botsAction: OptionType[] = [
   //   value: "view",
   //   to: "/ecommerce/product-details",
   // },
+  // {
+  //   title: "Edit",
+  //   icon: "ph-pencil",
+  //   value: "edit",
+  // },
   {
-    title: "Edit",
-    icon: "ph-pencil",
-    value: "edit",
-  },
-  {
-    title: "Remove",
-    icon: "ph-trash",
-    value: "remove",
+    title: "Reset",
+    icon: "ph-arrows-clockwise",
+    value: "reset",
   },
 ];

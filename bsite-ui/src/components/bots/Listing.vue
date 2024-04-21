@@ -37,7 +37,7 @@ const headers = ref([
   { title: 'Process Sub', key: 'process_sub', align: 'start', sortable: false },
   { title: 'Last activity', key: 'last_activity', align: 'start', sortable: false },
   { title: '', key: 'time', align: 'start', sortable: false },
-  // { title: 'Action', key: 'action', align: 'start', sortable: false },
+  { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
 
 const serverItems = ref([])
@@ -66,6 +66,8 @@ const onSelect = (option: string, data: any) => {
   } else if (option === "remove") {
     confirmationDialog.value = true;
     confirmationSite.value = data._id;
+  } else if (option === "reset") {
+    onResetBot(data)
   }
 }
 
@@ -87,6 +89,19 @@ watch(confirmationDialog, (dialog: boolean) => {
   }
 });
 
+const onResetBot = async (bot: any) => {
+  loading.value = true
+  try {
+    const data = await httpService.post(`/sites/${siteId.value}/bots/reset`, { bot_index: bot.proxy_id })
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+    await loadItems()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
 const onUpdate = async (updatedVal: SiteType) => {
   try {
     await httpService.patch(`/sites/${siteId.value}/bots${updatedVal._id}`, updatedVal)
@@ -184,9 +199,9 @@ const onConfirmDelete = async () => {
             {{formatDistance(new Date(item.last_activity), new Date(), { addSuffix: true })}}
           </span>
         </template>
-<!--        <template v-slot:item.action="{item}">-->
-<!--          <ListMenuWithIcon :menu-items="botsAction" @onSelect="onSelect($event, item)" />-->
-<!--        </template>-->
+        <template v-slot:item.action="{item}">
+          <ListMenuWithIcon :menu-items="botsAction" @onSelect="onSelect($event, item)" />
+        </template>
       </v-data-table-virtual>
 <!--      <v-data-table-server-->
 <!--          :header-props="{ class: 'font-weight-bold bg-light'}"-->
