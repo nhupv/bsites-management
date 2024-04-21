@@ -64,7 +64,7 @@ export const productsHeader: TableHeaderType[] = [
   { title: "Action" },
 ];
 
-export const sitesAction: OptionType[] = [
+export const botsAction: OptionType[] = [
   // {
   //   title: "View",
   //   icon: "ph-eye",

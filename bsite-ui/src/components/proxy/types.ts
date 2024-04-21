@@ -14,3 +14,8 @@ export type ProxyType = {
   updated_time?: string;
 
 };
+
+export enum ProxyStatus {
+  InUsed = 'in-use',
+  NotInUsed = 'not-in-use',
+}

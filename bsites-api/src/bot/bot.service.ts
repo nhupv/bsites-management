@@ -15,15 +15,17 @@ export class BotService {
     return 'This action adds a new bot';
   }
 
-  async findAll(ip: string): Promise<Bot[]> {
-    const { data } = await firstValueFrom(
-        this.httpService.get<Bot[]>(process.env.BOT_ENDPOINT).pipe(
-            catchError((e: AxiosError) => {
-              throw new HttpException(e.response.data, e.response.status)
-            }),
-        ),
-    );
-    return data
+  findAll(ip: string) {
+    return this.httpService
+        .get(
+            `http://${ip}:5000/list_processes`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+        )
+        .toPromise();
   }
 
   findOne(id: number) {

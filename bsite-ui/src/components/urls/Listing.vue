@@ -60,9 +60,10 @@ const loadItems = async (options: any) => {
     const data = await httpService.get(url)
     serverItems.value = data.data
     totalItems.value = data.total
-    loading.value = false
   } catch (e) {
-    console.log(e)
+    handleError(e)
+  } finally {
+    loading.value = false
   }
 }
 const onSelect = (option: string, data: any) => {

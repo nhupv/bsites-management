@@ -171,12 +171,12 @@ export const routes = [
     component: () => import("@/views/user/index.vue"),
     meta: { title: "Site", authRequired: true, layout: DefaultLayout },
   },
-  // {
-  //   path: "/bots",
-  //   name: "Bots",
-  //   component: () => import("@/views/bots/index.vue"),
-  //   meta: { title: "Bots", authRequired: true, layout: DefaultLayout },
-  // },
+  {
+    path: "/bots",
+    name: "Bots",
+    component: () => import("@/views/bots/index.vue"),
+    meta: { title: "Bots", authRequired: true, layout: DefaultLayout },
+  },
   {
     path: "/urls",
     name: "Urls",

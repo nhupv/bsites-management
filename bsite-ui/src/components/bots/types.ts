@@ -5,7 +5,7 @@ export type FilterType = {
   discount: string;
 };
 
-export type UrlType = {
+export type BotType = {
   id?: string;
   _id?: string;
   description: string;

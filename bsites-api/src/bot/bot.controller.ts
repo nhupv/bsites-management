@@ -1,4 +1,15 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  NotFoundException,
+  BadRequestException
+} from '@nestjs/common';
 import { BotService } from './bot.service';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { UpdateBotDto } from './dto/update-bot.dto';
@@ -14,29 +25,39 @@ import {Role} from "../roles/role.enum";
 export class BotController {
   constructor(private readonly botService: BotService, private readonly  siteService: SitesService) {}
 
-  @Post()
-  create(@Body() createBotDto: CreateBotDto) {
-    return this.botService.create(createBotDto);
-  }
+  // @Post()
+  // create(@Body() createBotDto: CreateBotDto) {
+  //   return this.botService.create(createBotDto);
+  // }
 
-  @Get()
+  @Get('list')
   async findAll(@Param('siteId', ParseObjectIdPipe) siteId: string) {
     const site = await this.siteService.findOne(siteId)
-    return this.botService.findAll(site.ip);
+
+    if(!site) {
+      throw new NotFoundException(`Site ${siteId} not found`);
+    }
+
+    try {
+      const { data } = await this.botService.findAll(site.ip);
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.botService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBotDto: UpdateBotDto) {
-    return this.botService.update(+id, updateBotDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.botService.remove(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   return this.botService.findOne(+id);
+  // }
+  //
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateBotDto: UpdateBotDto) {
+  //   return this.botService.update(+id, updateBotDto);
+  // }
+  //
+  // @Delete(':id')
+  // remove(@Param('id') id: string) {
+  //   return this.botService.remove(+id);
+  // }
 }

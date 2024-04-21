@@ -57,13 +57,13 @@ export const menuItems: MenuItemType[] = [
     id: "sidebarPages",
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
-  // {
-  //   label: "bot",
-  //   icon: "ph-robot",
-  //   id: "sidebarBot",
-  //   link: "/bots",
-  //   show: !!localStorage.getItem(LS_KEY_SITE)
-  // },
+  {
+    label: "bot",
+    icon: "ph-robot",
+    id: "sidebarBot",
+    link: "/bots",
+    show: !!localStorage.getItem(LS_KEY_SITE)
+  },
   {
     label: "url",
     icon: "ph-link",

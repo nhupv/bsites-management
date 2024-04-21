@@ -8,7 +8,7 @@ import {sitesAction} from "@/components/sites/utils";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
 import { format } from "date-fns";
-import { ProxyType } from "@/components/proxy/types";
+import { ProxyType, ProxyStatus } from "@/components/proxy/types";
 import CreateMultipleProxyDialog from "@/components/proxy/CreateMultipleProxyDialog.vue";
 import {proxyAction} from "@/components/proxy/utils";
 import {co} from "@/assets/images/flags/utils";
@@ -39,7 +39,12 @@ const confirmationProxy = ref<string>('');
 const createEditDialog = ref(false);
 const proxyDetail = ref<ProxyType | null>(null);
 
-const { setQueryUrl } = useTable()
+const totalInUse = computed(() => serverItems.value.filter((proxy: ProxyType) => {
+  return proxy.status === ProxyStatus.InUsed
+}))
+const totalNotInUse = computed(() => serverItems.value.filter((proxy: ProxyType) => {
+  return proxy.status === ProxyStatus.NotInUsed
+}))
 
 const loadItems = async () => {
   // tableOptions.value = options
@@ -49,9 +54,10 @@ const loadItems = async () => {
     const data = await httpService.get('/proxy')
     serverItems.value = data
     // totalItems.value = data.total
-    loading.value = false
   } catch (e) {
-    console.log(e)
+    handleError(e)
+  } finally {
+    loading.value = false
   }
 }
 const onSelect = (option: string, data: ProxyType) => {
@@ -134,11 +140,29 @@ const onConfirmDelete = async () => {
     <v-card-title
       class="text-subtitle-1 font-weight-bold d-flex justify-space-between align-center"
     >
+        <div class="d-flex ga-md-5 ga-2">
+          <div>
+            Proxy
+            <v-badge :content="serverItems.length" inline color="light" rounded="sm" />
+          </div>
+          <div>
+            In Used
+            <v-badge :content="totalInUse.length" inline color="error" rounded="sm" />
+          </div>
+          <div>
+            Not In Used
+            <v-badge :content="totalNotInUse.length" inline color="success" rounded="sm" />
+          </div>
+        </div>
       <div>
-        Proxy
-        <v-badge :content="serverItems.length" inline color="light" rounded="sm" />
-      </div>
-      <div>
+        <v-btn
+            elevation="0"
+            class="my-2 mr-2"
+            variant="outlined"
+            @click="loadItems"
+        >
+          <i class="ph-arrow-clockwise mx-1" /> Refresh
+        </v-btn>
         <v-btn
             color="primary"
             elevation="0"
@@ -148,6 +172,7 @@ const onConfirmDelete = async () => {
           <i class="ph-plus-circle mx-1" /> Add proxy
         </v-btn>
       </div>
+
     </v-card-title>
     <v-card-text class="px-0">
       <v-data-table-virtual :loading="loading" sticky :headers="headers" :items="serverItems" height="500" item-value="_id">
