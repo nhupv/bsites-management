@@ -175,7 +175,7 @@ const onConfirmDelete = async () => {
 
     </v-card-title>
     <v-card-text class="px-0">
-      <v-data-table-virtual :loading="loading" sticky :headers="headers" :items="serverItems" height="500" item-value="_id">
+      <v-data-table-virtual :loading="loading" sticky :headers="headers" :items="serverItems" height="550" item-value="_id">
         <template v-slot:item.proxy="{item} : any">
           <span class="text-primary">{{item.proxy}}</span>
         </template>

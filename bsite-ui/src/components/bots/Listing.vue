@@ -138,6 +138,14 @@ const onConfirmDelete = async () => {
         Bot in site
         <v-badge :content="serverItems.length" inline color="light" rounded="sm" />
       </div>
+      <v-btn
+          elevation="0"
+          class="my-2 mr-2"
+          variant="outlined"
+          @click="loadItems"
+      >
+        <i class="ph-arrow-clockwise mx-1" /> Refresh
+      </v-btn>
 <!--      <v-btn-->
 <!--        color="primary"-->
 <!--        elevation="0"-->
@@ -148,7 +156,7 @@ const onConfirmDelete = async () => {
 <!--      </v-btn>-->
     </v-card-title>
     <v-card-text class="px-0">
-      <v-data-table-virtual :loading="loading" sticky :headers="headers" :items="serverItems" height="500" item-value="_id">
+      <v-data-table-virtual :loading="loading" sticky :headers="headers" :items="serverItems" height="550" item-value="_id">
         <template v-slot:item.proxy_id="{item} : any">
           <v-chip label color="primary" variant="tonal" density="compact">{{item.proxy_id}}</v-chip>
         </template>
