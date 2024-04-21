@@ -119,7 +119,7 @@ const onAddUrlClick = () => {
 
 const onConfirmDelete = async () => {
   try {
-    await httpService.delete(`/proxy`, { data: { proxy_url: confirmationProxy.value }})
+    await httpService.deleteWithData(`/proxy`, { data: { proxy_url: confirmationProxy.value }})
     $toast.success('Proxy deleted successfully!')
     confirmationDialog.value = false;
     await loadItems()
