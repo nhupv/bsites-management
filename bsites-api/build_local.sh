@@ -1,1 +1,1 @@
-docker build -t seo-api:latest -f Dockerfile-pro .
+docker build -t bsites-api:latest -f Dockerfile-pro .
