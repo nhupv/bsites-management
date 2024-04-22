@@ -9,7 +9,7 @@ import {
   Patch,
   Post, UseGuards,
   Request,
-  UseInterceptors
+  UseInterceptors, BadRequestException
 } from '@nestjs/common';
 import {UrlSiteService} from './url-site.service';
 import {UpdateUrlSiteDto} from './dto/update-url-site.dto';
@@ -57,6 +57,17 @@ export class UrlSiteController {
   @Get('list')
   findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
     return this.urlSiteService.findAll(pagination, filter );
+  }
+
+  @HttpCode(200)
+  @Get('push')
+  async pushData(@Request() req) {
+    try {
+      const { data } = await this.urlSiteService.pushData(req.site.id)
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
   }
 
   @Get(':id')

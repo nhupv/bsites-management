@@ -25,6 +25,19 @@ export class DashboardService {
         .toPromise();
   }
 
+  resetStats(ip:string) {
+    return this.http
+        .get(
+            `http://${ip}:5000/reset_stats`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+        )
+        .toPromise();
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} dashboard`;
   }

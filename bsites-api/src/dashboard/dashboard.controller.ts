@@ -29,6 +29,17 @@ export class DashboardController {
     }
   }
 
+  @Get('reset')
+  async resetDashboard(@Req() req) {
+    try {
+      const { data } = await this.dashboardService.resetStats(req.site.ip)
+      return data
+    } catch (e) {
+      console.log(e)
+      throw new BadRequestException(e.message || e.toString());
+    }
+  }
+
   // @Get('tracking-domain')
   // totalTrackingDomain() {
   //   // return this.trackingDomainService.getTotal();

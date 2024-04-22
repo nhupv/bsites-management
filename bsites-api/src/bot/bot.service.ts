@@ -43,6 +43,31 @@ export class BotService {
         .toPromise();
   }
 
+    stopAllBot(ip: string) {
+        return this.httpService
+            .get(
+                `http://${ip}:5000/stop_all_bot`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            )
+            .toPromise();
+    }
+    startAllBot(ip: string) {
+        return this.httpService
+            .get(
+                `http://${ip}:5000/start_all_bot`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            )
+            .toPromise();
+    }
+
   findOne(id: number) {
     return `This action returns a #${id} bot`;
   }

@@ -102,6 +102,36 @@ const onResetBot = async (bot: any) => {
     loading.value = false
   }
 };
+
+const onStartAllBot = async (bot: any) => {
+  loading.value = true
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/bots/start-all-bot`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+    await loadItems()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
+const onStopAllBot = async (bot: any) => {
+  loading.value = true
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/bots/stop-all-bot`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+    await loadItems()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
+
 const onUpdate = async (updatedVal: SiteType) => {
   try {
     await httpService.patch(`/sites/${siteId.value}/bots${updatedVal._id}`, updatedVal)
@@ -153,22 +183,37 @@ const onConfirmDelete = async () => {
         Bot in site
         <v-badge :content="serverItems.length" inline color="light" rounded="sm" />
       </div>
-      <v-btn
-          elevation="0"
-          class="my-2 mr-2"
-          variant="outlined"
-          @click="loadItems"
-      >
-        <i class="ph-arrow-clockwise mx-1" /> Refresh
-      </v-btn>
-<!--      <v-btn-->
-<!--        color="primary"-->
-<!--        elevation="0"-->
-<!--        class="mt-2"-->
-<!--        @click="onAddBotClick"-->
-<!--      >-->
-<!--        <i class="ph-plus-circle mx-1" /> Add bot-->
-<!--      </v-btn>-->
+      <div>
+        <v-btn
+            :loading="loading"
+            elevation="0"
+            class="my-2 mr-4"
+            variant="outlined"
+            @click="loadItems"
+        >
+          <i class="ph-arrow-clockwise mx-1" /> Refresh
+        </v-btn>
+        <v-btn
+            :loading="loading"
+            elevation="0"
+            color="success"
+            class="my-2 mr-4"
+            variant="tonal"
+            @click="onStartAllBot"
+        >
+          <i class="ph-play mx-1" /> Start All Bot
+        </v-btn>
+        <v-btn
+            :loading="loading"
+            elevation="0"
+            color="error"
+            class="my-2"
+            variant="tonal"
+            @click="onStopAllBot"
+        >
+          <i class="ph-stop-circle mx-1" /> Stop All Bot
+        </v-btn>
+      </div>
     </v-card-title>
     <v-card-text class="px-0">
       <v-data-table-virtual :loading="loading" sticky :headers="headers" :items="serverItems" height="550" item-value="_id">

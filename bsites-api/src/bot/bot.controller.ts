@@ -51,6 +51,26 @@ export class BotController {
     }
   }
 
+  @Get('stop-all-bot')
+  async stopAllBot(@Req() req) {
+    try {
+      const { data } = await this.botService.stopAllBot(req.site.ip);
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
+  }
+
+  @Get('start-all-bot')
+  async startAllBot(@Req() req) {
+    try {
+      const { data } = await this.botService.startAllBot(req.site.ip);
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
+  }
+
 
   // @Get(':id')
   // findOne(@Param('id') id: string) {

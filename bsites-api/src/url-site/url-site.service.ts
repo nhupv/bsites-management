@@ -8,10 +8,12 @@ import {PaginationParams} from "../common/pagination/dto/papgination-params.dto"
 import {PaginationResultInterface} from "../common/pagination/interface/pagination-result.interface";
 import {REQUEST} from "@nestjs/core";
 import { Request } from 'express'
+import {HttpService} from "@nestjs/axios";
 
 @Injectable({ scope: Scope.REQUEST})
 export class UrlSiteService {
   constructor(@InjectModel(UrlSite.name) private urlSiteModel: Model<UrlSiteDocument>,
+              private readonly httpService: HttpService,
               @Inject(REQUEST) private request: Request) {
   }
   create(createUrlSiteDto: CreateUrlSiteDto) {
@@ -91,5 +93,21 @@ export class UrlSiteService {
   }
   removeAll() {
     return this.urlSiteModel.remove({})
+  }
+  async pushData(ip:string) {
+    const urls = await this.findBySiteId(this.request.params.siteId)
+    const listUrl = urls.map(url => url.url)
+    console.log(listUrl)
+    return this.httpService
+        .post(
+            `http://${ip}:5000/sync_url`,
+            {list_url: listUrl},
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+        )
+        .toPromise();
   }
 }

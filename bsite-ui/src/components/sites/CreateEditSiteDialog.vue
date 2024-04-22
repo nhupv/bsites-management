@@ -116,6 +116,7 @@ const ctr = ref(prop.itemDetail?.ctr || 4);
               <h6 class="mb-2">CTR</h6>
               <v-text-field
                   variant="solo"
+                  type="number"
                   class="text-field-component"
                   density="compact"
                   v-model="ctr"

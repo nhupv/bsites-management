@@ -101,6 +101,19 @@ const onUpdate = async (updatedVal: SiteType) => {
   }
 };
 
+const onPushData = async () => {
+  loading.value = true;
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/urls/push`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
 const onCreate = async (newVal: { urls: string, description?: string}) => {
   const arrayUrl = newVal.urls.replace(/\r\n/g,"\n").split("\n")
   const filterUrl = arrayUrl.filter((url: string) => !!url.trim())
@@ -156,6 +169,7 @@ const onConfirmDeleteAll = async () => {
       </div>
       <div>
         <v-btn
+            :loading="loading"
             v-if="totalItems"
             color="error"
             elevation="0"
@@ -163,6 +177,17 @@ const onConfirmDeleteAll = async () => {
             @click="confirmationRemoveAllDialog = true"
         >
           <i class="ph-trash mx-1" /> Delete all
+        </v-btn>
+        <v-btn
+            :disabled="totalItems === 0"
+            :loading="loading"
+            color="primary"
+            variant="outlined"
+            elevation="0"
+            class="my-2 mr-4"
+            @click="onPushData"
+        >
+          <i class="ph-paper-plane-tilt mx-1" /> Push data
         </v-btn>
         <v-btn
             color="primary"
