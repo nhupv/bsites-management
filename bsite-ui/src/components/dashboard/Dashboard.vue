@@ -100,7 +100,7 @@ onMounted(()=> {
             v-for="(item, index) in dataStats"
             :key="'real-estate-dashboard-' + index"
         >
-          <v-card variant="outlined">
+          <v-card variant="tonal" color="primary">
             <v-card-text>
               <v-row no-gutters justify="space-between">
                 <v-col cols>
