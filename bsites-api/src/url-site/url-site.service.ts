@@ -91,9 +91,11 @@ export class UrlSiteService {
     return this.urlSiteModel.findOneAndDelete({ _id: id });
 
   }
+
   removeAll() {
-    return this.urlSiteModel.remove({})
+    return this.urlSiteModel.remove({site: this.request.params.siteId}).exec();
   }
+
   async pushData(ip:string) {
     const urls = await this.findBySiteId(this.request.params.siteId)
     const listUrl = urls.map(url => url.url)
