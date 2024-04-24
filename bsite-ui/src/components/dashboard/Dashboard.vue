@@ -6,7 +6,9 @@ import { useLayoutStore } from "@/store/app";
 import {handleError} from "@/app/helpers";
 import {httpService} from "@/app/http/httpServiceProvider";
 import {useSite} from "@/store/site";
+import {useToast} from "vue-toast-notification";
 
+const $toast = useToast({ position: 'top-right'});
 const siteStore = useSite()
 const siteId = computed(()=> siteStore.siteId)
 const loading  = ref<boolean>(false);
@@ -34,6 +36,9 @@ const resetStats = async () => {
   loading.value = true;
   try {
     const data = await httpService.get(`/sites/${siteId.value}/dashboard/reset`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+    await getStats()
   } catch (e) {
     handleError(e)
   } finally {
