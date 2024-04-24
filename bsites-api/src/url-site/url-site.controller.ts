@@ -63,7 +63,7 @@ export class UrlSiteController {
   @Get('push')
   async pushData(@Request() req) {
     try {
-      const { data } = await this.urlSiteService.pushData(req.site.id)
+      const { data } = await this.urlSiteService.pushData(req.site.ip)
       return data
     } catch (e) {
       throw new BadRequestException(e.message || e.toString());

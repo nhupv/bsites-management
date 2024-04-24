@@ -97,11 +97,10 @@ export class UrlSiteService {
   async pushData(ip:string) {
     const urls = await this.findBySiteId(this.request.params.siteId)
     const listUrl = urls.map(url => url.url)
-    console.log(listUrl)
     return this.httpService
         .post(
             `http://${ip}:5000/sync_url`,
-            {list_url: listUrl},
+            { list_url: listUrl },
             {
               headers: {
                 'Content-Type': 'application/json',
