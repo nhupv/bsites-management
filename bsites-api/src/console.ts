@@ -10,8 +10,10 @@ bootstrap.init().then(async (app) => {
     await app.init();
     // boot the cli
     await bootstrap.boot();
+    // await app.close();
     process.exit(0);
   } catch (e) {
+    // await app.close();
     process.exit(1);
   }
 });

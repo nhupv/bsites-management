@@ -1,6 +1,5 @@
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
-import { User } from 'src/users/entities/user.entity';
 export class TelegramBotService {
   constructor(@InjectQueue('send-message-telegram') private queue: Queue) {}
 

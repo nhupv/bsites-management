@@ -20,6 +20,10 @@ export class SitesService {
     return site.save();
   }
 
+  findAllWithoutPagination(): Promise<Site[]> {
+    return this.siteModel.find().exec();
+  }
+
   async findAll(
       paginationParams: PaginationParams,
       filter: Array<any>,

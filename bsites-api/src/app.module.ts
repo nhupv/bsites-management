@@ -14,7 +14,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import * as moment from 'moment';
 import { CsvModule } from 'nest-csv-parser';
 import { MulterModule } from '@nestjs/platform-express';
-// import { BacklinkModule } from './backlink/backlink.module';
 import { HttpModule } from '@nestjs/axios';
 import { MigrateModule } from './migrate/migrate.module';
 import { MailModule } from './mail/mail.module';
@@ -28,6 +27,7 @@ import {UrlSiteController} from "./url-site/url-site.controller";
 import {SiteProxyController} from "./site-proxy/site-proxy.controller";
 import { BotModule } from './bot/bot.module';
 import { ProxyModule } from './proxy/proxy.module';
+import {JobsModule} from "./jobs/jobs.module";
 
 @Global()
 @Module({
@@ -67,8 +67,8 @@ import { ProxyModule } from './proxy/proxy.module';
     ConsoleModule,
     TelegramBotModule,
     DashboardModule,
-    // JobsModule,
-    CsvModule,
+    JobsModule,
+    // CsvModule,
     MulterModule.register({
       dest: './uploads',
     }),
@@ -117,7 +117,7 @@ import { ProxyModule } from './proxy/proxy.module';
     },
   ],
   // exports: [ElasticsearchModule, 'Moment'],
-  exports: ['Moment'],
+  exports: ['Moment', AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

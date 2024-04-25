@@ -19,7 +19,7 @@ export default {
       :class="titleClass"
     >
       <div class="d-flex align-center">
-        <h4 class="text-body-1 font-weight-bold">
+        <h4 class="text-body-1 font-weight-bold text-capitalize">
           {{ title }}
         </h4>
         <slot name="title-badge" />

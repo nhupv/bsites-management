@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { type PropType } from "vue";
+const emit = defineEmits(['onChange'])
 
 const prop = defineProps({
   icon: {
@@ -11,9 +12,13 @@ const prop = defineProps({
     type: Boolean,
     default: false,
   },
-  isSortBy: {
+  isTitle: {
     type: Boolean,
     default: false,
+  },
+  title: {
+    type: String,
+    default: 'Title',
   },
   listItems: {
     type: Array as PropType<any[]>,
@@ -36,8 +41,9 @@ const prop = defineProps({
 });
 
 const selectedOption = ref(prop.listItems?.[0] || "");
-const onOptionClick = (value: string) => {
+const onOptionClick = (value: any) => {
   selectedOption.value = value;
+  emit("onChange", selectedOption.value);
 };
 </script>
 <template>
@@ -60,14 +66,14 @@ const onOptionClick = (value: string) => {
         class="nav-link menu-link list-menu-btn"
         :class="class"
       >
-        <span v-if="isSortBy" class="font-weight-bold text-uppercase">
-          Sort By:
+        <span v-if="isTitle" class="font-weight-bold text-uppercase">
+          {{ title }}:
         </span>
         <div
           :class="variant === 'outlined' ? '' : 'text-muted'"
           class="px-2 d-flex align-center justify-space-between"
         >
-          <span>{{ selectedOption }}</span>
+          <span class="text-capitalize">{{ selectedOption }}</span>
           <i class="ph-caret-down"></i>
         </div>
       </v-btn>

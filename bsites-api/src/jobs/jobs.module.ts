@@ -3,11 +3,14 @@ import { JobsService } from './jobs.service';
 import { JobsController } from './jobs.controller';
 import { TelegramBotModule } from '../telegram/telegram.module';
 import * as moment from 'moment-timezone';
-// import { CveModule } from '../cve/cve.module';
-// import { CveYearlyModule } from '../cve-yearly/cve-yearly.module';
+import {SitesModule} from "../sites/sites.module";
+import {DashboardModule} from "../dashboard/dashboard.module";
+import {ConsoleModule} from "nestjs-console";
+import {JobsCommand} from "./commands/jobs.command";
+import {ScheduleModule} from "@nestjs/schedule";
 
 @Module({
-  imports: [TelegramBotModule],
+  imports: [ConsoleModule, TelegramBotModule, SitesModule, DashboardModule],
   controllers: [JobsController],
   providers: [
     JobsService,
@@ -16,5 +19,6 @@ import * as moment from 'moment-timezone';
       useValue: moment,
     },
   ],
+  exports: [JobsService]
 })
 export class JobsModule {}

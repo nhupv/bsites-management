@@ -1,8 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 import { TelegramBotService } from './telegram/telegram.service';
+import {CronJob} from "cron";
 @Injectable()
 export class AppService {
+  private readonly logger = new Logger(AppService.name);
+
   constructor(private telegramService: TelegramBotService) {}
   async requestFido2RedirectUri(
     sessionID: string,

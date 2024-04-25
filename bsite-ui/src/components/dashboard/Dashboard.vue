@@ -13,7 +13,6 @@ const siteStore = useSite()
 const siteId = computed(()=> siteStore.siteId)
 const loading  = ref<boolean>(false);
 
-const charts = ref<any>(getCharts(getChartColorsArray));
 const dataStats = ref<any>([]);
 
 const getStats = async () => {
@@ -66,9 +65,9 @@ onMounted(()=> {
     <v-card-title
         class="text-subtitle-1 font-weight-bold d-flex justify-space-between align-center"
     >
-      <div>
+      <h4 class="text-body-1 font-weight-bold">
         Dashboard
-      </div>
+      </h4>
       <div>
         <v-btn
             :loading="loading"

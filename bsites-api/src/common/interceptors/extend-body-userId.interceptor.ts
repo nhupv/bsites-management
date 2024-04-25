@@ -13,7 +13,7 @@ export class ExtendBodyUserIdInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     if (request.body) {
-      request.body.user = request.user._id
+      request.body.user = request.user?._id
     }
     return next.handle();
   }
