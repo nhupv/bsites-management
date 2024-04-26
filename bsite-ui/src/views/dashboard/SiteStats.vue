@@ -6,8 +6,10 @@ import BotHistory from "@/components/dashboard/BotHistory.vue";
 </script>
 <template>
   <Breadcrumb title="Site Statistics" :items="realEstateBreadcrumb" />
-  <Dashboard />
   <v-row>
+    <v-col cols="12">
+      <Dashboard />
+    </v-col>
     <v-col cols="12">
       <StatsLineChart />
     </v-col>
