@@ -11,14 +11,9 @@ export class TelegramConsumer {
   constructor(private readonly telegramService: TelegramService) {}
   private readonly logger = new Logger(TelegramConsumer.name);
 
-  @Process('send-filtered-room')
+  @Process('send-stats-report')
   async sendMessageToRoom(job: Job<any>): Promise<TelegramMessage> {
-    const data = {
-      chat_id: process.env.FILTERED_DOMAIN_TELEGRAM_ROOM,
-      text: `[${process.env.APP_NAME}] ${job.data.message}`,
-      parse_mode: 'html',
-    } as TelegramSendMessageParams;
-    return this.telegramService.sendMessage(data).toPromise();
+    return this.telegramService.sendMessage(job.data).toPromise();
   }
 
   @Process('send-log')

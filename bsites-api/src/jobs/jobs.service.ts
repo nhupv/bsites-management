@@ -13,7 +13,7 @@ export class JobsService {
   private readonly logger = new Logger(JobsService.name);
 
   constructor(
-    // private readonly telegramService: TelegramBotService,
+    private readonly telegramService: TelegramBotService,
     private readonly siteService: SitesService,
     private readonly dashboardService: DashboardService,
     // @Inject('Moment') private momentService: moment.Moment,
@@ -58,17 +58,19 @@ export class JobsService {
     this.logger.log(`Start insertStats cron job success`)
   }
 
-  // @Cron('*/10 * * * *', {
-  //   name: 'insertStats',
-  //   timeZone: process.env.TZ,
-  // })
+  @Cron(process.env.CRON_JOB_TIME, {
+    name: 'insertStats',
+    timeZone: process.env.TZ,
+  })
   async handleCron() {
     this.logger.log('Cron job run every 10 minute', new Date());
+    // this.telegramService.sendLogToTelegram('Start job run every 10 minute')
 
     const sites = await this.siteService.findAllWithoutPagination()
 
     if(sites.length === 0){
       this.logger.error('No sites in db.');
+      await this.telegramService.sendLogToTelegram('No sites in db.')
       return
     }
 

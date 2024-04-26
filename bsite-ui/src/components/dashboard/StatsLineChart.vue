@@ -34,9 +34,17 @@ const getStats = async () => {
       data: [],
       categories: [],
     }])
-    balanceOverviewChart.value.series = tempData
-    balanceOverviewChart.value.chartOptions.xaxis.categories = tempData[0].categories
-
+    balanceOverviewChart.value = {
+      ...balanceOverviewChart.value,
+      series: tempData,
+      chartOptions: {
+        ...balanceOverviewChart.value.chartOptions,
+        xaxis: {
+          ...balanceOverviewChart.value.chartOptions.xaxis,
+          categories: tempData[0].categories
+        }
+      }
+    }
     dataStats.value = tempData
   } catch (e) {
     handleError(e)
@@ -49,27 +57,6 @@ const overViewChange = (index: number) => {
   overviewType.value = index
   getStats()
 }
-
-// const dataChart = computed(() => {
-//   return dataStats.value.reduce((result: any, row: any) => {
-//     return [
-//        {...result[0], data: [...result[0].data, row[chartType.value]], categories: [...result[0].categories, format(row.time, 'MM-dd-yyyy HH:mm')]},
-//        // {...result[1], data: [...result[1].data, row.total_click_ads]},
-//        // {...result[2], data: [...result[2].data, row.total_views]},
-//     ]
-//   }, [{
-//        name: chartType.value,
-//         color: "primary",
-//        data: [],
-//        categories: [],
-//     }])
-// })
-
-// watch(dataChart, (value) => {
-//   console.log(value)
-//   balanceOverviewChart.value.series = value
-//   balanceOverviewChart.value.chartOptions.xaxis.categories = value[0].categories
-// })
 
 const onChangeType = (v: any) => {
   chartType.value = v;

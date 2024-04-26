@@ -6,8 +6,6 @@ import * as moment from 'moment-timezone';
 import {SitesModule} from "../sites/sites.module";
 import {DashboardModule} from "../dashboard/dashboard.module";
 import {ConsoleModule} from "nestjs-console";
-import {JobsCommand} from "./commands/jobs.command";
-import {ScheduleModule} from "@nestjs/schedule";
 
 @Module({
   imports: [ConsoleModule, TelegramBotModule, SitesModule, DashboardModule],

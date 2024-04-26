@@ -9,9 +9,10 @@ import {Dashboard, DashboardSchema} from "./entities/dashboard.entity";
 import {BullModule} from "@nestjs/bull";
 import {DASHBOARD_QUEUE} from "./constants";
 import {DashboardStatsConsumer} from "./dashboard-stats.consumer";
+import {TelegramBotModule} from "../telegram/telegram.module";
 
 @Module({
-  imports: [DomainModule, HttpModule, SitesModule,
+  imports: [DomainModule, HttpModule, SitesModule, TelegramBotModule,
     BullModule.registerQueue({
       name: DASHBOARD_QUEUE.INSERT_STATS_QUEUE,
     }),

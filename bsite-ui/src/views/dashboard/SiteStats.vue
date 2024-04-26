@@ -8,9 +8,9 @@ import BotHistory from "@/components/dashboard/BotHistory.vue";
   <Breadcrumb title="Site Statistics" :items="realEstateBreadcrumb" />
   <Dashboard />
   <v-row>
-<!--    <v-col cols="12">-->
-<!--      <StatsLineChart />-->
-<!--    </v-col>-->
+    <v-col cols="12">
+      <StatsLineChart />
+    </v-col>
     <v-col cols="12">
       <BotHistory />
     </v-col>

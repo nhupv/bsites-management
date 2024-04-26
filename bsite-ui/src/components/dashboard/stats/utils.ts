@@ -15,8 +15,18 @@ export const crmBreadcrumb: BreadcrumbType[] = [
 
 export const chartFilter = [
   {
-    title: '1D',
+    title: 'TODAY',
     start_date: format(new Date(), "yyyy-MM-dd"),
+    end_date: format(new Date(), "yyyy-MM-dd"),
+  },
+  {
+    title: 'YESTERDAY',
+    start_date: format(subDays(new Date(), 1), "yyyy-MM-dd"),
+    end_date: format(subDays(new Date(), 1), "yyyy-MM-dd"),
+  },
+  {
+    title: '1D',
+    start_date: format(subDays(new Date(), 1), "yyyy-MM-dd"),
     end_date: format(new Date(), "yyyy-MM-dd"),
   },
   {
@@ -85,6 +95,7 @@ export const getCharts = (getChartColorsArray: Function) => {
       },
       xaxis: {
         categories: [],
+        tickAmount: 8,
         labels: {
           rotate: 0,
         },
