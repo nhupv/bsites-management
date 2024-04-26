@@ -21,7 +21,7 @@ import { Fido2Strategy } from './fido2.strategy';
     ConfigModule.forRoot(),
     JwtModule.register({
       secret: process.env.SECRET,
-      signOptions: { expiresIn: jwtConstants.expire },
+      signOptions: { expiresIn: process.env.TOKEN_TIME_EXPIRED },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
