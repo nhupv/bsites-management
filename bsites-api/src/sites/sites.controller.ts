@@ -29,6 +29,7 @@ import {StripContextPipe} from "../common/pipes/strip.context.pipe";
 import { HttpService } from '@nestjs/axios';
 import {UrlSite} from "../url-site/entities/url-site.entity";
 import {UrlSiteService} from "../url-site/url-site.service";
+import {ChangeSiteStatusDto} from "./dto/change-site-status.dto";
 
 @UseInterceptors(PaginationInterceptor)
 @Roles(Role.Admin, Role.SuperUser)
@@ -57,6 +58,11 @@ export class SitesController {
     return this.sitesService.findByUrl(findByUrl.url);
   }
 
+  @Post(':id/status')
+  changeSiteStatus(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() changeStatusDto: ChangeSiteStatusDto) {
+    return this.sitesService.changeStatus(id, changeStatusDto);
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseObjectIdPipe) id: ObjectId) {
     return this.sitesService.findOne(id);
@@ -72,11 +78,6 @@ export class SitesController {
 
     const urls = await this.urlSiteService.findBySiteId(site._id)
 
-    console.log({
-      ctr: site.ctr,
-      site_url: site.siteUrl,
-      list_url: urls.map(url => url.url)
-    })
     try {
       const { data } = await this.http
           .post(

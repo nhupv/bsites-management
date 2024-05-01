@@ -22,6 +22,9 @@ export class CreateSiteDto extends ContextAwareDto {
     @IsOptional()
     ctr?: number;
 
+    @IsNotEmpty()
+    status: boolean;
+
     @IsOptional()
     description?: string;
 

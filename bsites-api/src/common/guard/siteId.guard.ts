@@ -16,7 +16,7 @@ export class SiteIdGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
-    const site = await this.sitesService.findOne(request.params.siteId)
+    const site = await this.sitesService.findOneSiteActive(request.params.siteId)
     if(!site) {
       throw new NotFoundException(`Site was not found!`);
     }

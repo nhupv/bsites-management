@@ -18,7 +18,7 @@ export const useSite = defineStore("site-store", {
     async getSites() {
       try {
         const data = await httpService.get('/sites/list?page=1&perPage=100')
-        this.sites = data.data
+        this.sites = data.data.filter((site: SiteType) => site.status)
       } catch (e) {
         handleError(e)
       }

@@ -10,6 +10,7 @@ import {PaginationParams} from "../common/pagination/dto/papgination-params.dto"
 import {Domain} from "../domain/entities/domain.entity";
 import {UpdateDomainDto} from "../domain/dto/update-domain.dto";
 import {UrlSite} from "../url-site/entities/url-site.entity";
+import {ChangeSiteStatusDto} from "./dto/change-site-status.dto";
 
 @Injectable()
 export class SitesService {
@@ -50,8 +51,24 @@ export class SitesService {
     return this.siteModel.findById(id).exec();
   }
 
+  findOneSiteActive(id: ObjectId | string): Promise<Site> {
+    return this.siteModel.findOne({ _id: id, status: true }).exec();
+  }
+
   findByUrl(url: string): Promise<Site> {
     return this.siteModel.findOne({siteUrl: url}).populate(['urls', 'keywords','proxies']).exec();
+  }
+
+  changeStatus(id: ObjectId | string, changeStatus: ChangeSiteStatusDto): Promise<Site> {
+    return this.siteModel
+        .findOneAndUpdate(
+            { _id: id },
+            { $set: changeStatus },
+            {
+              new: true,
+            },
+        )
+        .exec();
   }
 
 
@@ -74,6 +91,13 @@ export class SitesService {
             },
         )
         .exec();
+  }
+
+  updateMany(
+      updateStatus: ChangeSiteStatusDto,
+  ) {
+    return this.siteModel
+        .updateMany({}, {$set: updateStatus}).exec()
   }
 
   remove(id: ObjectId) {

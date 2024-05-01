@@ -1,25 +1,51 @@
 <script lang="ts" setup>
-import {ref, watch, computed, onMounted} from "vue";
+import {ref, watch, computed, onMounted, onUnmounted} from "vue";
 import {handleError} from "@/app/helpers";
 import {httpService} from "@/app/http/httpServiceProvider";
 import {useSite} from "@/store/site";
 import {useToast} from "vue-toast-notification";
 
+const prop = defineProps({
+  siteId: {
+    type: String,
+    default: '',
+  },
+  siteName: {
+    type: String,
+    default: 'Stats'
+  }
+});
 const $toast = useToast({ position: 'top-right'});
 const siteStore = useSite()
 const siteId = computed(()=> siteStore.siteId)
 const loading  = ref<boolean>(false);
+const intervalID = ref<null | ReturnType<typeof setTimeout>>(null)
 
 const dataStats = ref<any>([]);
 
 const getStats = async () => {
-  dataStats.value = []
   loading.value = true;
+  if(intervalID.value) {
+    clearInterval(intervalID.value)
+  }
+
+  intervalID.value = setInterval(() => {
+    getStats()
+  },300000)
+
   try {
-    const data = await httpService.get(`/sites/${siteId.value}/dashboard/stats`)
+    const data = await httpService.get(`/sites/${prop.siteId}/dashboard/stats`)
     Object.keys(data).forEach(function(key, index) {
-      if(typeof data[key] === 'number')
-      dataStats.value.push({ title: key.split('_').join(' '), count: data[key] });
+      if(typeof data[key] === 'number') {
+        const updateField = dataStats.value.findIndex((field: any) => {
+          return field.key === key
+        } )
+        if(updateField >= 0) {
+          dataStats.value[updateField] = { title: key.split('_').join(' '), count: data[key], key }
+        } else {
+          dataStats.value.push({ title: key.split('_').join(' '), count: data[key], key });
+        }
+      }
     });
   } catch (e) {
     handleError(e)
@@ -43,57 +69,54 @@ const resetStats = async () => {
 }
 
 onMounted(()=> {
+  // if(intervalID.value) {
+  //   clearInterval(intervalID.value)
+  // }
+  //
+  // intervalID.value = setInterval(() => {
+  //   getStats()
+  // },300000)
+
   getStats()
 })
 
-// const state = useLayoutStore();
-// const layoutTheme = computed(() => state.layoutTheme);
-
-// watch(layoutTheme, () => {
-//   data.value = [];
-//   setTimeout(() => {
-//     const chartsVal = getCharts(getChartColorsArray);
-//     data.value = chartsVal.data;
-//   }, 200);
-// });
+onUnmounted(() => {
+  if(intervalID.value) {
+    clearInterval(intervalID.value)
+  }
+})
 </script>
 <template>
   <v-card>
     <v-card-title
         class="text-subtitle-1 font-weight-bold d-flex justify-space-between align-center"
     >
-      <h4 class="text-body-1 font-weight-bold">
-        Dashboard
+      <h4 class="text-body-1 font-weight-bold text-capitalize">
+        {{ siteName }}
       </h4>
       <div>
         <v-btn
             :loading="loading"
             variant="outlined"
             elevation="0"
-            class="my-2 mr-4"
+            class="my-2"
             @click="getStats"
         >
           <i class="ph-arrow-clockwise mx-1" /> Refresh
         </v-btn>
-        <v-btn
-            :loading="loading"
-            variant="tonal"
-            elevation="0"
-            class="my-2"
-            @click="resetStats"
-        >
-          <i class="ph-arrows-clockwise mx-1" /> Reset Stats
-        </v-btn>
+<!--        <v-btn-->
+<!--            :loading="loading"-->
+<!--            variant="tonal"-->
+<!--            elevation="0"-->
+<!--            class="my-2"-->
+<!--            @click="resetStats"-->
+<!--        >-->
+<!--          <i class="ph-arrows-clockwise mx-1" /> Reset Stats-->
+<!--        </v-btn>-->
       </div>
     </v-card-title>
     <v-card-text>
       <v-row>
-        <v-col v-if="loading" cols="12">
-          <v-progress-linear
-              indeterminate
-              height="2"
-          ></v-progress-linear>
-        </v-col>
         <v-col
             cols="12"
             sm="6"
@@ -116,30 +139,9 @@ onMounted(()=> {
                           :suffix="item.suffix"
                           :decimals="item.decimals"
                       />
-                      <!--                  <span-->
-                      <!--                    class="font-weight-bold"-->
-                      <!--                    :class="item.isSuccess ? 'text-success' : 'text-danger'"-->
-                      <!--                  >-->
-                      <!--                    <i v-if="item.isSuccess" class="ph-arrow-up"></i>-->
-                      <!--                    <i v-else class="ph-arrow-down"></i>-->
-                      <!--                    {{ item.percent }}-->
-                      <!--                  </span>-->
                     </div>
                   </div>
                 </v-col>
-                <!--            <v-col class="d-flex justify-end">-->
-                <!--              <div class="temp-class">-->
-                <!--                <apexchart-->
-                <!--                  v-if="item.chart"-->
-                <!--                  class="apex-charts"-->
-                <!--                  height="110"-->
-                <!--                  width="110"-->
-                <!--                  dir="ltr"-->
-                <!--                  :series="item.chart.series"-->
-                <!--                  :options="item.chart.chartOptions"-->
-                <!--                />-->
-                <!--              </div>-->
-                <!--            </v-col>-->
               </v-row>
             </v-card-text>
           </v-card>

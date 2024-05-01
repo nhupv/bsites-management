@@ -32,6 +32,9 @@ export class Site extends Document {
     @Prop({ type: String, required: true })
     ip: string;
 
+    @Prop({ type: Boolean, required: true, default: true })
+    status: boolean;
+
     @Prop({ default: '' })
     description?: string;
 

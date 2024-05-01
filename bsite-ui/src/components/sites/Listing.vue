@@ -10,6 +10,7 @@ import {SiteType} from "@/components/sites/types";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
 import { format } from "date-fns";
+import {useSite} from "@/store/site";
 
 // const prop = defineProps({
 //   filters: {
@@ -30,6 +31,7 @@ const headers = ref([
   { title: 'Home url', key: 'siteUrl', align: 'start' },
   { title: 'Ip', key: 'ip', align: 'start' },
   { title: 'CTR', key: 'ctr', align: 'start' },
+  { title: 'Status', key: 'status', align: 'start' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
@@ -40,11 +42,13 @@ const totalItems = ref<number>(0)
 const search = ref({ key: 'name', value: ''})
 const serverItems = ref([])
 const loading = ref(false);
+const siteStore = useSite()
 
 const confirmationDialog = ref(false);
 const confirmationSite = ref<string>('');
 const createEditDialog = ref(false);
 const siteDetail = ref<SiteType | null>(null);
+const loadingStatus = ref(false)
 
 const { setQueryUrl } = useTable()
 
@@ -123,12 +127,26 @@ const onCreate = async (newVal: SiteType) => {
   }
 };
 
+const updateSiteStatus = async (value: boolean, item: any) => {
+  loadingStatus.value = true
+  try {
+    await httpService.post(`/sites/${item._id}/status`, {status: value})
+    $toast.success('Change site status updated successfully!')
+    await siteStore.getSites()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loadingStatus.value = false
+  }
+}
+
 const onAddProductClick = () => {
   siteDetail.value = {
     name: "",
     description: "",
     ip: "",
     siteUrl: "",
+    status: true,
     id: "",
     ctr: 4,
   };
@@ -188,6 +206,16 @@ const onConfirmDelete = async () => {
         </template>
         <template v-slot:item.ctr="{item}: any">
           {{ item.ctr }}
+        </template>
+        <template v-slot:item.status="{item}: any">
+          <v-switch
+              v-model="item.status"
+              :loading="loadingStatus"
+              hide-details
+              color="primary"
+              size="sm"
+              @update:modelValue="(value) => updateSiteStatus(value, item)"
+          ></v-switch>
         </template>
         <template v-slot:item.action="{item}">
           <ListMenuWithIcon :menu-items="sitesAction" @onSelect="onSelect($event, item)" />

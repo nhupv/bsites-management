@@ -24,6 +24,13 @@ export const menuItems: MenuItemType[] = [
     show: true,
   },
   {
+    label: "dashboard",
+    icon: "ph-gauge",
+    id: "sidebarDashboard",
+    link: "/dashboard",
+    show: true
+  },
+  {
     label: "site",
     icon: "ph-browser",
     id: "sidebarSites",
@@ -58,7 +65,7 @@ export const menuItems: MenuItemType[] = [
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
   {
-    label: "dashboards",
+    label: "dashboard",
     icon: "ph-gauge",
     id: "sidebarDashboards",
     link: "/site-stats",

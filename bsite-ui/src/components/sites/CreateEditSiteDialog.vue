@@ -6,6 +6,17 @@ import { formateDate } from "@/app/common/dateFormate";
 const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
 
 const refForm = ref<any>()
+
+const actives = [
+  {
+    text: 'Active',
+    value: true
+  },
+  {
+    text: 'Inactive',
+    value: false
+  }
+]
 const formRules = {
   requiredRule: [
     (v: any) => {
@@ -51,6 +62,7 @@ const onCreateUpdate = async () => {
       ip: siteIp.value,
       siteUrl: siteUrl.value,
       ctr: ctr.value,
+      status: status.value,
     });
   } else {
     emit("onCreate", {
@@ -59,6 +71,7 @@ const onCreateUpdate = async () => {
       ip: siteIp.value,
       siteUrl: siteUrl.value,
       ctr: ctr.value,
+      status: status.value,
     });
   }
 };
@@ -68,6 +81,7 @@ const siteDescription = ref(prop.itemDetail?.description || "");
 const siteUrl = ref(prop.itemDetail?.siteUrl || "");
 const siteIp = ref(prop.itemDetail?.ip || "");
 const ctr = ref(prop.itemDetail?.ctr || 4);
+const status = ref(prop.itemDetail?.status);
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>
@@ -82,15 +96,32 @@ const ctr = ref(prop.itemDetail?.ctr || 4);
           />
         </template>
         <v-card-text data-simplebar style="max-height: 500px">
-          <h6 class="mb-2">Site name</h6>
-          <v-text-field
-              variant="solo"
-              class="text-field-component"
-              density="compact"
-              v-model="siteName"
-              :rules="formRules.requiredRule"
-              placeholder="Enter site name"
-          />
+          <v-row>
+            <v-col cols="12" md="8">
+              <h6 class="mb-2">Site name</h6>
+              <v-text-field
+                  variant="solo"
+                  class="text-field-component"
+                  density="compact"
+                  v-model="siteName"
+                  :rules="formRules.requiredRule"
+                  placeholder="Enter site name"
+              />
+            </v-col>
+            <v-col cols="12" md="4">
+              <h6 class="mb-2">Status</h6>
+              <v-select
+                  variant="solo"
+                  :items="actives"
+                  item-value="value"
+                  item-title="text"
+                  class="text-field-component"
+                  density="compact"
+                  v-model="status"
+              >
+              </v-select>
+            </v-col>
+          </v-row>
             <h6 class="mb-2">Home url</h6>
             <v-text-field
                 variant="solo"

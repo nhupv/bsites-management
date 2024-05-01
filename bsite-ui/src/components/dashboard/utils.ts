@@ -12,7 +12,7 @@ import { PropertyType } from "@/components/dashboard/types";
 
 export const realEstateBreadcrumb: BreadcrumbType[] = [
   {
-    title: "dashboards",
+    title: "home",
     disabled: false,
     to: "/",
   },
@@ -21,6 +21,19 @@ export const realEstateBreadcrumb: BreadcrumbType[] = [
     disabled: true,
   },
 ];
+
+export const dashboardBreadcrumb: BreadcrumbType[] = [
+  {
+    title: "home",
+    disabled: false,
+    to: "/",
+  },
+  {
+    title: "dashboard",
+    disabled: true,
+  },
+];
+
 
 export const sales: PropertyType[] = [
   {
