@@ -22,7 +22,7 @@ export class SitesService {
   }
 
   findAllWithoutPagination(): Promise<Site[]> {
-    return this.siteModel.find().exec();
+    return this.siteModel.find({ status: true }).exec();
   }
 
   async findAll(
