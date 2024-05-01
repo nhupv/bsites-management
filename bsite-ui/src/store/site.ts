@@ -12,7 +12,8 @@ export const useSite = defineStore("site-store", {
     sites: [],
   }),
   getters: {
-    siteSelected: state => !!state.siteId
+    siteSelected: state => !!state.siteId,
+    siteInList: state => !!state.sites.find((site: SiteType) => site._id === state.siteId)
   },
   actions: {
     async getSites() {

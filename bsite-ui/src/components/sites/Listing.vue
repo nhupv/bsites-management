@@ -153,6 +153,10 @@ const onAddProductClick = () => {
   createEditDialog.value = true;
 };
 
+const siteAction = (item: SiteType) => {
+  return item.status ? sitesAction : sitesAction.filter((action: any) => action.value !== 'push')
+}
+
 const onConfirmDelete = async () => {
   try {
     await httpService.delete(`/sites/${confirmationSite.value}`)
@@ -218,7 +222,7 @@ const onConfirmDelete = async () => {
           ></v-switch>
         </template>
         <template v-slot:item.action="{item}">
-          <ListMenuWithIcon :menu-items="sitesAction" @onSelect="onSelect($event, item)" />
+          <ListMenuWithIcon :menu-items="siteAction(item)" @onSelect="onSelect($event, item)" />
         </template>
         <template v-slot:no-data>
           <div class="text-center pa-7">
