@@ -155,7 +155,7 @@ export const routes = [
   {
     path: "/",
     name: "Home",
-    redirect: '/sites',
+    redirect: '/dashboard',
     // component: () => import("@/views/site/index.vue"),
     meta: { title: "Home", authRequired: true, layout: DefaultLayout },
   },
