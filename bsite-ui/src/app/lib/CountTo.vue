@@ -14,6 +14,10 @@ const prop = defineProps({
     type: String,
     default: "",
   },
+  startVal: {
+    type: Number,
+    default: 0,
+  },
   decimals: {
     type: Number,
     default: 0,
@@ -22,7 +26,7 @@ const prop = defineProps({
 </script>
 <template>
   <CountTo
-    :startVal="0"
+    :startVal="startVal"
     :duration="3000"
     :endVal="endVal"
     :prefix="prefix"

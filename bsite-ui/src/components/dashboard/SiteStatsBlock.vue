@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import {ref, watch, computed, onMounted, onUnmounted} from "vue";
-import {handleError} from "@/app/helpers";
+import {handleError, handleErrorMsg} from "@/app/helpers";
 import {httpService} from "@/app/http/httpServiceProvider";
 import {useSite} from "@/store/site";
 import {useToast} from "vue-toast-notification";
+import {er} from "@/assets/images/flags/utils";
 
 const prop = defineProps({
   siteId: {
@@ -13,6 +14,10 @@ const prop = defineProps({
   siteName: {
     type: String,
     default: 'Stats'
+  },
+  siteUrl: {
+    type: String,
+    default: ''
   }
 });
 const $toast = useToast({ position: 'top-right'});
@@ -20,7 +25,7 @@ const siteStore = useSite()
 const siteId = computed(()=> siteStore.siteId)
 const loading  = ref<boolean>(false);
 const intervalID = ref<null | ReturnType<typeof setTimeout>>(null)
-
+const error = ref('')
 const dataStats = ref<any>([]);
 
 const getStats = async () => {
@@ -41,14 +46,14 @@ const getStats = async () => {
           return field.key === key
         } )
         if(updateField >= 0) {
-          dataStats.value[updateField] = { title: key.split('_').join(' '), count: data[key], key }
+          dataStats.value[updateField] = { title: key.split('_').join(' '), preCount: dataStats.value[updateField]?.count, count: Math.round(data[key] * 100) / 100, key }
         } else {
-          dataStats.value.push({ title: key.split('_').join(' '), count: data[key], key });
+          dataStats.value.push({ title: key.split('_').join(' '), preCount: 0, count: Math.round(data[key] * 100) / 100, key });
         }
       }
     });
   } catch (e) {
-    handleError(e)
+    error.value = handleErrorMsg(e)
   } finally {
     loading.value = false;
   }
@@ -91,8 +96,8 @@ onUnmounted(() => {
     <v-card-title
         class="text-subtitle-1 font-weight-bold d-flex justify-space-between align-center"
     >
-      <h4 class="text-body-1 font-weight-bold text-capitalize">
-        {{ siteName }}
+      <h4 class="text-body-1 font-weight-bold">
+        {{ siteName }} - Run site: <a class="text-decoration-underline text-primary" :href="siteUrl" target="_blank">{{ siteUrl }}</a>
       </h4>
       <div>
         <v-btn
@@ -115,7 +120,10 @@ onUnmounted(() => {
 <!--        </v-btn>-->
       </div>
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="text-error" v-if="error">
+      {{ error }}
+    </v-card-text>
+    <v-card-text v-else>
       <v-row>
         <v-col
             cols="12"
@@ -133,8 +141,13 @@ onUnmounted(() => {
                       {{ item.title }}
                     </div>
                     <div class="mt-auto">
+                      <span v-if="item.key === 'ctr'" class="text-h5 font-weight-bold mx-1">
+                        {{item.count}}
+                      </span>
                       <CountTo
+                          v-else
                           class="text-h5 font-weight-bold mx-1"
+                          :startVal="item.preCount"
                           :endVal="item.count"
                           :suffix="item.suffix"
                           :decimals="item.decimals"

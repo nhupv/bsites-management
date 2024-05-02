@@ -7,11 +7,10 @@ import ListMenuWithIcon from "@/app/common/components/ListMenuWithIcon.vue";
 import {sitesAction} from "@/components/sites/utils";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
-import { format } from "date-fns";
+import {format, formatDistance, } from "date-fns";
 import { ProxyType, ProxyStatus } from "@/components/proxy/types";
 import CreateMultipleProxyDialog from "@/components/proxy/CreateMultipleProxyDialog.vue";
 import {proxyAction} from "@/components/proxy/utils";
-import {co} from "@/assets/images/flags/utils";
 
 const $toast = useToast({ position: 'top-right'});
 
@@ -22,7 +21,9 @@ const headers = ref([
     key: 'proxy',
     sortable: false
   },
+  { title: 'Index', key: 'index', align: 'start', sortable: false },
   { title: 'Status', key: 'status', align: 'start', sortable: false },
+  { title: 'Site', key: 'site', align: 'start', sortable: false },
   { title: 'Used at', key: 'used_at', align: 'start', sortable: false },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
@@ -179,8 +180,16 @@ const onConfirmDelete = async () => {
         <template v-slot:item.proxy="{item} : any">
           <span class="text-primary">{{item.proxy}}</span>
         </template>
+        <template v-slot:item.site="{item} : any">
+          <a v-if="item.site" target="_blank" :href="item.site" class="text-primary text-decoration-underline">{{item.site}}</a>
+        </template>
         <template v-slot:item.status="{item} : any">
           <v-chip label :color="getStatusColor(item.status)" variant="tonal" density="compact">{{ item.status }}</v-chip>
+        </template>
+        <template v-slot:item.used_at="{item} : any">
+          <span v-if="item.used_at" class="text-muted">
+            {{formatDistance(new Date(item.used_at + '+0700'), new Date(), { addSuffix: true })}}
+          </span>
         </template>
         <template v-slot:item.action="{item}">
           <ListMenuWithIcon :menu-items="proxyAction" @onSelect="onSelect($event, item)" />

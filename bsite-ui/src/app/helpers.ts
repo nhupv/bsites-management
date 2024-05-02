@@ -45,3 +45,32 @@ function showMessage(type: SweetAlertIcon, text: string) {
     confirmButtonColor: '#3762ea'
   });
 }
+
+export const handleErrorMsg =  (error: any) => {
+  if(!axios.isAxiosError(error)) {
+    return error.toString()
+  } else {
+    const status = error.response?.status
+    if(status === 401) {
+      return
+    }
+    if(status === 404){
+      return 'Request not found!'
+    }
+    if(!error.response?.data){
+      return 'Api service not available!'
+    } else {
+      if(error.response?.data?.message) {
+        const message = error.response?.data?.message
+        if(typeof message === 'string') {
+          return error.response?.data?.message
+        }
+        if(Array.isArray(message)) {
+          const errorText = message.length > 0 ? message[0] : 'Unknown error!'
+          return errorText
+        }
+        return 'Unknown Error'
+      }
+    }
+  }
+}
