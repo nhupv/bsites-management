@@ -10,7 +10,7 @@ const siteList = computed(()=> siteStore.sites)
   <Breadcrumb title="Dashboard" :items="dashboardBreadcrumb" />
   <v-row>
     <v-col v-for="site in siteList" :key="site._id" cols="12">
-      <Dashboard :site-name="site.name" :site-url="site.siteUrl" :site-id="site._id" />
+      <Dashboard :site-name="site.name" :site-id="site._id" />
     </v-col>
   </v-row>
 </template>

@@ -14,10 +14,6 @@ const prop = defineProps({
   siteName: {
     type: String,
     default: 'Stats'
-  },
-  siteUrl: {
-    type: String,
-    default: ''
   }
 });
 const $toast = useToast({ position: 'top-right'});
@@ -27,6 +23,7 @@ const loading  = ref<boolean>(false);
 const intervalID = ref<null | ReturnType<typeof setTimeout>>(null)
 const error = ref('')
 const dataStats = ref<any>([]);
+const siteUrl = ref<any>('');
 
 const getStats = async () => {
   loading.value = true;
@@ -40,6 +37,7 @@ const getStats = async () => {
 
   try {
     const data = await httpService.get(`/sites/${prop.siteId}/dashboard/stats`)
+    siteUrl.value = data.site_url
     Object.keys(data).forEach(function(key, index) {
       if(typeof data[key] === 'number') {
         const updateField = dataStats.value.findIndex((field: any) => {
@@ -97,7 +95,7 @@ onUnmounted(() => {
         class="text-subtitle-1 font-weight-bold d-flex justify-space-between align-center"
     >
       <h4 class="text-body-1 font-weight-bold">
-        {{ siteName }} - Run site: <a class="text-decoration-underline text-primary" :href="siteUrl" target="_blank">{{ siteUrl }}</a>
+        {{ siteName }} - Run site: <a v-if="siteUrl" class="text-decoration-underline text-primary" :href="siteUrl" target="_blank">{{ siteUrl }}</a> <span class="text-primary" v-else>--</span>
       </h4>
       <div>
         <v-btn
