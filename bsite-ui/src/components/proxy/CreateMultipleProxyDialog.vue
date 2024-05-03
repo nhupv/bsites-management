@@ -51,16 +51,19 @@ const onCreateUpdate = async () => {
     emit("onUpdate", {
       ...prop.itemDetail,
       proxy: proxy.value,
+      supplier: supplier.value,
     });
   } else {
     emit("onCreate", {
       proxies: proxies.value,
+      supplier: supplier.value,
     });
   }
 };
 
 const proxy = ref(prop.itemDetail?.proxy || "");
 const proxies = ref<string>('');
+const supplier = ref<string>(prop.itemDetail?.supplier || "");
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>
@@ -75,19 +78,33 @@ const proxies = ref<string>('');
           />
         </template>
         <v-card-text data-simplebar style="max-height: 500px">
-          <h6 class="mb-2">Proxy</h6>
-          <v-text-field
-              v-if="!isCreate"
-              variant="solo"
-              class="text-field-component"
-              density="compact"
-              v-model="proxy"
-              :rules="formRules.requiredRule"
-              placeholder="Enter proxy here"
-          />
-          <TextArea v-else v-model="proxies"
-                    :rules="formRules.requiredRule"
-                    rows="20" placeholder="Paste your proxy here" />
+          <v-row no-gutters>
+            <v-col cols="12">
+              <h6 class="mb-2">Proxy</h6>
+              <v-text-field
+                  v-if="!isCreate"
+                  variant="solo"
+                  class="text-field-component"
+                  density="compact"
+                  v-model="proxy"
+                  :rules="formRules.requiredRule"
+                  placeholder="Enter proxy here"
+              />
+              <TextArea v-else v-model="proxies"
+                        :rules="formRules.requiredRule"
+                        rows="20" placeholder="Paste your proxy here" />
+            </v-col>
+            <v-col cols="12">
+              <h6 class="mb-2">Supplier</h6>
+              <v-text-field
+                  variant="solo"
+                  class="text-field-component"
+                  density="compact"
+                  v-model="supplier"
+                  placeholder="Enter supplier here"
+              />
+            </v-col>
+          </v-row>
         </v-card-text>
         <v-card-actions class="me-3 mb-2">
           <v-spacer />

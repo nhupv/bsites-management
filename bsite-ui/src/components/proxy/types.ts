@@ -12,6 +12,7 @@ export type ProxyType = {
   proxy?: string;
   used_at?: string;
   updated_time?: string;
+  supplier?: string;
 
 };
 

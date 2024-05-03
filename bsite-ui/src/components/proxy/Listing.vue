@@ -21,6 +21,7 @@ const headers = ref([
     key: 'proxy',
     sortable: false
   },
+  { title: 'Supplier', key: 'supplier', align: 'start', sortable: false },
   { title: 'Index', key: 'index', align: 'start', sortable: false },
   { title: 'Status', key: 'status', align: 'start', sortable: false },
   { title: 'Site', key: 'site', align: 'start', sortable: false },
@@ -104,11 +105,11 @@ watch(confirmationDialog, (dialog: boolean) => {
   }
 });
 
-const onCreate = async (newVal: { proxies: string }) => {
+const onCreate = async (newVal: { proxies: string, supplier: string }) => {
   const arrayProxy = newVal.proxies.replace(/\r\n/g,"\n").split("\n")
   const filterProxy = arrayProxy.filter((proxy: string) => !!proxy.trim())
   try {
-    await httpService.post(`/proxy`, {proxies: filterProxy})
+    await httpService.post(`/proxy`, {proxies: filterProxy, supplier: newVal.supplier})
     $toast.success('Proxies created successfully!')
     createEditDialog.value = false;
     await loadItems()
@@ -120,6 +121,7 @@ const onCreate = async (newVal: { proxies: string }) => {
 const onAddUrlClick = () => {
   proxyDetail.value = {
     proxy: "",
+    supplier: ""
   };
   createEditDialog.value = true;
 };
