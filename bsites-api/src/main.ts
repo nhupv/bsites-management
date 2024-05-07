@@ -7,6 +7,7 @@ import { JwtAuthGuard } from './common/guard/jwt-auth.guard';
 import helmet from 'helmet';
 import { useContainer } from 'class-validator';
 import {ExtendBodyUserIdInterceptor} from "./common/interceptors/extend-body-userId.interceptor";
+import {customErrors} from "./common/helpers/file-helpers";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
 
@@ -42,6 +43,9 @@ async function bootstrap() {
   });
   app.useGlobalPipes(
     new ValidationPipe({
+      exceptionFactory: (errors) => {
+        return customErrors(errors);
+      },
       transform: true,
       whitelist: true,
       // transformOptions: { enableImplicitConversion: true },
@@ -57,9 +61,9 @@ async function bootstrap() {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   const reflector = app.get(Reflector);
   app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
-  if (process.env.NODE_ENV === 'production') {
+  // if (process.env.NODE_ENV === 'production') {
     app.useGlobalFilters(new HttpExceptionFilter());
-  }
+  // }
 
   await app.listen(4000);
 }

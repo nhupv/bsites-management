@@ -5,6 +5,9 @@ import { createVuetify } from "vuetify";
 
 export default createVuetify({
   defaults: {
+    VDialog: {
+      persistent: true
+    },
     VBtn: {
       elevation: 0,
       class: "text-none",

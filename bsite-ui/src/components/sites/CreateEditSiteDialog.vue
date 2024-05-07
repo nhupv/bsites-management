@@ -80,7 +80,7 @@ const siteName = ref(prop.itemDetail?.name || "");
 const siteDescription = ref(prop.itemDetail?.description || "");
 const siteUrl = ref(prop.itemDetail?.siteUrl || "");
 const siteIp = ref(prop.itemDetail?.ip || "");
-const ctr = ref(prop.itemDetail?.ctr || 4);
+const ctr = ref(prop.itemDetail?.ctr);
 const status = ref(prop.itemDetail?.status);
 </script>
 <template>
