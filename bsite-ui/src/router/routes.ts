@@ -207,12 +207,12 @@ export const routes = [
   //   component: () => import("@/views/proxies/index.vue"),
   //   meta: { title: "Proxies", authRequired: true, layout: DefaultLayout },
   // },
-  // {
-  //   path: "/keywords",
-  //   name: "Keywords",
-  //   component: () => import("@/views/keywords/index.vue"),
-  //   meta: { title: "Keywords", authRequired: true, layout: DefaultLayout },
-  // },
+  {
+    path: "/keywords",
+    name: "Keywords",
+    component: () => import("@/views/keywords/index.vue"),
+    meta: { title: "Keywords", authRequired: true, layout: DefaultLayout },
+  },
   ...authRoutes,
   ...pagesRoutes,
   {

@@ -9,11 +9,13 @@ import {SiteKeyword, SiteKeywordDocument} from "./entities/site-keyword.entity";
 import {REQUEST} from "@nestjs/core";
 import { Request } from 'express'
 import {CreateSiteProxyDto} from "../site-proxy/dto/create-site-proxy.dto";
+import {HttpService} from "@nestjs/axios";
 
 @Injectable({ scope: Scope.REQUEST })
 
 export class SiteKeywordService {
   constructor(@InjectModel(SiteKeyword.name) private siteKeywordModel: Model<SiteKeywordDocument>,
+              private readonly httpService: HttpService,
               @Inject(REQUEST) private request: Request) {
   }
   create(createSiteKeywordDto: CreateSiteKeywordDto) {
@@ -70,6 +72,10 @@ export class SiteKeywordService {
     return this.siteKeywordModel.findOne({_id: id, site: siteId}).populate('site').exec();
   }
 
+  findBySiteId(id: any){
+    return this.siteKeywordModel.find({ site: id}).exec()
+  }
+
   update(
       id: ObjectId | string,
       updateSiteKeywordDto: UpdateSiteKeywordDto,
@@ -90,7 +96,26 @@ export class SiteKeywordService {
   }
 
   removeAll() {
-    return this.siteKeywordModel.remove({});
+    const siteId = Types.ObjectId.createFromHexString(this.request.params.siteId)
+
+    return this.siteKeywordModel.remove({site: siteId}).exec();
+  }
+
+  async pushData(ip:string) {
+    const siteId = Types.ObjectId.createFromHexString(this.request.params.siteId)
+    const keywords = await this.findBySiteId(siteId)
+    const listKeyword = keywords.map(({keyword}) => keyword)
+    return this.httpService
+        .post(
+            `http://${ip}:5000/init_keywords`,
+            { list_keyword: listKeyword },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+        )
+        .toPromise();
   }
 
 }

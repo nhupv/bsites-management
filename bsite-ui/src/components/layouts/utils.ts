@@ -93,13 +93,13 @@ export const menuItems: MenuItemType[] = [
   //   link: "/proxies",
   //   show: !!localStorage.getItem(LS_KEY_SITE)
   // },
-  // {
-  //   label: "keyword",
-  //   icon: "ph-key",
-  //   id: "sidebarKeyword",
-  //   link: "/keywords",
-  //   show: !!localStorage.getItem(LS_KEY_SITE)
-  // },
+  {
+    label: "keyword",
+    icon: "ph-key",
+    id: "sidebarKeyword",
+    link: "/keywords",
+    show: !!localStorage.getItem(LS_KEY_SITE)
+  },
   // {
   //   label: "authentication",
   //   icon: "ph-user-circle",

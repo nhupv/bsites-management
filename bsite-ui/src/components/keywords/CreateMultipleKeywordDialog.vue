@@ -90,7 +90,7 @@ const keywords = ref<string>('');
           />
           <TextArea v-else v-model="keywords"
                     :rules="formRules.requiredRule"
-                    rows="20" placeholder="Paste your proxies here" />
+                    rows="20" placeholder="Paste your keywords here" />
           <h6 class="mb-2">Description</h6>
           <v-text-field
               variant="solo"

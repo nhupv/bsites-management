@@ -4,7 +4,7 @@ import RemoveItemConfirmationDialog from "@/app/common/components/RemoveItemConf
 import {httpService} from "@/app/http/httpServiceProvider";
 import {useTable} from "@/app/composables/useTable";
 import ListMenuWithIcon from "@/app/common/components/ListMenuWithIcon.vue";
-import {sitesAction} from "@/components/sites/utils";
+import {urlsAction} from "@/components/urls/utils";
 import {SiteType} from "@/components/sites/types";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
@@ -219,7 +219,7 @@ const onConfirmDeleteAll = async () => {
           <a class="text-primary text-decoration-underline" target="_blank" :href="item.url">{{item.url}}</a>
         </template>
         <template v-slot:item.action="{item}">
-          <ListMenuWithIcon :menu-items="sitesAction" @onSelect="onSelect($event, item)" />
+          <ListMenuWithIcon :menu-items="urlsAction" @onSelect="onSelect($event, item)" />
         </template>
         <template v-slot:no-data>
           <div class="text-center pa-7">

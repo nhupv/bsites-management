@@ -4,7 +4,7 @@ import RemoveItemConfirmationDialog from "@/app/common/components/RemoveItemConf
 import {httpService} from "@/app/http/httpServiceProvider";
 import {useTable} from "@/app/composables/useTable";
 import ListMenuWithIcon from "@/app/common/components/ListMenuWithIcon.vue";
-import {sitesAction} from "@/components/sites/utils";
+import {keywordsAction} from "@/components/keywords/utils";
 import {SiteType} from "@/components/sites/types";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
@@ -115,6 +115,19 @@ const onCreate = async (newVal: { keywords: string, description?: string}) => {
   }
 };
 
+const onPushData = async () => {
+  loading.value = true;
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/keywords/push`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
 const onAddUrlClick = () => {
   keywordDetail.value = {
     description: "",
@@ -166,6 +179,17 @@ const onConfirmDeleteAll = async () => {
           <i class="ph-trash mx-1" /> Delete all
         </v-btn>
         <v-btn
+            :disabled="totalItems === 0"
+            :loading="loading"
+            color="primary"
+            variant="outlined"
+            elevation="0"
+            class="my-2 mr-4"
+            @click="onPushData"
+        >
+          <i class="ph-paper-plane-tilt mx-1" /> Push data
+        </v-btn>
+        <v-btn
             color="primary"
             elevation="0"
             class="my-2"
@@ -195,7 +219,7 @@ const onConfirmDeleteAll = async () => {
           <span class="font-weight-bold">{{item.keyword}}</span>
         </template>
         <template v-slot:item.action="{item}">
-          <ListMenuWithIcon :menu-items="sitesAction" @onSelect="onSelect($event, item)" />
+          <ListMenuWithIcon :menu-items="keywordsAction" @onSelect="onSelect($event, item)" />
         </template>
         <template v-slot:no-data>
           <div class="text-center pa-7">

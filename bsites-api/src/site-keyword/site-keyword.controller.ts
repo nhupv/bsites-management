@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -36,7 +37,7 @@ export class SiteKeywordController {
 
   @HttpCode(201)
   @Post()
-  async create(@Param('siteId', ParseObjectIdPipe) siteId: String, @Body() createSiteKeywordDto: CreateSiteKeywordDto) {
+  async create(@Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createSiteKeywordDto: CreateSiteKeywordDto) {
 
     createSiteKeywordDto.site = siteId
     return this.siteKeywordService.create(createSiteKeywordDto);
@@ -44,7 +45,7 @@ export class SiteKeywordController {
 
   @HttpCode(201)
   @Post('create-bulk')
-  async createBulk(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: String, @Body() createBulkSiteKeywordDto: CreateBulkSiteKeywordDto) {
+  async createBulk(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createBulkSiteKeywordDto: CreateBulkSiteKeywordDto) {
 
     const keywordList : CreateSiteKeywordDto[] = createBulkSiteKeywordDto.keywords.map(keyword => ({
       keyword,
@@ -58,6 +59,17 @@ export class SiteKeywordController {
   @Get('list')
   findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
     return this.siteKeywordService.findAll(pagination,filter );
+  }
+
+  @HttpCode(200)
+  @Get('push')
+  async pushData(@Request() req) {
+    try {
+      const { data } = await this.siteKeywordService.pushData(req.site.ip)
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
   }
 
   @Get(':id')
