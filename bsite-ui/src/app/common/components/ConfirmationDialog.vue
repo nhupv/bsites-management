@@ -39,7 +39,7 @@ const dialogValue = computed({
           flat
           variant="elevated"
         >
-          Close
+          Cancel
         </v-btn>
         <v-btn
           color="danger"
@@ -47,7 +47,7 @@ const dialogValue = computed({
           variant="elevated"
           @click="emit('onConfirm')"
         >
-          Yes, Delete It!
+          Yes
         </v-btn>
       </v-card-actions>
     </v-card>

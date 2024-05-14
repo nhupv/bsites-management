@@ -2,9 +2,8 @@
 import {ref, watch, computed, onMounted, onUnmounted} from "vue";
 import {handleError, handleErrorMsg} from "@/app/helpers";
 import {httpService} from "@/app/http/httpServiceProvider";
-import {useSite} from "@/store/site";
 import {useToast} from "vue-toast-notification";
-import {er} from "@/assets/images/flags/utils";
+import ConfirmationDialog from "@/app/common/components/ConfirmationDialog.vue";
 
 const prop = defineProps({
   siteId: {
@@ -17,13 +16,14 @@ const prop = defineProps({
   }
 });
 const $toast = useToast({ position: 'top-right'});
-const siteStore = useSite()
-const siteId = computed(()=> siteStore.siteId)
 const loading  = ref<boolean>(false);
 const intervalID = ref<null | ReturnType<typeof setTimeout>>(null)
 const error = ref('')
 const dataStats = ref<any>([]);
 const siteUrl = ref<any>('');
+const note = ref<any>('');
+const confirmationDialog = ref(false);
+
 
 const getStats = async () => {
   loading.value = true;
@@ -38,6 +38,7 @@ const getStats = async () => {
   try {
     const data = await httpService.get(`/sites/${prop.siteId}/dashboard/stats`)
     siteUrl.value = data.site_url
+    note.value = data.note
     Object.keys(data).forEach(function(key, index) {
       if(typeof data[key] === 'number') {
         const updateField = dataStats.value.findIndex((field: any) => {
@@ -59,8 +60,9 @@ const getStats = async () => {
 
 const resetStats = async () => {
   loading.value = true;
+  confirmationDialog.value = false;
   try {
-    const data = await httpService.get(`/sites/${siteId.value}/dashboard/reset`)
+    const data = await httpService.get(`/sites/${prop.siteId}/dashboard/reset`)
     const message = typeof  data.message !== 'string' ? String(data.message) : data.message
     $toast.success(message)
     await getStats()
@@ -72,14 +74,6 @@ const resetStats = async () => {
 }
 
 onMounted(()=> {
-  // if(intervalID.value) {
-  //   clearInterval(intervalID.value)
-  // }
-  //
-  // intervalID.value = setInterval(() => {
-  //   getStats()
-  // },300000)
-
   getStats()
 })
 
@@ -95,7 +89,8 @@ onUnmounted(() => {
         class="text-subtitle-1 font-weight-bold d-flex justify-space-between align-center"
     >
       <h4 class="text-body-1 font-weight-bold">
-        {{ siteName }} - Run site: <a v-if="siteUrl" class="text-decoration-underline text-primary" :href="siteUrl" target="_blank">{{ siteUrl }}</a> <span class="text-primary" v-else>--</span>
+        {{ siteName }} | Run site: <a v-if="siteUrl" class="text-decoration-underline text-primary" :href="siteUrl" target="_blank">{{ siteUrl }}</a> <span class="text-primary" v-else>--</span>
+        <span v-if="note"> | <span class="text-secondary">Note: {{note}}</span></span>
       </h4>
       <div>
         <v-btn
@@ -107,15 +102,15 @@ onUnmounted(() => {
         >
           <i class="ph-arrow-clockwise mx-1" /> Refresh
         </v-btn>
-<!--        <v-btn-->
-<!--            :loading="loading"-->
-<!--            variant="tonal"-->
-<!--            elevation="0"-->
-<!--            class="my-2"-->
-<!--            @click="resetStats"-->
-<!--        >-->
-<!--          <i class="ph-arrows-clockwise mx-1" /> Reset Stats-->
-<!--        </v-btn>-->
+        <v-btn
+            :loading="loading"
+            variant="tonal"
+            elevation="0"
+            class="my-2 ml-4"
+            @click="confirmationDialog = true"
+        >
+          <i class="ph-arrows-clockwise mx-1" /> Reset Stats
+        </v-btn>
       </div>
     </v-card-title>
     <v-card-text class="text-error" v-if="error">
@@ -159,6 +154,15 @@ onUnmounted(() => {
         </v-col>
       </v-row>
     </v-card-text>
-
+    <v-card-actions v-if="note" class="px-0 pt-0 align-center" style="min-height: auto">
+      <v-card-subtitle class="text-secondary pt-0 text-right text-body-2">
+        Note: {{note}}
+      </v-card-subtitle>
+    </v-card-actions>
   </v-card>
+  <ConfirmationDialog
+      :title="`Reset Stats ${siteName}`"
+      v-model="confirmationDialog"
+      @onConfirm="resetStats"
+  />
 </template>
