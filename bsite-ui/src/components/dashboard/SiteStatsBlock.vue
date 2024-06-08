@@ -13,6 +13,10 @@ const prop = defineProps({
   siteName: {
     type: String,
     default: 'Stats'
+  },
+  ctr: {
+    type: Number,
+    default: 0
   }
 });
 const $toast = useToast({ position: 'top-right'});
@@ -130,8 +134,19 @@ onUnmounted(() => {
               <v-row no-gutters justify="space-between">
                 <v-col cols>
                   <div class="d-flex flex-column h-100">
-                    <div class="text-muted text-subtitle-2 font-weight-regular text-uppercase">
-                      {{ item.title }}
+                    <div class="d-flex justify-lg-space-between">
+                      <div class="text-muted text-subtitle-2 font-weight-regular text-uppercase">
+                        {{ item.title }}
+                      </div>
+                      <v-chip
+                          v-if="item.key==='ctr'"
+                          label
+                          size="x-small"
+                          class="font-weight-bold"
+                          color="info"
+                      >
+                        <span class="ms-1 chip-text">{{item.count + '/' + prop.ctr}}</span>
+                      </v-chip>
                     </div>
                     <div class="mt-auto">
                       <span v-if="item.key === 'ctr'" class="text-h5 font-weight-bold mx-1">
@@ -154,11 +169,6 @@ onUnmounted(() => {
         </v-col>
       </v-row>
     </v-card-text>
-    <v-card-actions v-if="note" class="px-0 pt-0 align-center" style="min-height: auto">
-      <v-card-subtitle class="text-secondary pt-0 text-right text-body-2">
-        Note: {{note}}
-      </v-card-subtitle>
-    </v-card-actions>
   </v-card>
   <ConfirmationDialog
       :title="`Reset Stats ${siteName}`"
