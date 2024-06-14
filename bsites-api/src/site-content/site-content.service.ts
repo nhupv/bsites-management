@@ -143,7 +143,6 @@ export class SiteContentService {
         priority: item.priority ? 1 : 0
       }
     })
-    console.log(listLink)
     return this.httpService
         .post(
             `http://${site.ip}:5000/sync_url_v_2`,
