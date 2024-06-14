@@ -104,6 +104,22 @@ export class SiteContentController {
     return { message: 'Save post successfully! Job update post is running.' }
   }
 
+  @Delete('delete-all')
+  async removeAll(@SiteParam() site: Site) {
+    return await this.siteContentService.removeAll(site)
+  }
+
+  @Delete('delete-both')
+  async removeBoth(@SiteParam() site: Site) {
+    const postList = await this.siteContentService.findBySiteId(site._id)
+
+    postList.forEach(post => {
+      this.siteContentService.deletePostToSiteJob({ post, site, direct: true})
+    })
+
+    return {message: 'Delete post job is running.'};
+  }
+
   @Delete(':id')
   async remove(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
     const post = await this.siteContentService.findOne(id, site);

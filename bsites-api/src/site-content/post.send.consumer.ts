@@ -167,15 +167,12 @@ export class PostSendConsumer {
         status: [ContentStatus.PROCESSING]
       })
     }
-    if(!postDelete.post_id) {
-      await this.siteContentService.updateStatus(post._id, {
-        status: [...postDelete.status, ContentStatus.SEND_DELETE_POST_FAILED]
-      })
-      throw new Error('Post id is empty!');
-    }
-
     try {
-      await this.deletePostToSite(postDelete, site)
+      if(postDelete.post_id) {
+        await this.deletePostToSite(postDelete, site)
+      } else  {
+        await this.siteContentService.remove(post._id)
+      }
     } catch (e) {
       throw new Error(e);
     }

@@ -175,6 +175,20 @@ const showPost = (data: any) => {
   createEditDialog.value = true;
 }
 
+const deletePortal = async () => {
+  await httpService.delete(`/sites/${siteId.value}/posts/delete-all`)
+  $toast.success('Posts deleted successfully!')
+  confirmationDialog.value = false;
+  await loadItems(tableOptions.value)
+}
+
+const deleteBoth = async () => {
+  await httpService.delete(`/sites/${siteId.value}/posts/delete-both`)
+  $toast.success('Posts deleted successfully!')
+  confirmationDialog.value = false;
+  await loadItems(tableOptions.value)
+}
+
 const getVariantStatus = (status: string) => {
   const variant = {
     color: 'secondary',
@@ -238,26 +252,26 @@ const getVariantStatus = (status: string) => {
         <v-badge :content="totalItems" inline color="light" rounded="sm" />
       </div>
       <div>
-<!--        <v-btn-->
-<!--            v-if="totalItems"-->
-<!--            color="error"-->
-<!--            elevation="0"-->
-<!--            class="my-2 mr-4"-->
-<!--            @click="confirmationRemoveAllDialog = true"-->
-<!--        >-->
-<!--          <i class="ph-trash mx-1" /> Delete all-->
-<!--        </v-btn>-->
-<!--        <v-btn-->
-<!--            :disabled="totalItems === 0"-->
-<!--            :loading="loading"-->
-<!--            color="primary"-->
-<!--            variant="outlined"-->
-<!--            elevation="0"-->
-<!--            class="my-2 mr-4"-->
-<!--            @click="onPushData"-->
-<!--        >-->
-<!--          <i class="ph-paper-plane-tilt mx-1" /> Push data-->
-<!--        </v-btn>-->
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn
+                v-if="serverItems.length > 0"
+                color="error"
+                class="mr-2"
+                v-bind="props"
+            >
+              Delete all
+            </v-btn>
+          </template>
+          <v-list nav density="compact">
+            <v-list-item @click="deletePortal" link>
+              <v-list-item-title>For portal</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="deleteBoth" link>
+              <v-list-item-title>For both</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
         <v-btn
             color="primary"
             elevation="0"

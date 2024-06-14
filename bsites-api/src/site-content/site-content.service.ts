@@ -77,6 +77,10 @@ export class SiteContentService {
     return this.siteContentModel.findOne({_id: id, site: site._id}).populate('site').exec();
   }
 
+  findBySiteId(id: string){
+    return this.siteContentModel.find({ site: id}).exec()
+  }
+
   update(
       id: ObjectId | string,
       updateSiteContentDto: UpdateSiteContentDto,
@@ -109,6 +113,10 @@ export class SiteContentService {
 
   remove(id: ObjectId | string) {
     return this.siteContentModel.findOneAndDelete({ _id: id });
+  }
+
+  removeAll(site: Site) {
+    return this.siteContentModel.remove({site: site._id}).exec();
   }
 
   async insertPostJob(data: any) {
