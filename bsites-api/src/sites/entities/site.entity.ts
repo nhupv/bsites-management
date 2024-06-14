@@ -32,6 +32,12 @@ export class Site extends Document {
     @Prop({ type: String, required: true })
     ip: string;
 
+    @Prop({ type: String, required: false })
+    username: string;
+
+    @Prop({ type: String, required: false })
+    password: string;
+
     @Prop({ type: Boolean, required: true, default: true })
     status: boolean;
 

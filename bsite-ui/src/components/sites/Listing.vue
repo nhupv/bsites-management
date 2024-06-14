@@ -149,6 +149,8 @@ const onAddProductClick = () => {
     status: true,
     id: "",
     ctr: 4,
+    username: "",
+    password: "",
   };
   createEditDialog.value = true;
 };

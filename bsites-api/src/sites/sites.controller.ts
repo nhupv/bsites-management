@@ -68,6 +68,25 @@ export class SitesController {
     return this.sitesService.findOne(id);
   }
 
+  @Get(':id/categories')
+  async getCategory(@Param('id', ParseObjectIdPipe) id: ObjectId) {
+    const site = await this.sitesService.findOne(id);
+    if (!site) {
+      throw new NotFoundException(`Site with id ${id} was not found!`);
+    }
+    if(!site.username || !site.password){
+      throw new BadRequestException(`Site setting is not found!`);
+    }
+
+    try {
+      const { data } = await this.sitesService.getCategoryInSite(site);
+      return data
+    } catch (e) {
+      console.log(e)
+      throw new BadRequestException(e.message || e.toString())
+    }
+  }
+
   @Get(':id/push')
   async pushData(@Param('id', ParseObjectIdPipe) id: ObjectId) {
     const site = await this.sitesService.findOne(id);

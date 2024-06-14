@@ -100,6 +100,13 @@ export const menuItems: MenuItemType[] = [
     link: "/keywords",
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
+  {
+    label: "post",
+    icon: "ph-article",
+    id: "sidebarPost",
+    link: "/posts",
+    show: !!localStorage.getItem(LS_KEY_SITE)
+  },
   // {
   //   label: "authentication",
   //   icon: "ph-user-circle",

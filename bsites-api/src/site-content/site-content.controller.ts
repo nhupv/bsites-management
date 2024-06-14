@@ -1,0 +1,117 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  Request,
+  NotFoundException,
+  UseInterceptors, UseGuards
+} from '@nestjs/common';
+import { SiteContentService } from './site-content.service';
+import { CreateSiteContentDto } from './dto/create-site-content.dto';
+import { UpdateSiteContentDto } from './dto/update-site-content.dto';
+import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
+import {CreateBulkSiteContentDto} from "./dto/create-bulk-site-content.dto";
+import {FilterParams} from "../common/decorator/filter.decorator";
+import {FilterDomain} from "../domain/dto/filter-domain.dto";
+import {Pagination} from "../common/decorator/pagination.decorator";
+import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
+import {ObjectId} from "mongoose";
+import {PaginationInterceptor} from "../common/pagination/interceptor/pagination.interceptor";
+import {SiteIdGuard} from "../common/guard/siteId.guard";
+import {ContentStatus} from "./enum/content-status-enum";
+import {SiteParam} from "../common/decorator/site.decorator";
+import {Site} from "../sites/entities/site.entity";
+import {getTitle} from "../common/helpers/file-helpers";
+
+@UseInterceptors(PaginationInterceptor)
+@Controller()
+@UseGuards(SiteIdGuard)
+export class SiteContentController {
+  constructor(private readonly siteContentService: SiteContentService) {}
+
+  @Post()
+  create(@Body() createSiteContentDto: CreateSiteContentDto) {
+    return this.siteContentService.create(createSiteContentDto);
+  }
+
+  @HttpCode(201)
+  @Post('create-bulk')
+  async createBulk(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createBulkSiteContentDto: CreateBulkSiteContentDto) {
+
+    const urlList : CreateSiteContentDto[] = createBulkSiteContentDto.titles.map(title => ({
+      title : getTitle(title).length > 0 ? getTitle(title)[0] : title,
+      question : title,
+      // status : [ContentStatus.PROCESSING],
+      site: siteId,
+      category_id: createBulkSiteContentDto.category_id,
+      category: createBulkSiteContentDto.category,
+      user: req.user._id
+    }))
+
+    const list = await this.siteContentService.createBulk(urlList);
+
+    list.forEach(item => {
+      this.siteContentService.insertPostJob({post: item, site: req.site})
+    })
+
+    return { message: 'Save posts successfully! Job create post is running.' };
+  }
+
+
+  @HttpCode(200)
+  @Get('list')
+  findAll(@SiteParam() site: Site, @FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+    return this.siteContentService.findAll(pagination, site, filter );
+  }
+
+  @Get(':id')
+  findOne(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
+    return this.siteContentService.findOne(id, site);
+  }
+
+
+  @Get(':id/rewrite')
+  async reWrite(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
+    const post = await this.siteContentService.findOne(id, site);
+
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} was not found!`);
+    }
+
+    await this.siteContentService.insertPostJob({post, site})
+
+    return { message: 'Rewrite post job is running.' };
+
+  }
+
+  @Patch(':id')
+  async update(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId, @Body() siteContentDto: UpdateSiteContentDto) {
+    const postUpdate = await this.siteContentService.findOne(id, site);
+
+    if (!postUpdate) {
+      throw new NotFoundException(`Post with id ${id} was not found!`);
+    }
+
+    const post = await this.siteContentService.update(id, siteContentDto);
+
+    await this.siteContentService.updatePostToSiteJob({post, site, direct: true })
+
+    return { message: 'Save post successfully! Job update post is running.' }
+  }
+
+  @Delete(':id')
+  async remove(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
+    const post = await this.siteContentService.findOne(id, site);
+
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} was not found!`);
+    }
+    await this.siteContentService.deletePostToSiteJob({post, site, direct: true })
+    return { message: 'Delete post job is running! ' }
+  }
+}

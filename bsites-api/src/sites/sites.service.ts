@@ -5,16 +5,15 @@ import {InjectModel} from "@nestjs/mongoose";
 import {Site, SiteDocument} from "./entities/site.entity";
 import {Model, ObjectId} from "mongoose";
 import {PaginationResultInterface} from "../common/pagination/interface/pagination-result.interface";
-import {User} from "../users/entities/user.entity";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
-import {Domain} from "../domain/entities/domain.entity";
-import {UpdateDomainDto} from "../domain/dto/update-domain.dto";
-import {UrlSite} from "../url-site/entities/url-site.entity";
 import {ChangeSiteStatusDto} from "./dto/change-site-status.dto";
+import {HttpService} from "@nestjs/axios";
 
 @Injectable()
 export class SitesService {
-  constructor(@InjectModel(Site.name) private  siteModel : Model<SiteDocument>) {
+  constructor(@InjectModel(Site.name) private  siteModel : Model<SiteDocument>,
+              private readonly httpService: HttpService,
+  ) {
   }
   create(createSiteDto: CreateSiteDto) {
     const site = new this.siteModel(createSiteDto);
@@ -102,6 +101,22 @@ export class SitesService {
 
   remove(id: ObjectId) {
     return this.siteModel.findOneAndDelete({ _id: id });
-
   }
+
+  getCategoryInSite(site: Site) {
+    const wpUrl = `${site.siteUrl}/wp-json/wp/v2/categories`;
+    const auth = Buffer.from(`${site.username}:${site.password}`).toString('base64');
+    return this.httpService
+        .get(
+            wpUrl,
+            {
+              headers: {
+                // 'Content-Type': 'application/json',
+                'Authorization': `Basic ${auth}`,
+              },
+            },
+        )
+        .toPromise();
+  }
+
 }

@@ -63,6 +63,8 @@ const onCreateUpdate = async () => {
       siteUrl: siteUrl.value,
       ctr: ctr.value,
       status: status.value,
+      username: username.value,
+      password: password.value,
     });
   } else {
     emit("onCreate", {
@@ -72,6 +74,8 @@ const onCreateUpdate = async () => {
       siteUrl: siteUrl.value,
       ctr: ctr.value,
       status: status.value,
+      username: username.value,
+      password: password.value,
     });
   }
 };
@@ -82,6 +86,9 @@ const siteUrl = ref(prop.itemDetail?.siteUrl || "");
 const siteIp = ref(prop.itemDetail?.ip || "");
 const ctr = ref(prop.itemDetail?.ctr);
 const status = ref(prop.itemDetail?.status);
+const username = ref(prop.itemDetail?.username);
+const password = ref(prop.itemDetail?.password);
+const showPass = ref(false);
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="600" scrollable>
@@ -131,6 +138,38 @@ const status = ref(prop.itemDetail?.status);
                 :rules="formRules.requiredRule"
                 placeholder="Enter home url"
             />
+          <v-row>
+            <v-col>
+              <h6 class="mb-2">Username</h6>
+              <v-text-field
+                  variant="solo"
+                  class="text-field-component"
+                  density="compact"
+                  v-model="username"
+                  hide-details="auto"
+                  placeholder="Enter username"
+              />
+            </v-col>
+            <v-col>
+              <h6 class="mb-2">Application Password</h6>
+              <v-text-field
+                  variant="solo"
+                  :type="showPass ? 'text' : 'password'"
+                  class="text-field-component"
+                  density="compact"
+                  v-model="password"
+                  hide-details="auto"
+                  placeholder="Enter password"
+
+              >
+                <template #append-inner>
+                  <v-btn icon size="small" variant="text" @click="showPass = !showPass">
+                    <v-icon>{{showPass ? 'mdi-eye-off' : 'mdi-eye'}}</v-icon>
+                  </v-btn>
+                </template>
+              </v-text-field>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col>
               <h6 class="mb-2">Ip</h6>

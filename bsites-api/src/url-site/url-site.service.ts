@@ -89,7 +89,6 @@ export class UrlSiteService {
 
   remove(id: ObjectId) {
     return this.urlSiteModel.findOneAndDelete({ _id: id });
-
   }
 
   removeAll() {

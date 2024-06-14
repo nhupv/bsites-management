@@ -12,6 +12,8 @@ export type SiteType = {
   description?: string;
   ctr?: number;
   status?: boolean;
+  username?: string;
+  password?: string;
   ip: string;
   siteUrl: string;
 

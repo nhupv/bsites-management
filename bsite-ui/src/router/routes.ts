@@ -17,18 +17,18 @@ const accountRoutes = [
     component: () => import("@/views/account/SignUp.vue"),
     meta: { title: "Sign Up", authRequired: false }
   },
-  {
-    path: `/pass-reset`,
-    name: "AccountResetPassword",
-    component: () => import("@/views/account/ResetPassword.vue"),
-    meta: { title: "Reset Password", authRequired: false }
-  },
-  {
-    path: `/pass-change`,
-    name: "AccountChangePassword",
-    component: () => import("@/views/account/CreatePassword.vue"),
-    meta: { title: "Create New Password", authRequired: false }
-  }
+  // {
+  //   path: `/pass-reset`,
+  //   name: "AccountResetPassword",
+  //   component: () => import("@/views/account/ResetPassword.vue"),
+  //   meta: { title: "Reset Password", authRequired: false }
+  // },
+  // {
+  //   path: `/pass-change`,
+  //   name: "AccountChangePassword",
+  //   component: () => import("@/views/account/CreatePassword.vue"),
+  //   meta: { title: "Create New Password", authRequired: false }
+  // }
 ].map((data) => {
   return {
     ...data,
@@ -212,6 +212,12 @@ export const routes = [
     name: "Keywords",
     component: () => import("@/views/keywords/index.vue"),
     meta: { title: "Keywords", authRequired: true, layout: DefaultLayout },
+  },
+  {
+    path: "/posts",
+    name: "Posts",
+    component: () => import("@/views/posts/index.vue"),
+    meta: { title: "Posts", authRequired: true, layout: DefaultLayout },
   },
   ...authRoutes,
   ...pagesRoutes,

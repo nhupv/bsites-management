@@ -28,6 +28,7 @@ import {SiteProxyController} from "./site-proxy/site-proxy.controller";
 import { BotModule } from './bot/bot.module';
 import { ProxyModule } from './proxy/proxy.module';
 import {JobsModule} from "./jobs/jobs.module";
+import { SiteContentModule } from './site-content/site-content.module';
 
 @Global()
 @Module({
@@ -98,6 +99,10 @@ import {JobsModule} from "./jobs/jobs.module";
             module: BotModule,
           },
           {
+            path: 'posts',
+            module: SiteContentModule,
+          },
+          {
             path: 'dashboard',
             module: DashboardModule,
           },
@@ -105,7 +110,8 @@ import {JobsModule} from "./jobs/jobs.module";
       },
     ]),
     BotModule,
-    ProxyModule
+    ProxyModule,
+    SiteContentModule,
     // MailModule,
   ],
   controllers: [AppController],

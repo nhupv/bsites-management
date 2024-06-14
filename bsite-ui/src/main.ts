@@ -13,10 +13,10 @@ import "@vuepic/vue-datepicker/dist/main.css";
 
 import "emoji-picker-element";
 
-import { vMaska } from "maska";
+// import { vMaska } from "maska";
 
-import "maz-ui/css/main.css";
-import MazPhoneNumberInput from "maz-ui/components/MazPhoneNumberInput";
+// import "maz-ui/css/main.css";
+// import MazPhoneNumberInput from "maz-ui/components/MazPhoneNumberInput";
 
 import VueApexCharts from "vue3-apexcharts";
 
@@ -36,7 +36,8 @@ registerPlugins(app);
 app.use(i18n);
 app.use(VueApexCharts);
 app.use(ToastPlugin, {
-    position: 'top-right'
+    position: 'top-right',
+    duration: 5000,
 });
 
 
@@ -48,7 +49,7 @@ app.component("ListMenuWithIcon", ListMenuWithIcon);
 app.component("Breadcrumb", Breadcrumb);
 app.component("TextField", TextField);
 app.component("TextArea", TextArea);
-app.directive("maska", vMaska);
-app.component("MazPhoneNumberInput", MazPhoneNumberInput);
+// app.directive("maska", vMaska);
+// app.component("MazPhoneNumberInput", MazPhoneNumberInput);
 
 app.mount("#app");

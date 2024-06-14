@@ -34,3 +34,17 @@ export const customErrors = (errors) => {
   });
   return new BadRequestException(result[0].message);
 };
+
+export const subString = (text: string) => text.length > 50 ? text.match(/.{50,}?(?=\b)/)[0]: text;
+
+export const getTitle = (text: string) => {
+  const regex = /"([^"]*)"/g;
+  let matches;
+  const results = [];
+
+  while ((matches = regex.exec(text)) !== null) {
+    results.push(matches[1]);
+  }
+
+  return results
+}
