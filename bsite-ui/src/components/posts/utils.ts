@@ -72,9 +72,9 @@ export const postsAction: OptionType[] = [
   //   to: "/ecommerce/product-details",
   // },
   {
-    title: "Rewrite",
-    icon: "ph-article",
-    value: "rewrite",
+    title: "Recreate",
+    icon: "ph-plus",
+    value: "recreate",
   },
   {
     title: "Edit",
@@ -85,6 +85,11 @@ export const postsAction: OptionType[] = [
     title: "Remove",
     icon: "ph-trash",
     value: "remove",
+  },
+  {
+    title: "Rewrite",
+    icon: "ph-article",
+    value: "rewrite",
   },
 ];
 

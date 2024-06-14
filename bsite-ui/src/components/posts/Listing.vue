@@ -36,6 +36,7 @@ const headers = ref([
   { title: 'Category', key: 'category', align: 'start', },
   { title: 'Content', key: 'content', align: 'start' },
   { title: 'Link', key: 'link', align: 'start' },
+  { title: 'Priority', key: 'priority', align: 'start' },
   { title: 'Status', key: 'status', align: 'start', sortable: false, width: '130px' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
@@ -48,6 +49,7 @@ const search = ref({ key: 'name', value: ''})
 const serverItems = ref([])
 const loading = ref(false);
 const readOnly = ref(false);
+const loadingPriority = ref(false)
 
 const confirmationDialog = ref(false);
 // const confirmationRemoveAllDialog = ref(false);
@@ -87,6 +89,8 @@ const onSelect = (option: string, data: any) => {
     confirmationContent.value = data._id;
   } else if (option === "rewrite") {
     onRewrite(data._id)
+  } else if (option === "recreate") {
+    onRecreate(data._id)
   }
 }
 
@@ -111,6 +115,19 @@ watch(confirmationDialog, (dialog: boolean) => {
   }
 });
 
+const onPushData = async () => {
+  loading.value = true;
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/posts/push`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
 const onUpdate = async (updatedVal: PostType) => {
   try {
     const data = await httpService.patch(`/sites/${siteId.value}/posts/${updatedVal._id}`, updatedVal)
@@ -121,6 +138,7 @@ const onUpdate = async (updatedVal: PostType) => {
     handleError(e)
   }
 };
+
 
 const onCreate = async (newVal: { titles: string, category?: any}) => {
   const arrayTitle = newVal.titles.replace(/\r\n/g,"\n").split("\n")
@@ -137,10 +155,36 @@ const onCreate = async (newVal: { titles: string, category?: any}) => {
   }
 };
 
+const updateSiteStatus = async (value: boolean, item: any) => {
+  loadingPriority.value = true
+  try {
+    await httpService.post(`/sites/${siteId.value}/posts/${item._id}/priority`, {priority: value})
+    $toast.success('Update priority successfully!')
+    await siteStore.getSites()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loadingPriority.value = false
+  }
+}
+
 const onRewrite = async (id: string) => {
   loading.value = true;
   try {
     const data = await httpService.get(`/sites/${siteId.value}/posts/${id}/rewrite`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
+const onRecreate = async (id: string) => {
+  loading.value = true;
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/posts/${id}/recreate`)
     const message = typeof  data.message !== 'string' ? String(data.message) : data.message
     $toast.success(message)
   } catch (e) {
@@ -257,7 +301,7 @@ const getVariantStatus = (status: string) => {
             <v-btn
                 v-if="serverItems.length > 0"
                 color="error"
-                class="mr-2"
+                class="mr-4"
                 v-bind="props"
             >
               Delete all
@@ -272,6 +316,17 @@ const getVariantStatus = (status: string) => {
             </v-list-item>
           </v-list>
         </v-menu>
+        <v-btn
+            :disabled="totalItems === 0"
+            :loading="loading"
+            color="primary"
+            variant="outlined"
+            elevation="0"
+            class="my-2 mr-4"
+            @click="onPushData"
+        >
+          <i class="ph-paper-plane-tilt mx-1" /> Push data
+        </v-btn>
         <v-btn
             color="primary"
             elevation="0"
@@ -295,6 +350,16 @@ const getVariantStatus = (status: string) => {
           item-value="name"
           @update:options="loadItems"
       >
+        <template v-slot:item.priority="{item}: any">
+          <v-switch
+              v-model="item.priority"
+              :loading="loadingPriority"
+              hide-details
+              color="primary"
+              size="sm"
+              @update:modelValue="(value) => updateSiteStatus(value, item)"
+          ></v-switch>
+        </template>
         <template v-slot:item.status="{item}: any">
           <template v-for="s in item.status" :key="s">
             <v-tooltip height="30" contained location="top" :text="getVariantStatus(s).text">

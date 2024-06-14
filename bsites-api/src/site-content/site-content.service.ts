@@ -13,12 +13,16 @@ import {InjectQueue} from "@nestjs/bull";
 import {Queue} from "bull";
 import {POSTS_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from "./constants";
 import {UpdatePostStatusDto} from "./dto/update-post-status.dto";
+import {ChangeSiteStatusDto} from "../sites/dto/change-site-status.dto";
+import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
+import {HttpService} from "@nestjs/axios";
 
 @Injectable()
 export class SiteContentService {
   constructor(@InjectModel(SiteContent.name) private siteContentModel: Model<SiteContentDocument>,
               @InjectQueue(POSTS_QUEUE.INSERT_STATS_QUEUE)
               private queue: Queue,
+              private readonly httpService: HttpService,
               @InjectQueue(POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_QUEUE)
               private queueSend: Queue
              ) {
@@ -111,12 +115,46 @@ export class SiteContentService {
         .exec();
   }
 
+  changePriority(id: ObjectId | string, postPriorityDto: UpdatePostPriorityDto): Promise<SiteContent> {
+    return this.siteContentModel
+        .findOneAndUpdate(
+            { _id: id },
+            { $set: postPriorityDto },
+            {
+              new: true,
+            },
+        )
+        .exec();
+  }
+
   remove(id: ObjectId | string) {
     return this.siteContentModel.findOneAndDelete({ _id: id });
   }
 
   removeAll(site: Site) {
     return this.siteContentModel.remove({site: site._id}).exec();
+  }
+
+  async pushData(site: Site) {
+    const posts = await this.findBySiteId(site._id)
+    const listLink = posts.filter(post => !!post.link).map(item => {
+      return {
+        url: item.link,
+        priority: item.priority ? 1 : 0
+      }
+    })
+    console.log(listLink)
+    return this.httpService
+        .post(
+            `http://${site.ip}:5000/sync_url_v_2`,
+            listLink,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            },
+        )
+        .toPromise();
   }
 
   async insertPostJob(data: any) {

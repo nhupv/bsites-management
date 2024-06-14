@@ -9,7 +9,7 @@ import {
   HttpCode,
   Request,
   NotFoundException,
-  UseInterceptors, UseGuards
+  UseInterceptors, UseGuards, BadRequestException
 } from '@nestjs/common';
 import { SiteContentService } from './site-content.service';
 import { CreateSiteContentDto } from './dto/create-site-content.dto';
@@ -27,6 +27,8 @@ import {ContentStatus} from "./enum/content-status-enum";
 import {SiteParam} from "../common/decorator/site.decorator";
 import {Site} from "../sites/entities/site.entity";
 import {getTitle} from "../common/helpers/file-helpers";
+import {ChangeSiteStatusDto} from "../sites/dto/change-site-status.dto";
+import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
 
 @UseInterceptors(PaginationInterceptor)
 @Controller()
@@ -69,9 +71,39 @@ export class SiteContentController {
     return this.siteContentService.findAll(pagination, site, filter );
   }
 
+  @HttpCode(200)
+  @Get('push')
+  async pushData(@SiteParam() site: Site) {
+    try {
+      const { data } = await this.siteContentService.pushData(site)
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
+  }
+
   @Get(':id')
   findOne(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
     return this.siteContentService.findOne(id, site);
+  }
+
+  @Post(':id/priority')
+  changePriorityPost(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updatePostPriorityDto: UpdatePostPriorityDto) {
+    return this.siteContentService.changePriority(id, updatePostPriorityDto);
+  }
+
+  @Get(':id/recreate')
+  async reCreate(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
+    const post = await this.siteContentService.findOne(id, site);
+
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} was not found!`);
+    }
+
+    await this.siteContentService.sendPostToSiteJob({post, site, direct: true})
+
+    return { message: 'Recreate post job is running.' };
+
   }
 
 

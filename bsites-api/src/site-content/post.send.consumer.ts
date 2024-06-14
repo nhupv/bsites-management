@@ -42,15 +42,29 @@ export class PostSendConsumer {
     concurrency: +process.env.JOB_CONCURRENCY,
   })
   async sendPost(job: Job<any>) {
-    const { post, site } = job.data
-    if(!post.content) {
-      await this.siteContentService.updateStatus(post._id, {
-        status: [...post.status, ContentStatus.PROCESSING]
+    const { post, site, direct } = job.data
+    let postCreate = {...post}
+    if(direct) {
+      postCreate = await this.siteContentService.updateStatus(postCreate._id, {
+        status: [ContentStatus.PROCESSING]
+      })
+    }
+
+    if(!postCreate.content) {
+      await this.siteContentService.updateStatus(postCreate._id, {
+        status: [...postCreate.status, ContentStatus.SEND_CONTENT_FAILED]
       })
       throw new Error('Content is empty!');
     }
+
+    if(postCreate.post_id) {
+      await this.siteContentService.updateStatus(postCreate._id, {
+        status: [...postCreate.status, ContentStatus.SEND_CONTENT_FAILED]
+      })
+      throw new Error(`Post is existed with id ${postCreate.post_id}`);
+    }
     try {
-      await this.sendPostToSite(post, site)
+      await this.sendPostToSite(postCreate, site)
     } catch (e) {
       throw new Error(e);
     }
