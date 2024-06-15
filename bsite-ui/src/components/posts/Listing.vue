@@ -382,7 +382,7 @@ const getVariantStatus = (status: string) => {
           <span class="text-muted">{{ format(item.createdAt, 'MM-dd-yyyy HH:mm')}}</span>
         </template>
         <template v-slot:item.content="{item} : any">
-          {{ clip(item.content, 300) }}
+          {{ clip(item.content, 150) }}
         </template>
         <template v-slot:item.title="{item} : any">
           <span class="font-weight-bold">{{item.title}}</span>
