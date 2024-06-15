@@ -26,6 +26,8 @@ import {PaginationParams} from "../common/pagination/dto/papgination-params.dto"
 import {CreateUrlSiteDto} from "./dto/create-url-site.dto";
 import {SiteIdGuard} from "../common/guard/siteId.guard";
 import {CreateBulkSiteUrlDto} from "./dto/create-bulk-site-url.dto";
+import {parsePriorityUrl} from "../common/helpers/file-helpers";
+import {UpdatePostPriorityDto} from "../site-content/dto/update-post-priority.dto";
 
 @UseInterceptors(PaginationInterceptor)
 @Roles(Role.Admin, Role.User, Role.SuperUser)
@@ -44,9 +46,9 @@ export class UrlSiteController {
   @HttpCode(201)
   @Post('create-bulk')
   async createBulk(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createBulkSiteUrlDto: CreateBulkSiteUrlDto) {
-
     const urlList : CreateUrlSiteDto[] = createBulkSiteUrlDto.urls.map(url => ({
-      url : url,
+      url : parsePriorityUrl(url).url,
+      priority: parsePriorityUrl(url).priority,
       site: siteId,
       user: req.user._id
     }))
@@ -56,6 +58,7 @@ export class UrlSiteController {
   @HttpCode(200)
   @Get('list')
   findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+    console.log(parsePriorityUrl('https://savingsaccounts.elambo.vn/apple-bank-savings-account-interest-rates-june-2024/\t1'))
     return this.urlSiteService.findAll(pagination, filter );
   }
 
@@ -68,6 +71,16 @@ export class UrlSiteController {
     } catch (e) {
       throw new BadRequestException(e.message || e.toString());
     }
+  }
+
+  @Post(':id/priority')
+  async changePriorityPost(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updatePostPriorityDto: UpdatePostPriorityDto) {
+    const urlUpdate = await this.urlSiteService.findOne(id);
+
+    if (!urlUpdate) {
+      throw new NotFoundException(`UrlSite with id ${id} was not found!`);
+    }
+    return this.urlSiteService.updatePriority(id, updatePostPriorityDto);
   }
 
   @Get(':id')

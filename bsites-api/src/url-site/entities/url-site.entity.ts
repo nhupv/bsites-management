@@ -18,6 +18,9 @@ export class UrlSite extends Document {
     @Prop({ type: String, required: true })
     url: string;
 
+    @Prop({ type: Boolean, required: true, default: true })
+    priority: boolean;
+
     @Prop({ default: '' })
     description?: string;
 

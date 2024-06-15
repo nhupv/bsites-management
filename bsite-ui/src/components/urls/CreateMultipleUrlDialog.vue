@@ -52,6 +52,7 @@ const onCreateUpdate = async () => {
       ...prop.itemDetail,
       description: urlDescription.value,
       url: url.value,
+      priority: priority.value,
     });
   } else {
     emit("onCreate", {
@@ -63,6 +64,7 @@ const onCreateUpdate = async () => {
 
 const urlDescription = ref(prop.itemDetail?.description || "");
 const url = ref(prop.itemDetail?.url || "");
+const priority = ref(prop.itemDetail?.priority ?? true);
 const urls = ref<string>('');
 </script>
 <template>
@@ -91,6 +93,16 @@ const urls = ref<string>('');
           <TextArea v-else v-model="urls"
                     :rules="formRules.requiredRule"
                     rows="20" placeholder="Paste your urls here" />
+
+         <div v-if="!isCreate">
+           <h6 class="mb-2">Priority</h6>
+           <v-switch
+               v-model="priority"
+               hide-details
+               color="primary"
+               size="sm"
+           ></v-switch>
+         </div>
           <h6 class="mb-2">Description</h6>
           <v-text-field
               variant="solo"

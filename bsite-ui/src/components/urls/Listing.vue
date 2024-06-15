@@ -31,7 +31,9 @@ const headers = ref([
     title: 'Url',
     align: 'start',
     key: 'url',
+    width: '40%',
   },
+  { title: 'Priority', key: 'priority', align: 'start' },
   { title: 'Description', key: 'description', align: 'start' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
@@ -43,6 +45,7 @@ const totalItems = ref<number>(0)
 const search = ref({ key: 'name', value: ''})
 const serverItems = ref([])
 const loading = ref(false);
+const loadingPriority = ref(false);
 
 const confirmationDialog = ref(false);
 const confirmationRemoveAllDialog = ref(false);
@@ -113,6 +116,19 @@ const onPushData = async () => {
     loading.value = false
   }
 };
+
+const updatePriority = async (value: boolean, item: any) => {
+  loadingPriority.value = true
+  try {
+    await httpService.post(`/sites/${siteId.value}/urls/${item._id}/priority`, {priority: value})
+    $toast.success('Update priority successfully!')
+    await siteStore.getSites()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loadingPriority.value = false
+  }
+}
 
 const onCreate = async (newVal: { urls: string, description?: string}) => {
   const arrayUrl = newVal.urls.replace(/\r\n/g,"\n").split("\n")
@@ -212,6 +228,16 @@ const onConfirmDeleteAll = async () => {
           item-value="name"
           @update:options="loadItems"
       >
+        <template v-slot:item.priority="{item}: any">
+          <v-switch
+              v-model="item.priority"
+              :loading="loadingPriority"
+              hide-details
+              color="primary"
+              size="sm"
+              @update:modelValue="(value) => updatePriority(value, item)"
+          ></v-switch>
+        </template>
         <template v-slot:item.createdAt="{item} : any">
           <span class="text-muted">{{ format(item.createdAt, 'MM-dd-yyyy HH:mm')}}</span>
         </template>

@@ -34,10 +34,10 @@ const headers = ref([
     width: '15%',
   },
   { title: 'Category', key: 'category', align: 'start', },
-  { title: 'Content', key: 'content', align: 'start' },
-  { title: 'Link', key: 'link', align: 'start' },
+  { title: 'Content', key: 'content', align: 'start', width: '30%' },
+  { title: 'Link', key: 'link', align: 'start', width: '10%' },
   { title: 'Priority', key: 'priority', align: 'start' },
-  { title: 'Status', key: 'status', align: 'start', sortable: false, width: '130px' },
+  { title: 'Status', key: 'status', align: 'start', sortable: false, width: '15%' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
@@ -155,7 +155,7 @@ const onCreate = async (newVal: { titles: string, category?: any}) => {
   }
 };
 
-const updateSiteStatus = async (value: boolean, item: any) => {
+const updatePostPriority = async (value: boolean, item: any) => {
   loadingPriority.value = true
   try {
     await httpService.post(`/sites/${siteId.value}/posts/${item._id}/priority`, {priority: value})
@@ -357,7 +357,7 @@ const getVariantStatus = (status: string) => {
               hide-details
               color="primary"
               size="sm"
-              @update:modelValue="(value) => updateSiteStatus(value, item)"
+              @update:modelValue="(value) => updatePostPriority(value, item)"
           ></v-switch>
         </template>
         <template v-slot:item.status="{item}: any">

@@ -88,7 +88,12 @@ export class SiteContentController {
   }
 
   @Post(':id/priority')
-  changePriorityPost(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updatePostPriorityDto: UpdatePostPriorityDto) {
+  async changePriorityPost(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updatePostPriorityDto: UpdatePostPriorityDto) {
+    const post = await this.siteContentService.findOne(id, site);
+
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} was not found!`);
+    }
     return this.siteContentService.changePriority(id, updatePostPriorityDto);
   }
 

@@ -10,5 +10,6 @@ export type UrlType = {
   _id?: string;
   description: string;
   url: string;
+  priority?: boolean;
 
 };

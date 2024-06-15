@@ -1,10 +1,14 @@
-import {Allow, IsMongoId, IsNotEmpty, IsOptional} from "class-validator";
+import {Allow, IsBoolean, IsMongoId, IsNotEmpty, IsOptional} from "class-validator";
 import { Types, Schema } from "mongoose"
 import {Type} from "class-transformer";
 
 export class CreateUrlSiteDto {
     @IsNotEmpty()
     url: string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    priority: boolean;
 
     @IsOptional()
     description?: string;

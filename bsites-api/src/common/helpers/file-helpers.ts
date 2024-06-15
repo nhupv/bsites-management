@@ -48,3 +48,18 @@ export const getTitle = (text: string) => {
 
   return results
 }
+
+export const parsePriorityUrl = (url: string) => {
+  const parts = url.split('\t');
+  if(parts.length === 1) {
+    return {
+      url: url,
+      priority: true
+    }
+  } else {
+    return {
+      url: parts[0],
+      priority: parts[1] === "1"
+    }
+  }
+}

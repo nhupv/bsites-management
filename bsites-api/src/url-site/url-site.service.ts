@@ -9,6 +9,9 @@ import {PaginationResultInterface} from "../common/pagination/interface/paginati
 import {REQUEST} from "@nestjs/core";
 import { Request } from 'express'
 import {HttpService} from "@nestjs/axios";
+import {UpdatePostStatusDto} from "../site-content/dto/update-post-status.dto";
+import {SiteContent} from "../site-content/entities/site-content.entity";
+import {UpdateUrlPriorityDto} from "./dto/update-url-priority.dto";
 
 @Injectable({ scope: Scope.REQUEST})
 export class UrlSiteService {
@@ -87,6 +90,21 @@ export class UrlSiteService {
         .exec();
   }
 
+  updatePriority(
+      id: ObjectId | string,
+      updateUrlPriorityDto: UpdateUrlPriorityDto,
+  ): Promise<UrlSite> {
+    return this.urlSiteModel
+        .findOneAndUpdate(
+            { _id: id },
+            { $set: updateUrlPriorityDto },
+            {
+              new: true,
+            },
+        ).populate('site')
+        .exec();
+  }
+
   remove(id: ObjectId) {
     return this.urlSiteModel.findOneAndDelete({ _id: id });
   }
@@ -97,11 +115,11 @@ export class UrlSiteService {
 
   async pushData(ip:string) {
     const urls = await this.findBySiteId(this.request.params.siteId)
-    const listUrl = urls.map(url => url.url)
+    const listUrl = urls.map(url => ({url: url.url, priority: url.priority ? 1 : 0}))
     return this.httpService
         .post(
             `http://${ip}:5000/sync_url`,
-            { list_url: listUrl },
+            listUrl,
             {
               headers: {
                 'Content-Type': 'application/json',
