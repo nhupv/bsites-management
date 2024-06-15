@@ -42,6 +42,7 @@ export class MigrateCommand {
 
       if(sites.length === 0 ) {
         console.log('No sites in db.');
+        return
       }
 
       const siteUpdated = await this.sitesService.updateMany({ status: true })
@@ -59,6 +60,7 @@ export class MigrateCommand {
 
       if(posts.length === 0 ) {
         console.log('No post in db.');
+        return
       }
 
       const postListUpdated = await this.postService.updateMany({ priority: true })
