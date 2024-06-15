@@ -77,6 +77,10 @@ export class SiteContentService {
     return { data, total };
   }
 
+  findAllWithoutPagination(): Promise<SiteContent[]> {
+    return this.siteContentModel.find({}).exec();
+  }
+
   findOne(id: ObjectId, site: Site) {
     return this.siteContentModel.findOne({_id: id, site: site._id}).populate('site').exec();
   }
@@ -113,6 +117,13 @@ export class SiteContentService {
             },
         ).populate('site')
         .exec();
+  }
+
+  updateMany(
+      updatePostPriorityDto: UpdatePostPriorityDto,
+  ) {
+    return this.siteContentModel
+        .updateMany({}, {$set: updatePostPriorityDto}).exec()
   }
 
   changePriority(id: ObjectId | string, postPriorityDto: UpdatePostPriorityDto): Promise<SiteContent> {

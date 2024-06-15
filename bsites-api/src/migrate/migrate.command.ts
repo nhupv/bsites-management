@@ -5,11 +5,13 @@ import mongoose, { Types } from 'mongoose';
 import { PaginationParams } from '../common/pagination/dto/papgination-params.dto';
 import { DomainService } from '../domain/domain.service';
 import {SitesService} from "../sites/sites.service";
+import {SiteContentService} from "../site-content/site-content.service";
 @Injectable()
 export class MigrateCommand {
   constructor(
     private readonly consoleService: ConsoleService,
     private readonly sitesService: SitesService,
+    private readonly postService: SiteContentService,
     // @InjectConnection() private readonly connection: mongoose.Connection,
   ) {
     const cli = this.consoleService.getCli();
@@ -21,6 +23,15 @@ export class MigrateCommand {
       },
       this.addStatusSite.bind(this),
       cli,
+    );
+
+    this.consoleService.createCommand(
+        {
+          command: 'migrate:post-priority',
+          description: 'Add priority column in post collection',
+        },
+        this.addPostPriority.bind(this),
+        cli,
     );
   }
   async addStatusSite() {
@@ -35,18 +46,24 @@ export class MigrateCommand {
 
       const siteUpdated = await this.sitesService.updateMany({ status: true })
 
-      // for (let site of sites) {
-      //   try {
-      //     const changeStatus = { status: true }
-      //     if(site.status !== undefined) {
-      //       changeStatus.status = site.status;
-      //     }
-      //     const siteUpdate = await this.sitesService.changeStatus(site._id, { status: true })
-      //   } catch (e) {
-      //     console.log(e)
-      //   }
-      // }
       console.log('Change status for all site successfully!');
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  async addPostPriority() {
+    // const spin = createSpinner();
+    try {
+
+      const posts = await this.postService.findAllWithoutPagination()
+
+      if(posts.length === 0 ) {
+        console.log('No post in db.');
+      }
+
+      const postListUpdated = await this.postService.updateMany({ priority: true })
+
+      console.log('Change priority for all post successfully!');
     } catch (e) {
       console.log(e);
     }
