@@ -58,7 +58,6 @@ export class UrlSiteController {
   @HttpCode(200)
   @Get('list')
   findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
-    console.log(parsePriorityUrl('https://savingsaccounts.elambo.vn/apple-bank-savings-account-interest-rates-june-2024/\t1'))
     return this.urlSiteService.findAll(pagination, filter );
   }
 

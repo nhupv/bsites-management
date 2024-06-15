@@ -12,6 +12,7 @@ import {HttpService} from "@nestjs/axios";
 import {UpdatePostStatusDto} from "../site-content/dto/update-post-status.dto";
 import {SiteContent} from "../site-content/entities/site-content.entity";
 import {UpdateUrlPriorityDto} from "./dto/update-url-priority.dto";
+import {UpdatePostPriorityDto} from "../site-content/dto/update-post-priority.dto";
 
 @Injectable({ scope: Scope.REQUEST})
 export class UrlSiteService {
@@ -75,6 +76,10 @@ export class UrlSiteService {
     return this.urlSiteModel.find({ site: id}).exec()
   }
 
+  findAllWithoutPagination(){
+    return this.urlSiteModel.find({}).exec()
+  }
+
   update(
       id: ObjectId | string,
       updateUrlSiteDto: UpdateUrlSiteDto,
@@ -88,6 +93,13 @@ export class UrlSiteService {
             },
         ).populate('site')
         .exec();
+  }
+
+  updateMany(
+      updateUrlPriorityDto: UpdateUrlPriorityDto,
+  ) {
+    return this.urlSiteModel
+        .updateMany({}, {$set: updateUrlPriorityDto}).exec()
   }
 
   updatePriority(

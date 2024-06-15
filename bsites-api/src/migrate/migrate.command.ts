@@ -6,12 +6,14 @@ import { PaginationParams } from '../common/pagination/dto/papgination-params.dt
 import { DomainService } from '../domain/domain.service';
 import {SitesService} from "../sites/sites.service";
 import {SiteContentService} from "../site-content/site-content.service";
+import {UrlSiteService} from "../url-site/url-site.service";
 @Injectable()
 export class MigrateCommand {
   constructor(
     private readonly consoleService: ConsoleService,
     private readonly sitesService: SitesService,
     private readonly postService: SiteContentService,
+    private readonly urlService: UrlSiteService,
     // @InjectConnection() private readonly connection: mongoose.Connection,
   ) {
     const cli = this.consoleService.getCli();
@@ -31,6 +33,15 @@ export class MigrateCommand {
           description: 'Add priority column in post collection',
         },
         this.addPostPriority.bind(this),
+        cli,
+    );
+
+    this.consoleService.createCommand(
+        {
+          command: 'migrate:url-priority',
+          description: 'Add priority column in url collection',
+        },
+        this.addUrlPriority.bind(this),
         cli,
     );
   }
@@ -66,6 +77,24 @@ export class MigrateCommand {
       const postListUpdated = await this.postService.updateMany({ priority: true })
 
       console.log('Change priority for all post successfully!');
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  async addUrlPriority() {
+    // const spin = createSpinner();
+    try {
+
+      const urls = await this.urlService.findAllWithoutPagination()
+
+      if(urls.length === 0 ) {
+        console.log('No url in db.');
+        return
+      }
+
+      const postListUpdated = await this.urlService.updateMany({ priority: true })
+
+      console.log('Change priority for all url successfully!');
     } catch (e) {
       console.log(e);
     }
