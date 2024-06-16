@@ -117,6 +117,20 @@ const onStartAllBot = async (bot: any) => {
   }
 };
 
+const onUpdateCode = async (bot: any) => {
+  loading.value = true
+  try {
+    const data = await httpService.get(`/sites/${siteId.value}/bots/update-code`)
+    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
+    $toast.success(message)
+    await loadItems()
+  } catch (e) {
+    handleError(e)
+  } finally {
+    loading.value = false
+  }
+};
+
 const onStopAllBot = async (bot: any) => {
   loading.value = true
   try {
@@ -192,6 +206,16 @@ const onConfirmDelete = async () => {
             @click="loadItems"
         >
           <i class="ph-arrow-clockwise mx-1" /> Refresh
+        </v-btn>
+        <v-btn
+            :loading="loading"
+            elevation="0"
+            color="primary"
+            class="my-2 mr-4"
+            variant="tonal"
+            @click="onUpdateCode"
+        >
+          <i class="ph-file-code mx-1" /> Update Code
         </v-btn>
         <v-btn
             :loading="loading"

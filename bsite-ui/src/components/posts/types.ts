@@ -26,6 +26,10 @@ export enum PostStatus {
   PROCESSING = "processing",
   SEND_CHATGPT_SUCCESS = "send-chatgpt-success",
   SEND_CHATGPT_FAILED = "send-chatgpt-failed",
+
+  PARSE_LINK_SUCCESS = "parse-promt-success",
+  PARSE_LINK_FAILED = "parse-promt-failed",
+
   SEND_CONTENT_SUCCESS = "send-post-success",
   SEND_CONTENT_FAILED = "send-post-failed",
 

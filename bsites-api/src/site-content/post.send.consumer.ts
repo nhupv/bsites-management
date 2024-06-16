@@ -3,11 +3,9 @@ import {Job} from 'bull';
 import {Injectable, Logger} from '@nestjs/common';
 import {POSTS_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from './constants';
 import {SiteContentService} from "./site-content.service";
-// import { CreateDashboardDto } from "./dto/create-dashboard.dto";
 import {TelegramBotService} from "../telegram/telegram.service";
 import {HttpService} from "@nestjs/axios";
 import {ContentStatus} from "./enum/content-status-enum";
-import {UpdatePostStatusDto} from "./dto/update-post-status.dto";
 import {Site} from "../sites/entities/site.entity";
 import {SiteContent} from "./entities/site-content.entity";
 
@@ -203,9 +201,6 @@ export class PostSendConsumer {
         }
       }).toPromise()
 
-      // const updateContentStatus = {
-      //   status: [...post.status, ContentStatus.SEND_CONTENT_SUCCESS],
-      // }
       await this.siteContentService.remove(post._id)
 
     } catch (e) {

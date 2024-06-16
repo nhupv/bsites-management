@@ -10,6 +10,7 @@ import {ContentStatus} from "./enum/content-status-enum";
 import {UpdatePostStatusDto} from "./dto/update-post-status.dto";
 import {Site} from "../sites/entities/site.entity";
 import {SiteContent} from "./entities/site-content.entity";
+import {getValueTitle} from "../common/helpers/file-helpers";
 
 @Processor({
   name: POSTS_QUEUE.INSERT_STATS_QUEUE,
@@ -42,11 +43,11 @@ export class PostConsumer {
     concurrency: +process.env.JOB_CONCURRENCY,
   })
   async insertStats(job: Job<any>) {
-    const { post, site } = job.data
+    const { post, site, direct } = job.data
     try {
-       const postUpdateStatus = await this.siteContentService.updateStatus(post._id, {
-         status: [ContentStatus.PROCESSING]
-       })
+      const postUpdateStatus = await this.siteContentService.updateStatus(post._id, {
+        status: [ContentStatus.PROCESSING]
+      })
       const postUpdated = await this.sendToChatGPT(postUpdateStatus)
       if(post.post_id) {
         await this.siteContentService.updatePostToSiteJob({post: postUpdated, site})
@@ -88,6 +89,75 @@ export class PostConsumer {
       }
       await this.siteContentService.updateStatus(post._id, updateContentStatus)
       throw new Error(e);
+    }
+  }
+
+  @Process({
+    name: POSTS_QUEUE.INSERT_POST_LINK_JOB,
+    concurrency: +process.env.JOB_CONCURRENCY,
+  })
+  async getLinkBeforeSend(job: Job<any>) {
+    const { post, site } = job.data
+    let postUpdate = { ...post }
+    postUpdate = await this.siteContentService.updateStatus(post._id, {
+      status: [ContentStatus.PROCESSING]
+    })
+
+    const matches = getValueTitle(post.question)
+    const titleList = matches.map(item => item[1])
+    if(titleList.length === 0) {
+      await this.siteContentService.updateStatus(post._id, {
+        status: [...postUpdate.status, ContentStatus.GET_LINK_FAILED]
+      })
+      throw new Error('No title found in question!')
+    }
+    const posts = await this.siteContentService.findByTitle(titleList)
+
+    if(posts.length === 0) {
+      await this.siteContentService.updateStatus(post._id, {
+        status: [...postUpdate.status, ContentStatus.GET_LINK_FAILED]
+      })
+      throw new Error('Title not match!')
+    }
+
+    const isJobSuccess = posts.every(item => !!item.link)
+
+    if(!isJobSuccess) {
+      await this.siteContentService.updateStatus(post._id, {
+        status: [...postUpdate.status, ContentStatus.GET_LINK_FAILED]
+      })
+      throw new Error('Link in some post is empty!')
+    }
+
+    const postLinkList = matches.map(match => {
+      const p = posts.find(post => post.title === match[1])
+      return [...match, p.link]
+    })
+
+    let question = post.question
+
+    for(let i = 0; i < postLinkList.length ; i++) {
+      question = question.replace(postLinkList[i][0], postLinkList[i][postLinkList[i].length - 1])
+    }
+
+    if(getValueTitle(question).length > 0) {
+      await this.siteContentService.updateStatus(post._id, {
+        status: [...postUpdate.status, ContentStatus.GET_LINK_FAILED]
+      })
+      throw new Error('Question is invalid!')
+    }
+
+    postUpdate = await this.siteContentService.updateStatus(post._id, {
+      question,
+      status: [...postUpdate.status, ContentStatus.GET_LINK_SUCCESS]
+    })
+
+    const postContent = await this.sendToChatGPT(postUpdate)
+
+    if(postContent.post_id) {
+      await this.siteContentService.updatePostToSiteJob({post: postContent, site})
+    } else {
+      await this.siteContentService.sendPostToSiteJob({post: postContent, site})
     }
   }
 }

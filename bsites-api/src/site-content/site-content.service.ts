@@ -13,7 +13,6 @@ import {InjectQueue} from "@nestjs/bull";
 import {Queue} from "bull";
 import {POSTS_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from "./constants";
 import {UpdatePostStatusDto} from "./dto/update-post-status.dto";
-import {ChangeSiteStatusDto} from "../sites/dto/change-site-status.dto";
 import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
 import {HttpService} from "@nestjs/axios";
 
@@ -83,6 +82,10 @@ export class SiteContentService {
 
   findOne(id: ObjectId, site: Site) {
     return this.siteContentModel.findOne({_id: id, site: site._id}).populate('site').exec();
+  }
+
+  findByTitle(titleList: string[]) {
+    return this.siteContentModel.find({title: { $in: titleList }}).exec();
   }
 
   findBySiteId(id: string){
@@ -168,11 +171,26 @@ export class SiteContentService {
   }
 
   async insertPostJob(data: any) {
-    await this.queue.add(POSTS_QUEUE.INSERT_STATS_JOB, data);
+    await this.queue.add(POSTS_QUEUE.INSERT_STATS_JOB, data, {
+      lifo: true,
+      priority: 1
+    });
+  }
+
+  async insertPostJobLink(data: any, delay = 0 ) {
+    await this.queue.add(POSTS_QUEUE.INSERT_POST_LINK_JOB, data, {
+      priority: 2,
+      attempts: 3,
+      backoff: 30000,
+      delay
+    });
   }
 
   async sendPostToSiteJob(data: any) {
-    await this.queueSend.add(POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_JOB, data);
+    await this.queueSend.add(POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_JOB, data, {
+      priority: 1,
+      lifo: true
+    });
   }
 
   async updatePostToSiteJob(data: any) {

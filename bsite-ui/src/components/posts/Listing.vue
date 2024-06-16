@@ -4,7 +4,7 @@ import RemoveItemConfirmationDialog from "@/app/common/components/RemoveItemConf
 import {httpService} from "@/app/http/httpServiceProvider";
 import {useTable} from "@/app/composables/useTable";
 import ListMenuWithIcon from "@/app/common/components/ListMenuWithIcon.vue";
-import {clip, postsAction} from "@/components/posts/utils";
+import {clip, getVariantStatus, postsAction} from "@/components/posts/utils";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
 import { format } from "date-fns";
@@ -233,48 +233,6 @@ const deleteBoth = async () => {
   await loadItems(tableOptions.value)
 }
 
-const getVariantStatus = (status: string) => {
-  const variant = {
-    color: 'secondary',
-    text: status,
-    icon: 'mdi-check',
-  }
-  switch (status) {
-    case PostStatus.PROCESSING:
-      variant.color = 'success'
-      break
-    case PostStatus.SEND_CHATGPT_SUCCESS:
-      variant.color = 'success'
-      break
-    case PostStatus.SEND_CONTENT_SUCCESS:
-      variant.color = 'success'
-      break
-    case PostStatus.SEND_CHATGPT_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-    case PostStatus.SEND_CONTENT_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.SEND_DELETE_POST_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.SEND_UPDATE_POST_SUCCESS:
-      variant.color = 'success'
-      break
-
-    case PostStatus.SEND_UPDATE_POST_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-  }
-  return variant
-}
-
 // const onConfirmDeleteAll = async () => {
 //   try {
 //     await httpService.delete(`/sites/${siteId.value}/keywords/delete-all`)
@@ -368,7 +326,7 @@ const getVariantStatus = (status: string) => {
                     v-bind="props"
                     :color="getVariantStatus(s).color"
                     size="small"
-                    class="me-3"
+                    class="me-1"
                     density="compact"
                     variant="outlined"
                     :icon="getVariantStatus(s).icon"

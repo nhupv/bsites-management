@@ -11,8 +11,6 @@ import {
   BadRequestException, Req
 } from '@nestjs/common';
 import { BotService } from './bot.service';
-import { CreateBotDto } from './dto/create-bot.dto';
-import { UpdateBotDto } from './dto/update-bot.dto';
 import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
 import {SitesService} from "../sites/sites.service";
 import {SiteIdGuard} from "../common/guard/siteId.guard";
@@ -65,6 +63,16 @@ export class BotController {
   async startAllBot(@Req() req) {
     try {
       const { data } = await this.botService.startAllBot(req.site.ip);
+      return data
+    } catch (e) {
+      throw new BadRequestException(e.message || e.toString());
+    }
+  }
+
+  @Get('update-code')
+  async updateCode(@Req() req) {
+    try {
+      const { data } = await this.botService.updateCode(req.site.ip);
       return data
     } catch (e) {
       throw new BadRequestException(e.message || e.toString());

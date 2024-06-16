@@ -63,3 +63,14 @@ export const parsePriorityUrl = (url: string) => {
     }
   }
 }
+
+export const getValueTitle = (text: string) => {
+  const regex = /\{([^}]+)\}/g;
+  const matches = [];
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    matches.push(match);
+  }
+  return matches;
+}

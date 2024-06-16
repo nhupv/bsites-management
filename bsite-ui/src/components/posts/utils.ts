@@ -3,6 +3,7 @@ import { BreadcrumbType } from "@/app/common/types/breadcrumb.type";
 import { FilterType } from "@/components/products/types";
 import { TableHeaderType } from "@/app/common/types/table.types";
 import { OptionType } from "@/app/common/types/option.type";
+import {PostStatus} from "@/components/posts/types";
 
 export const productBreadcrumb: BreadcrumbType[] = [
   {
@@ -96,3 +97,54 @@ export const postsAction: OptionType[] = [
 export const clip = (text: string, length: number) => {
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 };
+
+export const getVariantStatus = (status: string) => {
+  const variant = {
+    color: 'secondary',
+    text: status,
+    icon: 'mdi-check',
+  }
+  switch (status) {
+    case PostStatus.PROCESSING:
+      variant.color = 'success'
+      break
+    case PostStatus.SEND_CHATGPT_SUCCESS:
+      variant.color = 'success'
+      break
+    case PostStatus.SEND_CONTENT_SUCCESS:
+      variant.color = 'success'
+      break
+    case PostStatus.SEND_CHATGPT_FAILED:
+      variant.color = 'error';
+      variant.icon = 'mdi-close'
+      break
+    case PostStatus.SEND_CONTENT_FAILED:
+      variant.color = 'error';
+      variant.icon = 'mdi-close'
+      break
+
+    case PostStatus.PARSE_LINK_FAILED:
+      variant.color = 'error';
+      variant.icon = 'mdi-close'
+      break
+
+    case PostStatus.PARSE_LINK_SUCCESS:
+      variant.color = 'success';
+      break
+
+    case PostStatus.SEND_DELETE_POST_FAILED:
+      variant.color = 'error';
+      variant.icon = 'mdi-close'
+      break
+
+    case PostStatus.SEND_UPDATE_POST_SUCCESS:
+      variant.color = 'success'
+      break
+
+    case PostStatus.SEND_UPDATE_POST_FAILED:
+      variant.color = 'error';
+      variant.icon = 'mdi-close'
+      break
+  }
+  return variant
+}

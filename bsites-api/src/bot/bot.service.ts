@@ -68,6 +68,19 @@ export class BotService {
             .toPromise();
     }
 
+    updateCode(ip: string) {
+        return this.httpService
+            .get(
+                `http://${ip}:5000/update_git`,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                },
+            )
+            .toPromise();
+    }
+
   findOne(id: number) {
     return `This action returns a #${id} bot`;
   }

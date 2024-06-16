@@ -26,7 +26,7 @@ import {SiteIdGuard} from "../common/guard/siteId.guard";
 import {ContentStatus} from "./enum/content-status-enum";
 import {SiteParam} from "../common/decorator/site.decorator";
 import {Site} from "../sites/entities/site.entity";
-import {getTitle} from "../common/helpers/file-helpers";
+import {getTitle, getValueTitle} from "../common/helpers/file-helpers";
 import {ChangeSiteStatusDto} from "../sites/dto/change-site-status.dto";
 import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
 
@@ -58,7 +58,11 @@ export class SiteContentController {
     const list = await this.siteContentService.createBulk(urlList);
 
     list.forEach(item => {
-      this.siteContentService.insertPostJob({post: item, site: req.site})
+      if(getValueTitle(item.question).length > 0) {
+        this.siteContentService.insertPostJobLink({post: item, site: req.site}, 30000)
+      } else {
+        this.siteContentService.insertPostJob({post: item, site: req.site})
+      }
     })
 
     return { message: 'Save posts successfully! Job create post is running.' };
@@ -120,7 +124,11 @@ export class SiteContentController {
       throw new NotFoundException(`Post with id ${id} was not found!`);
     }
 
-    await this.siteContentService.insertPostJob({post, site})
+    if(getValueTitle(post.question).length > 0) {
+      await this.siteContentService.insertPostJobLink({post, site})
+    } else {
+      await this.siteContentService.insertPostJob({post, site})
+    }
 
     return { message: 'Rewrite post job is running.' };
 

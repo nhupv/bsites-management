@@ -1,6 +1,7 @@
 export const POSTS_QUEUE = {
   INSERT_STATS_QUEUE: 'insert-post-queue',
   INSERT_STATS_JOB: 'insert-post-job',
+  INSERT_POST_LINK_JOB: 'insert-post-link-job',
 };
 
 export const POSTS_SEND_TO_SITE_QUEUE = {
