@@ -21,6 +21,19 @@ export default class HttpService {
     }
   }
 
+  async postForm(path: string, payload: any) {
+    try {
+      const {data} = await axios.post(`${path}`, payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
+      return data;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   async patch(path: string, payload: { [key: string]: any }) {
     try {
       const { data } = await axios.patch(`${path}`, payload);

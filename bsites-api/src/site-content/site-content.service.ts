@@ -11,7 +11,7 @@ import {PaginationResultInterface} from "../common/pagination/interface/paginati
 import {Site} from "../sites/entities/site.entity";
 import {InjectQueue} from "@nestjs/bull";
 import {Queue} from "bull";
-import {POSTS_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from "./constants";
+import {POSTS_QUEUE, POSTS_SEND_TO_FB_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from "./constants";
 import {UpdatePostStatusDto} from "./dto/update-post-status.dto";
 import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
 import {HttpService} from "@nestjs/axios";
@@ -23,11 +23,13 @@ export class SiteContentService {
               private queue: Queue,
               private readonly httpService: HttpService,
               @InjectQueue(POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_QUEUE)
-              private queueSend: Queue
+              private queueSend: Queue,
+              @InjectQueue(POSTS_SEND_TO_FB_QUEUE.INSERT_STATS_QUEUE)
+              private queueFB: Queue
              ) {
   }
   create(createSiteContentDto: CreateSiteContentDto) {
-    const newContent = new this.siteContentModel(CreateSiteContentDto)
+    const newContent = new this.siteContentModel(createSiteContentDto)
     return newContent.save()
   }
 
@@ -186,6 +188,10 @@ export class SiteContentService {
     });
   }
 
+  async insertParseLinkJob(data: any) {
+    await this.queue.add(POSTS_QUEUE.INSERT_PARSE_LINK_JOB, data);
+  }
+
   async sendPostToSiteJob(data: any) {
     await this.queueSend.add(POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_JOB, data, {
       priority: 1,
@@ -199,6 +205,14 @@ export class SiteContentService {
 
   async deletePostToSiteJob(data: any) {
     await this.queueSend.add(POSTS_SEND_TO_SITE_QUEUE.INSERT_DELETE_JOB, data);
+  }
+
+  async sendPostToFbGroup(data: any) {
+    await this.queueFB.add(POSTS_SEND_TO_FB_QUEUE.SEND_POST_TO_GROUP, data);
+  }
+
+  async sendCommentToPost(data: any) {
+    await this.queueFB.add(POSTS_SEND_TO_FB_QUEUE.SEND_COMMENT_TO_POST, data);
   }
 
 }

@@ -62,66 +62,66 @@ const authRoutes = [
     component: () => import("@/views/authentication/SignUp.vue"),
     meta: { title: "Sign Up", authRequired: false }
   },
-  {
-    path: `${authPrefix}/pass-reset`,
-    name: "ResetPassword",
-    component: () => import("@/views/authentication/ResetPassword.vue"),
-    meta: { title: "Reset Password", authRequired: false }
-  },
-  {
-    path: `${authPrefix}/pass-change`,
-    name: "ChangePassword",
-    component: () => import("@/views/authentication/CreatePassword.vue"),
-    meta: { title: "Create New Password", authRequired: false }
-  },
-  {
-    path: `${authPrefix}/lockscreen`,
-    name: "LockScreen",
-    component: () => import("@/views/authentication/LockScreen.vue"),
-    meta: { title: "Lock Screen", authRequired: false }
-  },
+  // {
+  //   path: `${authPrefix}/pass-reset`,
+  //   name: "ResetPassword",
+  //   component: () => import("@/views/authentication/ResetPassword.vue"),
+  //   meta: { title: "Reset Password", authRequired: false }
+  // },
+  // {
+  //   path: `${authPrefix}/pass-change`,
+  //   name: "ChangePassword",
+  //   component: () => import("@/views/authentication/CreatePassword.vue"),
+  //   meta: { title: "Create New Password", authRequired: false }
+  // },
+  // {
+  //   path: `${authPrefix}/lockscreen`,
+  //   name: "LockScreen",
+  //   component: () => import("@/views/authentication/LockScreen.vue"),
+  //   meta: { title: "Lock Screen", authRequired: false }
+  // },
   {
     path: `${authPrefix}/logout`,
     name: "LogOut",
     component: () => import("@/views/authentication/Logout.vue"),
     meta: { title: "Log Out", authRequired: false }
   },
-  {
-    path: `${authPrefix}/success-msg`,
-    name: "SuccessMessage",
-    component: () => import("@/views/authentication/SuccessMsg.vue"),
-    meta: { title: "Success Message", authRequired: false }
-  },
-  {
-    path: `${authPrefix}/twostep`,
-    name: "TwoStepVerification",
-    component: () => import("@/views/authentication/TwoStepVerification.vue"),
-    meta: { title: "Two Step Verification", authRequired: false }
-  },
+  // {
+  //   path: `${authPrefix}/success-msg`,
+  //   name: "SuccessMessage",
+  //   component: () => import("@/views/authentication/SuccessMsg.vue"),
+  //   meta: { title: "Success Message", authRequired: false }
+  // },
+  // {
+  //   path: `${authPrefix}/twostep`,
+  //   name: "TwoStepVerification",
+  //   component: () => import("@/views/authentication/TwoStepVerification.vue"),
+  //   meta: { title: "Two Step Verification", authRequired: false }
+  // },
   {
     path: `${authPrefix}/404`,
     name: "Error404",
     component: () => import("@/views/authentication/error/404.vue"),
     meta: { title: "404 Error", authRequired: false }
   },
-  {
-    path: `${authPrefix}/500`,
-    name: "Error500",
-    component: () => import("@/views/authentication/error/500.vue"),
-    meta: { title: "500 Error", authRequired: false }
-  },
-  {
-    path: `${authPrefix}/503`,
-    name: "Error503",
-    component: () => import("@/views/authentication/error/503.vue"),
-    meta: { title: "503 Error", authRequired: false }
-  },
-  {
-    path: `${authPrefix}/offline`,
-    name: "Offline",
-    component: () => import("@/views/authentication/error/Offline.vue"),
-    meta: { title: "Offline Page", authRequired: false }
-  }
+  // {
+  //   path: `${authPrefix}/500`,
+  //   name: "Error500",
+  //   component: () => import("@/views/authentication/error/500.vue"),
+  //   meta: { title: "500 Error", authRequired: false }
+  // },
+  // {
+  //   path: `${authPrefix}/503`,
+  //   name: "Error503",
+  //   component: () => import("@/views/authentication/error/503.vue"),
+  //   meta: { title: "503 Error", authRequired: false }
+  // },
+  // {
+  //   path: `${authPrefix}/offline`,
+  //   name: "Offline",
+  //   component: () => import("@/views/authentication/error/Offline.vue"),
+  //   meta: { title: "Offline Page", authRequired: false }
+  // }
 ].map((data) => {
   return {
     ...data,
@@ -201,6 +201,12 @@ export const routes = [
     component: () => import("@/views/proxy/index.vue"),
     meta: { title: "Proxy", authRequired: true, layout: DefaultLayout },
   },
+  {
+    path: "/fb-page",
+    name: "Fb Page",
+    component: () => import("@/views/fb-page/index.vue"),
+    meta: { title: "FB Page", authRequired: true, layout: DefaultLayout },
+  },
   // {
   //   path: "/proxies",
   //   name: "Proxies",
@@ -220,7 +226,7 @@ export const routes = [
     meta: { title: "Posts", authRequired: true, layout: DefaultLayout },
   },
   ...authRoutes,
-  ...pagesRoutes,
+  // ...pagesRoutes,
   {
     path: "/logout",
     name: "Logout",

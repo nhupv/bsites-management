@@ -9,7 +9,7 @@ import {
   HttpCode,
   Request,
   NotFoundException,
-  UseInterceptors, UseGuards, BadRequestException
+  UseInterceptors, UseGuards, BadRequestException, UploadedFile
 } from '@nestjs/common';
 import { SiteContentService } from './site-content.service';
 import { CreateSiteContentDto } from './dto/create-site-content.dto';
@@ -26,9 +26,12 @@ import {SiteIdGuard} from "../common/guard/siteId.guard";
 import {ContentStatus} from "./enum/content-status-enum";
 import {SiteParam} from "../common/decorator/site.decorator";
 import {Site} from "../sites/entities/site.entity";
-import {getTitle, getValueTitle} from "../common/helpers/file-helpers";
+import {fileFilter, getParseLinkPrompt, getTitle, getValueTitle} from "../common/helpers/file-helpers";
 import {ChangeSiteStatusDto} from "../sites/dto/change-site-status.dto";
 import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
+import {CreatePostFbGroupDto} from "./dto/create-post-fb-group.dto";
+import {FileInterceptor} from "@nestjs/platform-express";
+import {diskStorage} from "multer";
 
 @UseInterceptors(PaginationInterceptor)
 @Controller()
@@ -37,8 +40,15 @@ export class SiteContentController {
   constructor(private readonly siteContentService: SiteContentService) {}
 
   @Post()
-  create(@Body() createSiteContentDto: CreateSiteContentDto) {
-    return this.siteContentService.create(createSiteContentDto);
+  async create(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createSiteContentDto: CreateSiteContentDto) {
+    createSiteContentDto.site = siteId
+    const post = await this.siteContentService.create(createSiteContentDto);
+    if(getParseLinkPrompt(post.question).length > 0) {
+      await this.siteContentService.insertParseLinkJob({post, site: req.site})
+    } else {
+      await this.siteContentService.insertPostJob({post: post, site: req.site})
+    }
+    return post
   }
 
   @HttpCode(201)
@@ -124,13 +134,40 @@ export class SiteContentController {
       throw new NotFoundException(`Post with id ${id} was not found!`);
     }
 
-    if(getValueTitle(post.question).length > 0) {
-      await this.siteContentService.insertPostJobLink({post, site})
+    if(getParseLinkPrompt(post.question).length > 0) {
+      await this.siteContentService.insertParseLinkJob({post, site})
     } else {
       await this.siteContentService.insertPostJob({post, site})
     }
 
     return { message: 'Rewrite post job is running.' };
+
+  }
+
+  @UseInterceptors(
+      FileInterceptor('file', {
+        storage: diskStorage({
+          destination: './uploads',
+        }),
+        fileFilter: fileFilter,
+        limits: { fileSize: 10485760 },
+      }),
+  )
+  @Post(':id/create-post')
+  async sendPostToFbGroup(@UploadedFile() file: Express.Multer.File, @Body() createPostGround: CreatePostFbGroupDto, @SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
+    if(!file) {
+      throw new BadRequestException(`Image is required!`);
+    }
+
+    const post = await this.siteContentService.findOne(id, site);
+
+    if (!post) {
+      throw new NotFoundException(`Post with id ${id} was not found!`);
+    }
+
+    await this.siteContentService.sendPostToFbGroup({payload: {...createPostGround, imagePath: file.path}, post, site})
+
+    return post
 
   }
 

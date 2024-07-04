@@ -38,6 +38,13 @@ export const menuItems: MenuItemType[] = [
     show: true
   },
   {
+    label: "fb-page",
+    icon: "ph-facebook-logo",
+    id: "sidebarPages",
+    link: "/fb-page",
+    show: true
+  },
+  {
     label: "proxy",
     icon: "ph-line-segments",
     id: "sidebarProxy",

@@ -2,10 +2,6 @@ import {Document, Types, SchemaTypes, Schema as SchemaMongoose} from "mongoose";
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 import {Transform} from "class-transformer";
 import { User } from "../../users/entities/user.entity";
-import {UrlSite} from "../../url-site/entities/url-site.entity";
-import {SiteProxy} from "../../site-proxy/entities/site-proxy.entity";
-import {SiteKeyword} from "../../site-keyword/entities/site-keyword.entity";
-
 export type SiteDocument = Site & Document;
 
 @Schema({
@@ -21,7 +17,7 @@ export class Site extends Document {
     _id: string;
 
     @Prop({ type: String, required: true })
-    name: number;
+    name: string;
 
     @Prop({ type: String, required: true })
     siteUrl: string;

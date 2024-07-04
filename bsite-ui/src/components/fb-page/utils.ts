@@ -3,7 +3,6 @@ import { BreadcrumbType } from "@/app/common/types/breadcrumb.type";
 import { FilterType } from "@/components/products/types";
 import { TableHeaderType } from "@/app/common/types/table.types";
 import { OptionType } from "@/app/common/types/option.type";
-import {PostStatus} from "@/components/posts/types";
 
 export const productBreadcrumb: BreadcrumbType[] = [
   {
@@ -11,7 +10,7 @@ export const productBreadcrumb: BreadcrumbType[] = [
     disabled: false,
   },
   {
-    title: "post",
+    title: "fb-page",
     disabled: true,
   },
 ];
@@ -65,18 +64,18 @@ export const productsHeader: TableHeaderType[] = [
   { title: "Action" },
 ];
 
-export const postsAction: OptionType[] = [
+export const pageAction: OptionType[] = [
   // {
   //   title: "View",
   //   icon: "ph-eye",
   //   value: "view",
   //   to: "/ecommerce/product-details",
   // },
-  {
-    title: "Recreate",
-    icon: "ph-plus",
-    value: "recreate",
-  },
+  // {
+  //   title: "Push data",
+  //   icon: "ph-paper-plane-tilt",
+  //   value: "push",
+  // },
   {
     title: "Edit",
     icon: "ph-pencil",
@@ -87,82 +86,4 @@ export const postsAction: OptionType[] = [
     icon: "ph-trash",
     value: "remove",
   },
-  {
-    title: "Rewrite",
-    icon: "ph-article",
-    value: "rewrite",
-  },
 ];
-
-export const clip = (text: string, length: number) => {
-  return text.length > length ? text.substring(0, length - 3) + '...' : text;
-};
-
-export const getVariantStatus = (status: string) => {
-  const variant = {
-    color: 'secondary',
-    text: status,
-    icon: 'mdi-check',
-  }
-  switch (status) {
-    case PostStatus.PROCESSING:
-      variant.color = 'success'
-      break
-    case PostStatus.SEND_CHATGPT_SUCCESS:
-      variant.color = 'success'
-      break
-    case PostStatus.SEND_CONTENT_SUCCESS:
-      variant.color = 'success'
-      break
-    case PostStatus.SEND_CHATGPT_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-    case PostStatus.SEND_CONTENT_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.PARSE_LINK_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.PARSE_LINK_SUCCESS:
-      variant.color = 'success';
-      break
-
-    case PostStatus.SEND_DELETE_POST_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.SEND_UPDATE_POST_SUCCESS:
-      variant.color = 'success'
-      break
-
-    case PostStatus.SEND_UPDATE_POST_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.SEND_POST_TO_GROUP_SUCCESS:
-      variant.color = 'success'
-      break
-
-    case PostStatus.SEND_POST_TO_GROUP_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-
-    case PostStatus.SEND_COMMENT_TO_POST_SUCCESS:
-      variant.color = 'success'
-      break
-
-    case PostStatus.SEND_COMMENT_TO_POST_FAILED:
-      variant.color = 'error';
-      variant.icon = 'mdi-close'
-      break
-  }
-  return variant
-}

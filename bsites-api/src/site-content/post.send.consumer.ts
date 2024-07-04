@@ -8,6 +8,7 @@ import {HttpService} from "@nestjs/axios";
 import {ContentStatus} from "./enum/content-status-enum";
 import {Site} from "../sites/entities/site.entity";
 import {SiteContent} from "./entities/site-content.entity";
+import {FbPageService} from "../fb-page/fb-page.service";
 
 @Processor({
   name: POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_QUEUE,
@@ -30,7 +31,7 @@ export class PostSendConsumer {
 
   @OnQueueFailed()
   async onFailed(job: Job<any>, error) {
-    this.logger.error(`Job failed with post ${job.data.post._id}`);
+    this.logger.error(`Job failed with post ${job.data.post?._id}`);
     this.logger.error(error.message  || error.toString())
     await this.telegramService.sendLogToTelegram(`Send post to ${job.data.site.siteUrl} failed with title: ${job.data.post.title} | Error: ${error.message || error.toString()}`)
   }

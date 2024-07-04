@@ -3,11 +3,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export const fileFilter = (req, file, cb) => {
-  const whitelist = ['text/csv'];
-
+  const whitelist = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
   if (!whitelist.includes(file.mimetype)) {
     cb(null, false);
-    return cb(new BadRequestException('Only accept csv files'));
+    return cb(new BadRequestException('Only accept image file'));
   }
 
   const fileSize = parseInt(req.headers['content-length']);
@@ -66,6 +65,17 @@ export const parsePriorityUrl = (url: string) => {
 
 export const getValueTitle = (text: string) => {
   const regex = /\{([^}]+)\}/g;
+  const matches = [];
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    matches.push(match);
+  }
+  return matches;
+}
+
+export const getParseLinkPrompt = (text: string) => {
+  const regex = /https?:\/\/[^\s/$.?#].[^\s]*/g;
   const matches = [];
   let match;
 

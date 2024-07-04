@@ -3,10 +3,11 @@ import { computed } from "vue";
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { ImageUploaderType } from "@/app/common/types/imageUploader";
+import {un} from "@/assets/images/flags/utils";
 
 const emit = defineEmits(["update:modelValue"]);
 
-const uploaderItem = ref<ImageUploaderType[]>([]);
+const uploaderItem = ref<File[]>([]);
 const prop = defineProps({
   modelValue: {
     type: Array,
@@ -24,38 +25,29 @@ const prop = defineProps({
 
 const files = computed({
   get() {
-    const existingFiles: ImageUploaderType[] = prop.modelValue.map(
-      (data: any, index) => {
-        return {
-          ...data,
-          src: data && data.src ? data.src : data,
-          name: (data && data.name) || `uploaded-img-` + index + ".png",
-          size: (data && data.size) || 1024,
-          id: (data && data.id) || uuidv4(),
-        };
-      }
-    );
+    const existingFiles: any[] = prop.modelValue
     uploaderItem.value = existingFiles;
     return existingFiles;
   },
   set(value: any) {
     const data = value.map((file: any) => {
-      if (!file.id) {
-        return {
-          src: URL.createObjectURL(file),
-          name: file.name,
-          size: file.size,
-          id: uuidv4(),
-        };
-      }
+      // if (!file.id) {
+      //   return {
+      //     src: URL.createObjectURL(file),
+      //     name: file.name,
+      //     size: file.size,
+      //     id: uuidv4(),
+      //   };
+      // }
 
       return file;
     });
-    if (prop.multiple) {
-      uploaderItem.value = [...uploaderItem.value, ...data];
-    } else {
-      uploaderItem.value = data;
-    }
+    // if (prop.multiple) {
+    //   uploaderItem.value = [...uploaderItem.value, ...data];
+    // } else {
+    // }
+    uploaderItem.value = data;
+
     emit(
       "update:modelValue",
       uploaderItem.value.map((item: any) => {
@@ -64,6 +56,17 @@ const files = computed({
     );
   },
 });
+const formRules = {
+  requiredRule: [
+    (v: any) => {
+      return !!v && v.length > 0 || 'Value is required.'
+    }
+  ]
+}
+
+const createURLFile = (file: any) => {
+  return URL.createObjectURL(file)
+}
 
 const onRemove = (item: any) => {
   uploaderItem.value = uploaderItem.value.filter(
@@ -77,26 +80,16 @@ const onRemove = (item: any) => {
 };
 </script>
 <template>
-  <div class="position-relative">
     <v-file-input
       v-model="files"
-      :multiple="multiple"
-      variant="plain"
+      variant="outlined"
       :clearable="false"
       prepend-icon=""
-      class="file-uploader"
+      v-bind="$attrs"
+      :rules="formRules.requiredRule"
+      prepend-inner-icon="mdi-image"
       :accept="'.png, .jpeg'"
     />
-
-    <div class="file-uploader-content">
-      <div class="text-center">
-        <i class="ph-cloud-arrow-down ph-4x" />
-      </div>
-      <div class="text-subtitle-1 font-weight-bold text-center">
-        {{ text }}
-      </div>
-    </div>
-  </div>
   <div>
     <v-card
       v-for="(file, index) in uploaderItem"
@@ -107,7 +100,7 @@ const onRemove = (item: any) => {
       <v-card-text class="d-flex align-center justify-space-between">
         <div class="d-flex">
           <v-avatar rounded="lg" size="large" class="pa-2 mx-2" color="light">
-            <v-img :src="file.src" />
+            <v-img :src="createURLFile(file)" />
           </v-avatar>
           <div class="d-flex flex-column">
             <span class="font-weight-bold">

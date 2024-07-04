@@ -3,6 +3,10 @@ import { Types, Schema } from "mongoose"
 import {Type} from "class-transformer";
 
 export class CreateSiteContentDto {
+
+    @IsNotEmpty()
+    title: string;
+
     @IsNotEmpty()
     question: string;
 

@@ -6,4 +6,5 @@ export class UpdatePostStatusDto {
     content?: string;
     post_id?: number;
     link?: string;
+    fb_status?: string[];
 }

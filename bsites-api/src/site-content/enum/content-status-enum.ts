@@ -3,6 +3,7 @@ export enum ContentStatus {
 
     GET_LINK_SUCCESS = "parse-promt-success",
     GET_LINK_FAILED = "parse-promt-failed",
+    UPLOAD_IMAGE_FAILED = "upload-image-failed",
 
     SEND_CHATGPT_SUCCESS = "send-chatgpt-success",
     SEND_CHATGPT_FAILED = "send-chatgpt-failed",
@@ -15,4 +16,10 @@ export enum ContentStatus {
 
     SEND_DELETE_POST_SUCCESS = "delete-post-success",
     SEND_DELETE_POST_FAILED = "delete-post-failed",
+
+    SEND_POST_TO_GROUP_SUCCESS = "send-post-to-group-success",
+    SEND_POST_TO_GROUP_FAILED = "send-post-to-group-failed",
+
+    SEND_COMMENT_TO_POST_SUCCESS = "send-comment-to-post-success",
+    SEND_COMMENT_TO_POST_FAILED = "send-comment-to-post-failed",
 }

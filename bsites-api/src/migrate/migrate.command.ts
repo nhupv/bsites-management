@@ -52,7 +52,7 @@ export class MigrateCommand {
       const sites = await this.sitesService.findAllWithoutPagination()
 
       if(sites.length === 0 ) {
-        console.log('No sites in db.');
+        console.log('No sites is active.');
         return
       }
 

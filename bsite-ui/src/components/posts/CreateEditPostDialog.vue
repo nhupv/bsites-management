@@ -67,6 +67,14 @@ const onCreateUpdate = async () => {
       content: content.value,
       question: question.value,
     });
+  } else {
+    emit("onCreate", {
+      title: title.value,
+      category: category.value?.name,
+      category_id: category.value?.id,
+      content: content.value,
+      question: question.value,
+    });
   }
 };
 
@@ -89,9 +97,9 @@ const title = ref(prop.itemDetail?.title || "");
 const question = ref(prop.itemDetail?.question || "");
 </script>
 <template>
-  <v-dialog v-model="dialogValue" width="900" scrollable>
+  <v-dialog v-model="dialogValue" width="800" scrollable>
     <v-form ref="refForm">
-      <Card :title="readonly ? 'View Content' : 'Update Post'">
+      <Card :title="readonly ? 'View Content' : isCreate ? 'Add Post' : 'Update Post'">
         <template #title-action>
           <v-btn
             variant="plain"
@@ -130,20 +138,20 @@ const question = ref(prop.itemDetail?.question || "");
             </v-col>
           </v-row>
           <div v-if="!readonly">
-            <h6 class="mb-2">Question</h6>
+            <h6 class="mb-2">Prompt</h6>
             <v-text-field
                 variant="solo"
                 class="text-field-component"
                 density="compact"
                 v-model="question"
                 :rules="formRules.requiredRule"
-                placeholder="Enter title here"
+                placeholder="Enter prompt here"
             />
           </div>
           <h6 class="mb-2">Content</h6>
           <v-textarea
               variant="solo"
-              :rows="30"
+              :rows="10"
               class="text-field-component"
               density="compact"
               :readonly="readonly"

@@ -20,7 +20,7 @@ import { MailModule } from './mail/mail.module';
 import { SitesModule } from './sites/sites.module';
 import { UrlSiteModule } from './url-site/url-site.module';
 import {RouterModule} from "@nestjs/core";
-import {SiteProxyModule} from "./site-proxy/site-proxy.module";
+// import {SiteProxyModule} from "./site-proxy/site-proxy.module";
 import {SiteKeywordModule} from "./site-keyword/site-keyword.module";
 import {SiteKeywordController} from "./site-keyword/site-keyword.controller";
 import {UrlSiteController} from "./url-site/url-site.controller";
@@ -29,6 +29,7 @@ import { BotModule } from './bot/bot.module';
 import { ProxyModule } from './proxy/proxy.module';
 import {JobsModule} from "./jobs/jobs.module";
 import { SiteContentModule } from './site-content/site-content.module';
+import { FbPageModule } from './fb-page/fb-page.module';
 
 @Global()
 @Module({
@@ -76,7 +77,7 @@ import { SiteContentModule } from './site-content/site-content.module';
     MigrateModule,
     SitesModule,
     UrlSiteModule,
-    SiteProxyModule,
+    // SiteProxyModule,
     SiteKeywordModule,
     RouterModule.register([
       {
@@ -86,10 +87,10 @@ import { SiteContentModule } from './site-content/site-content.module';
             path: 'urls',
             module: UrlSiteModule,
           },
-          {
-            path: 'proxies',
-            module: SiteProxyModule,
-          },
+          // {
+          //   path: 'proxies',
+          //   module: SiteProxyModule,
+          // },
           {
             path: 'keywords',
             module: SiteKeywordModule,
@@ -112,6 +113,7 @@ import { SiteContentModule } from './site-content/site-content.module';
     BotModule,
     ProxyModule,
     SiteContentModule,
+    FbPageModule,
     // MailModule,
   ],
   controllers: [AppController],

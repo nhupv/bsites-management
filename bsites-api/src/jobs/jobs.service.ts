@@ -69,8 +69,8 @@ export class JobsService {
     const sites = await this.siteService.findAllWithoutPagination()
 
     if(sites.length === 0){
-      this.logger.error('No sites in db.');
-      await this.telegramService.sendLogToTelegram('No sites in db.')
+      this.logger.error('No sites is active.');
+      await this.telegramService.sendLogToTelegram('No sites is active.')
       return
     }
 

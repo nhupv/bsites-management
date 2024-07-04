@@ -24,6 +24,9 @@ export class SiteContent extends Document {
     @Prop({ type: Array, required: false })
     status: string[];
 
+    @Prop({ type: Array, required: false })
+    fb_status: string[];
+
     @Prop({ type: Boolean, default: true})
     priority: boolean;
 

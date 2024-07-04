@@ -13,6 +13,7 @@ import {KeywordType} from "@/components/keywords/types";
 import {PostReq, PostStatus, PostType} from "@/components/posts/types";
 import CreateMultiplePostDialog from "@/components/posts/CreateMultiplePostDialog.vue";
 import CreateEditPostDialog from "@/components/posts/CreateEditPostDialog.vue";
+import SendPostToFBDialog from "@/components/posts/SendPostToFBDialog.vue";
 
 // const prop = defineProps({
 //   filters: {
@@ -34,8 +35,8 @@ const headers = ref([
     width: '15%',
   },
   { title: 'Category', key: 'category', align: 'start', },
-  { title: 'Content', key: 'content', align: 'start', width: '30%' },
-  { title: 'Link', key: 'link', align: 'start', width: '10%' },
+  { title: 'Content', key: 'content', align: 'start', width: '20%' },
+  { title: 'Link', key: 'link', align: 'start', width: '15%' },
   { title: 'Priority', key: 'priority', align: 'start' },
   { title: 'Status', key: 'status', align: 'start', sortable: false, width: '15%' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
@@ -52,7 +53,7 @@ const readOnly = ref(false);
 const loadingPriority = ref(false)
 
 const confirmationDialog = ref(false);
-// const confirmationRemoveAllDialog = ref(false);
+const postFbDialog = ref(false);
 const confirmationContent = ref<string>('');
 const createEditDialog = ref(false);
 const createMultiDialog = ref(false);
@@ -115,6 +116,12 @@ watch(confirmationDialog, (dialog: boolean) => {
   }
 });
 
+watch(postFbDialog, (dialog: boolean) => {
+  if (!dialog) {
+    postDetail.value = null;
+  }
+});
+
 const onPushData = async () => {
   loading.value = true;
   try {
@@ -140,15 +147,11 @@ const onUpdate = async (updatedVal: PostType) => {
 };
 
 
-const onCreate = async (newVal: { titles: string, category?: any}) => {
-  const arrayTitle = newVal.titles.replace(/\r\n/g,"\n").split("\n")
-  const filterTitle = arrayTitle.filter((title: string) => !!title.trim())
+const onCreate = async (post: PostType) => {
   try {
-    const data = await httpService.post(`/sites/${siteId.value}/posts/create-bulk`,
-        {titles: filterTitle, category: newVal.category?.name, category_id: newVal.category?.id}
-    )
-    $toast.success(data.message)
-    createMultiDialog.value = false;
+    const data = await httpService.post(`/sites/${siteId.value}/posts`, post)
+    $toast.success('Post save successfully!')
+    createEditDialog.value = false;
     await loadItems(tableOptions.value)
   } catch (e) {
     handleError(e)
@@ -194,13 +197,28 @@ const onRecreate = async (id: string) => {
   }
 };
 
-const onAddUrlClick = () => {
+const onAddMutiClick = () => {
   postReq.value = {
     titles: "",
     category: null,
   };
   createMultiDialog.value = true;
 };
+
+const onAddClick = () => {
+  postDetail.value = {
+    title: "",
+    question: "",
+    category: "",
+    content: ""
+  };
+  createEditDialog.value = true;
+};
+
+const sendPostToGroup = (value: any) => {
+  postDetail.value = value
+  postFbDialog.value = true
+}
 
 const onConfirmDelete = async () => {
   try {
@@ -289,7 +307,7 @@ const deleteBoth = async () => {
             color="primary"
             elevation="0"
             class="my-2"
-            @click="onAddUrlClick"
+            @click="onAddClick"
         >
           <i class="ph-plus-circle mx-1" /> Add Post
         </v-btn>
@@ -318,8 +336,8 @@ const deleteBoth = async () => {
               @update:modelValue="(value) => updatePostPriority(value, item)"
           ></v-switch>
         </template>
-        <template v-slot:item.status="{item}: any">
-          <template v-for="s in item.status" :key="s">
+        <template v-slot:item.fb_status="{item}: any">
+          <template v-for="s in item.fb_status" :key="s">
             <v-tooltip height="30" contained location="top" :text="getVariantStatus(s).text">
               <template v-slot:activator="{ props }">
                 <v-btn
@@ -331,25 +349,52 @@ const deleteBoth = async () => {
                     variant="outlined"
                     :icon="getVariantStatus(s).icon"
                     label
-                    />
-                    </template>
+                />
+              </template>
             </v-tooltip>
           </template>
+        </template>
+        <template v-slot:item.status="{item}: any">
+          <div class="d-flex">
+            <template v-for="s in item.status" :key="s">
+              <v-tooltip height="30" contained location="top" :text="getVariantStatus(s).text">
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                      v-bind="props"
+                      :color="getVariantStatus(s).color"
+                      size="small"
+                      class="me-1"
+                      density="compact"
+                      variant="outlined"
+                      :icon="getVariantStatus(s).icon"
+                      label
+                  />
+                </template>
+              </v-tooltip>
+            </template>
+          </div>
         </template>
         <template v-slot:item.createdAt="{item} : any">
           <span class="text-muted">{{ format(item.createdAt, 'MM-dd-yyyy HH:mm')}}</span>
         </template>
         <template v-slot:item.content="{item} : any">
-          {{ clip(item.content, 150) }}
+          <div class="text-break">
+            {{ clip(item.content, 150) }}
+          </div>
         </template>
         <template v-slot:item.title="{item} : any">
           <span class="font-weight-bold">{{item.title}}</span>
         </template>
         <template v-slot:item.link="{item} : any">
-          <a class="text-primary" :href="item.link" target="_blank">{{item.link}}</a>
+          <a class="text-primary text-break" :href="item.link" target="_blank">{{item.link}}</a>
         </template>
-        <template v-slot:item.action="{item}">
+        <template v-slot:item.action="{item}: any">
           <div class="d-flex justify-center align-center">
+            <v-tooltip text="Send post to fb page" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" v-if="item.post_id" @click="sendPostToGroup(item)" size="small" variant="plain" icon><v-icon>mdi-facebook</v-icon></v-btn>
+              </template>
+            </v-tooltip>
             <v-btn @click="showPost(item)" size="small" variant="plain" icon><v-icon>mdi-eye</v-icon></v-btn>
             <ListMenuWithIcon :menu-items="postsAction" @onSelect="onSelect($event, item)" />
           </div>
@@ -380,13 +425,23 @@ const deleteBoth = async () => {
     :itemDetail="postDetail"
     :readonly="readOnly"
     @onUpdate="onUpdate"
+    @onCreate="onCreate"
   />
-  <CreateMultiplePostDialog
-      v-if="postReq"
-      v-model="createMultiDialog"
-      :itemDetail="postReq"
+
+  <SendPostToFBDialog
+      v-if="postDetail"
+      v-model="postFbDialog"
+      :itemDetail="postDetail"
+      :readonly="readOnly"
+      @onUpdate="onUpdate"
       @onCreate="onCreate"
   />
+<!--  <CreateMultiplePostDialog-->
+<!--      v-if="postReq"-->
+<!--      v-model="createMultiDialog"-->
+<!--      :itemDetail="postReq"-->
+<!--      @onCreate="onCreate"-->
+<!--  />-->
 
   <RemoveItemConfirmationDialog
     v-if="confirmationContent"
