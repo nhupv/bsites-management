@@ -69,7 +69,7 @@ import { FbPageModule } from './fb-page/fb-page.module';
     ConsoleModule,
     TelegramBotModule,
     DashboardModule,
-    JobsModule,
+    // JobsModule,
     // CsvModule,
     MulterModule.register({
       dest: './uploads',
