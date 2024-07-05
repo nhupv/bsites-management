@@ -88,7 +88,7 @@ const onRemove = (item: any) => {
       v-bind="$attrs"
       :rules="formRules.requiredRule"
       prepend-inner-icon="mdi-image"
-      :accept="'.png, .jpeg'"
+      accept="image/*"
     />
   <div>
     <v-card

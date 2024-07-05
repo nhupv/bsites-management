@@ -46,7 +46,7 @@ export class PostConsumer {
     concurrency: +process.env.JOB_CONCURRENCY,
   })
   async insertStats(job: Job<any>) {
-    const { post, site, direct } = job.data
+    const { post, postFb, site, direct } = job.data
     try {
       const postUpdateStatus = await this.siteContentService.updateStatus(post._id, {
         status: [ContentStatus.PROCESSING]
@@ -55,7 +55,7 @@ export class PostConsumer {
       if(post.post_id) {
         await this.siteContentService.updatePostToSiteJob({post: postUpdated, site})
       } else {
-        await this.siteContentService.sendPostToSiteJob({post: postUpdated, site})
+        await this.siteContentService.sendPostToSiteJob({post: postUpdated, postFb, site})
       }
     } catch (e) {
       throw new Error(e);
@@ -171,7 +171,7 @@ export class PostConsumer {
     concurrency: +process.env.JOB_CONCURRENCY,
   })
   async parseLinkBeforeSend(job: Job<any>) {
-    const { post, site } = job.data
+    const { post, postFb, site } = job.data
     let postUpdate = { ...post }
     postUpdate = await this.siteContentService.updateStatus(post._id, {
       status: [ContentStatus.PROCESSING]
@@ -262,7 +262,7 @@ export class PostConsumer {
     if(postContent.post_id) {
       await this.siteContentService.updatePostToSiteJob({post: postContent, site})
     } else {
-      await this.siteContentService.sendPostToSiteJob({post: postContent, site})
+      await this.siteContentService.sendPostToSiteJob({post: postContent, postFb, site})
     }
   }
 

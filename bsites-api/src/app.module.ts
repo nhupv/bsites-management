@@ -30,6 +30,7 @@ import { ProxyModule } from './proxy/proxy.module';
 import {JobsModule} from "./jobs/jobs.module";
 import { SiteContentModule } from './site-content/site-content.module';
 import { FbPageModule } from './fb-page/fb-page.module';
+import {SiteContentController} from "./site-content/site-content.controller";
 
 @Global()
 @Module({
@@ -83,30 +84,30 @@ import { FbPageModule } from './fb-page/fb-page.module';
       {
         path: 'sites/:siteId',
         children: [
-          {
-            path: 'urls',
-            module: UrlSiteModule,
-          },
+          // {
+          //   path: 'urls',
+          //   module: UrlSiteModule,
+          // },
           // {
           //   path: 'proxies',
           //   module: SiteProxyModule,
           // },
-          {
-            path: 'keywords',
-            module: SiteKeywordModule,
-          },
-          {
-            path: 'bots',
-            module: BotModule,
-          },
+          // {
+          //   path: 'keywords',
+          //   module: SiteKeywordModule,
+          // },
+          // {
+          //   path: 'bots',
+          //   module: BotModule,
+          // },
           {
             path: 'posts',
             module: SiteContentModule,
           },
-          {
-            path: 'dashboard',
-            module: DashboardModule,
-          },
+          // {
+          //   path: 'dashboard',
+          //   module: DashboardModule,
+          // },
         ]
       },
     ]),
@@ -129,6 +130,6 @@ import { FbPageModule } from './fb-page/fb-page.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-      consumer.apply(LoggerMiddleware).forRoutes(SiteKeywordController, SiteProxyController, UrlSiteController);
+      consumer.apply(LoggerMiddleware).forRoutes(SiteContentController);
   }
 }

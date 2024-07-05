@@ -67,7 +67,7 @@ const onCreateUpdate = async () => {
   try {
     const data = await httpService.postForm(`/sites/${siteId.value}/posts/${prop.itemDetail?._id}/create-post`, form)
     dialogValue.value = false
-    $toast.success('Create a job send post to group successfully!')
+    $toast.success('Create a job send post to fb page successfully!')
   } catch (e) {
     handleError(e)
   }
@@ -98,7 +98,7 @@ const image = ref()
 <template>
   <v-dialog v-model="dialogValue" width="800" scrollable>
     <v-form ref="refForm">
-      <Card :title="'Send Post to Fb Group'">
+      <Card :title="'Send Post to Fb Page'">
         <template #title-action>
           <v-btn
             variant="plain"
@@ -139,6 +139,7 @@ const image = ref()
                   :min-date="new Date()"
                   :teleport="true"
                   auto-apply
+                  time-picker-inline
                   :format="(date: Date) => date && format(date, 'LLLL dd, yyyy HH:mm')"
                   :enable-time-picker="true"
               />

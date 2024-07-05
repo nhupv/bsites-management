@@ -41,7 +41,9 @@ export class PostSendConsumer {
     concurrency: +process.env.JOB_CONCURRENCY,
   })
   async sendPost(job: Job<any>) {
-    const { post, site, direct } = job.data
+    const { post, postFb, site, direct } = job.data
+    console.log(postFb)
+
     let postCreate = {...post}
     if(direct) {
       postCreate = await this.siteContentService.updateStatus(postCreate._id, {
@@ -63,7 +65,13 @@ export class PostSendConsumer {
       throw new Error(`Post is existed with id ${postCreate.post_id}`);
     }
     try {
-      await this.sendPostToSite(postCreate, site)
+      const data = await this.sendPostToSite(postCreate, site)
+      if(postFb.is_post_to_page) {
+        if(postFb.comment) {
+          postFb.comment = postFb.comment.replace("{link}", data.link)
+        }
+        await this.siteContentService.sendPostToFbGroup({payload: postFb, post: postCreate, site})
+      }
     } catch (e) {
       throw new Error(e);
     }
@@ -92,6 +100,8 @@ export class PostSendConsumer {
         post_id: data.id
       }
       await this.siteContentService.updateStatus(post._id, updateContentStatus)
+
+      return data
 
     } catch (e) {
       const updateContentStatus = {
@@ -128,7 +138,7 @@ export class PostSendConsumer {
       throw new Error('Content is empty!');
     }
     try {
-      await this.updatePostToSite(postUpdate, site)
+      const data = await this.updatePostToSite(postUpdate, site)
     } catch (e) {
       throw new Error(e);
     }
@@ -157,6 +167,7 @@ export class PostSendConsumer {
         post_id: data.id
       }
       await this.siteContentService.updateStatus(post._id, updateContentStatus)
+      return data
 
     } catch (e) {
       const updateContentStatus = {

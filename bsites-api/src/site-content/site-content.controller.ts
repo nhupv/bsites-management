@@ -39,14 +39,29 @@ import {diskStorage} from "multer";
 export class SiteContentController {
   constructor(private readonly siteContentService: SiteContentService) {}
 
+
+  @UseInterceptors(
+      FileInterceptor('file', {
+        storage: diskStorage({
+          destination: './uploads',
+        }),
+        fileFilter: fileFilter,
+        limits: { fileSize: 10485760 },
+      }),
+  )
   @Post()
-  async create(@Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createSiteContentDto: CreateSiteContentDto) {
+  async create(@UploadedFile() file: Express.Multer.File, @Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createSiteContentDto: CreateSiteContentDto) {
+
+    if(createSiteContentDto.is_post_to_page && !file) {
+      throw new BadRequestException('Image is required!');
+    }
+
     createSiteContentDto.site = siteId
     const post = await this.siteContentService.create(createSiteContentDto);
     if(getParseLinkPrompt(post.question).length > 0) {
-      await this.siteContentService.insertParseLinkJob({post, site: req.site})
+      await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, imagePath: file?.path}, site: req.site})
     } else {
-      await this.siteContentService.insertPostJob({post: post, site: req.site})
+      await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, imagePath: file?.path}, site: req.site})
     }
     return post
   }
@@ -119,7 +134,7 @@ export class SiteContentController {
       throw new NotFoundException(`Post with id ${id} was not found!`);
     }
 
-    await this.siteContentService.sendPostToSiteJob({post, site, direct: true})
+    await this.siteContentService.sendPostToSiteJob({post, postFb: { is_post_to_page: false }, site, direct: true})
 
     return { message: 'Recreate post job is running.' };
 
@@ -135,9 +150,9 @@ export class SiteContentController {
     }
 
     if(getParseLinkPrompt(post.question).length > 0) {
-      await this.siteContentService.insertParseLinkJob({post, site})
+      await this.siteContentService.insertParseLinkJob({post, postFb: {is_post_to_page: false}, site})
     } else {
-      await this.siteContentService.insertPostJob({post, site})
+      await this.siteContentService.insertPostJob({post,postFb: {is_post_to_page: false}, site})
     }
 
     return { message: 'Rewrite post job is running.' };

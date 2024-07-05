@@ -7,7 +7,7 @@ import ListMenuWithIcon from "@/app/common/components/ListMenuWithIcon.vue";
 import {clip, getVariantStatus, postsAction} from "@/components/posts/utils";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
-import { format } from "date-fns";
+import {format, getUnixTime} from "date-fns";
 import {useSite} from "@/store/site";
 import {KeywordType} from "@/components/keywords/types";
 import {PostReq, PostStatus, PostType} from "@/components/posts/types";
@@ -37,8 +37,9 @@ const headers = ref([
   { title: 'Category', key: 'category', align: 'start', },
   { title: 'Content', key: 'content', align: 'start', width: '20%' },
   { title: 'Link', key: 'link', align: 'start', width: '15%' },
-  { title: 'Priority', key: 'priority', align: 'start' },
+  // { title: 'Priority', key: 'priority', align: 'start' },
   { title: 'Status', key: 'status', align: 'start', sortable: false, width: '15%' },
+  { title: 'Fb Status', key: 'fb_status', align: 'start', sortable: false, width: '15%' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
@@ -147,9 +148,33 @@ const onUpdate = async (updatedVal: PostType) => {
 };
 
 
-const onCreate = async (post: PostType) => {
+const onCreate = async (post: any) => {
   try {
-    const data = await httpService.post(`/sites/${siteId.value}/posts`, post)
+
+    console.log(post.isPostToPage)
+    const form = new FormData()
+    form.append('title', post.title)
+    form.append('question', post.question)
+    if(post.category_id) {
+      form.append('category_id', post.category_id)
+    }
+    if(post.category_id) {
+      form.append('category', post.category)
+    }
+    form.append('is_post_to_page', post.isPostToPage)
+
+    if(post.isPostToPage) {
+      form.append('caption', post.caption)
+      if(post.comment) {
+        form.append('comment', post.comment)
+      }
+      form.append('file', post.image[0])
+      form.append('page_id', post.page_id)
+      if(post.schedule_time) {
+        form.append('schedule_time', getUnixTime(post.schedule_time).toString())
+      }
+    }
+    const data = await httpService.postForm(`/sites/${siteId.value}/posts`, form)
     $toast.success('Post save successfully!')
     createEditDialog.value = false;
     await loadItems(tableOptions.value)
@@ -292,17 +317,17 @@ const deleteBoth = async () => {
             </v-list-item>
           </v-list>
         </v-menu>
-        <v-btn
-            :disabled="totalItems === 0"
-            :loading="loading"
-            color="primary"
-            variant="outlined"
-            elevation="0"
-            class="my-2 mr-4"
-            @click="onPushData"
-        >
-          <i class="ph-paper-plane-tilt mx-1" /> Push data
-        </v-btn>
+<!--        <v-btn-->
+<!--            :disabled="totalItems === 0"-->
+<!--            :loading="loading"-->
+<!--            color="primary"-->
+<!--            variant="outlined"-->
+<!--            elevation="0"-->
+<!--            class="my-2 mr-4"-->
+<!--            @click="onPushData"-->
+<!--        >-->
+<!--          <i class="ph-paper-plane-tilt mx-1" /> Push data-->
+<!--        </v-btn>-->
         <v-btn
             color="primary"
             elevation="0"

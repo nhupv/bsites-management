@@ -1,6 +1,7 @@
-import {Allow, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
+import {Allow, IsBoolean, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString} from "class-validator";
 import { Types, Schema } from "mongoose"
-import {Type} from "class-transformer";
+import {Transform, Type} from "class-transformer";
+import {CreatePostFbGroupDto} from "./create-post-fb-group.dto";
 
 export class CreateSiteContentDto {
 
@@ -13,7 +14,7 @@ export class CreateSiteContentDto {
     @IsOptional()
     status?: string[];
 
-    @IsString()
+    @IsOptional()
     content?: string;
 
     @IsString()
@@ -22,7 +23,27 @@ export class CreateSiteContentDto {
 
     @IsNumber()
     @IsOptional()
+    @Transform(({ value }) => {
+        return Number(value);
+    })
     category_id?: number;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    @Transform(({value} ) => value === 'true')
+    is_post_to_page?: boolean;
+
+    @IsOptional()
+    page_id?: number;
+
+    @IsOptional()
+    caption?: string;
+
+    @IsOptional()
+    comment?: string;
+
+    @IsOptional()
+    schedule_time?: number;
 
     @IsOptional()
     @IsMongoId({ message: 'site id is not a mongodb id'})

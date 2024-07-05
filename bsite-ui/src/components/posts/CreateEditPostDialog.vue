@@ -6,10 +6,14 @@ import {httpService} from "@/app/http/httpServiceProvider";
 import {handleError} from "@/app/helpers";
 import {useSite} from "@/store/site";
 import {read} from "@amcharts/amcharts5/.internal/bundled/xlsx";
+import {format} from "date-fns";
+import ImageUploader from "@/app/common/components/ImageUploader.vue";
 
 const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
 
 const refForm = ref<any>()
+const pageList = ref([])
+
 const formRules = {
   requiredRule: [
     (v: any) => {
@@ -72,8 +76,13 @@ const onCreateUpdate = async () => {
       title: title.value,
       category: category.value?.name,
       category_id: category.value?.id,
-      content: content.value,
       question: question.value,
+      schedule_time: schedule_time.value,
+      caption: caption.value,
+      comment: comment.value,
+      isPostToPage: isPostToPage.value,
+      image: image.value,
+      page_id: page.value,
     });
   }
 };
@@ -87,7 +96,17 @@ const getCategory = async () => {
   }
 }
 
+const getPageList = async () => {
+  try {
+    const data = await httpService.get('/fb-page/all')
+    pageList.value = data
+  } catch (e) {
+    handleError(e)
+  }
+}
+
 onMounted(() => {
+  getPageList()
   getCategory()
 })
 
@@ -95,22 +114,36 @@ const content = ref(prop.itemDetail?.content || "");
 const category = ref(prop.itemDetail?.categoryObj);
 const title = ref(prop.itemDetail?.title || "");
 const question = ref(prop.itemDetail?.question || "");
+const caption = ref( "");
+const page = ref();
+const comment = ref(`See more: {link}`);
+const schedule_time = ref();
+const image = ref();
+const isPostToPage = ref(true)
 </script>
 <template>
   <v-dialog v-model="dialogValue" width="800" scrollable>
     <v-form ref="refForm">
       <Card :title="readonly ? 'View Content' : isCreate ? 'Add Post' : 'Update Post'">
         <template #title-action>
-          <v-btn
-            variant="plain"
-            icon="ph-x"
-            size="small"
-            @click="dialogValue = false"
-          />
+          <div class="d-flex align-center ga-2">
+            <v-checkbox
+                v-model="isPostToPage"
+                hide-details
+                label="Post to fb group"
+                color="primary"
+            ></v-checkbox>
+            <v-btn
+                variant="plain"
+                icon="ph-x"
+                size="small"
+                @click="dialogValue = false"
+            />
+          </div>
         </template>
         <v-card-text data-simplebar>
           <v-row v-if="!readonly">
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="8">
               <h6 class="mb-2">Title</h6>
               <v-text-field
                   variant="solo"
@@ -121,7 +154,7 @@ const question = ref(prop.itemDetail?.question || "");
                   placeholder="Enter title here"
               />
             </v-col>
-            <v-col cols="12" md="6">
+            <v-col cols="12" md="4">
               <h6 class="mb-2">Category</h6>
               <v-select
                   variant="solo"
@@ -138,26 +171,86 @@ const question = ref(prop.itemDetail?.question || "");
             </v-col>
           </v-row>
           <div v-if="!readonly">
-            <h6 class="mb-2">Prompt</h6>
-            <v-text-field
+              <h6 class="mb-2">Prompt</h6>
+              <v-textarea
+                  variant="solo"
+                  class="text-field-component"
+                  density="compact"
+                  rows="3"
+                  v-model="question"
+                  :rules="formRules.requiredRule"
+                  placeholder="Enter prompt here"
+              />
+          </div>
+          <div v-if="!isCreate">
+            <h6 class="mb-2">Content</h6>
+            <v-textarea
                 variant="solo"
+                :rows="10"
                 class="text-field-component"
                 density="compact"
-                v-model="question"
-                :rules="formRules.requiredRule"
-                placeholder="Enter prompt here"
+                :readonly="readonly"
+                v-model="content"
+                placeholder="Enter content"
             />
           </div>
-          <h6 class="mb-2">Content</h6>
-          <v-textarea
-              variant="solo"
-              :rows="10"
-              class="text-field-component"
-              density="compact"
-              :readonly="readonly"
-              v-model="content"
-              placeholder="Enter content"
-          />
+          <div v-if="isCreate && isPostToPage">
+            <v-row>
+              <v-col cols="12" md="6">
+                <h6 class="mb-2">Page</h6>
+                <v-select
+                    variant="solo"
+                    :items="pageList"
+                    item-value="_id"
+                    item-title="page_name"
+                    class="text-field-component"
+                    density="compact"
+                    :rules="formRules.requiredRule"
+                    v-model="page"
+                >
+                </v-select>
+              </v-col>
+              <v-col cols="12" md="6">
+                <h6 class="mb-2">Schedule time</h6>
+                <VueDatePicker
+                    v-model="schedule_time"
+                    :min-date="new Date()"
+                    :teleport="true"
+                    auto-apply
+                    time-picker-inline
+                    :format="(date: Date) => date && format(date, 'LLLL dd, yyyy HH:mm')"
+                    :enable-time-picker="true"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" md="6">
+                <h6 class="mb-2">Caption</h6>
+                <v-textarea
+                    variant="solo"
+                    class="text-field-component"
+                    density="compact"
+                    rows="3"
+                    v-model="caption"
+                    :rules="formRules.requiredRule"
+                    placeholder="Enter caption here"
+                />
+              </v-col>
+              <v-col cols="12" md="6">
+                <h6 class="mb-2">Comment</h6>
+                <v-textarea
+                    variant="solo"
+                    class="text-field-component"
+                    density="compact"
+                    rows="3"
+                    v-model="comment"
+                    placeholder="Enter comment here"
+                />
+              </v-col>
+            </v-row>
+            <h6 class="mb-2">Image</h6>
+            <ImageUploader :multiple="false" v-model="image" :rules="formRules.requiredRule" />
+          </div>
         </v-card-text>
         <v-card-actions class="me-3 mb-2">
           <v-spacer />

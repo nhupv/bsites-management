@@ -23,13 +23,13 @@ export const menuItems: MenuItemType[] = [
     id: "HeaderMenu",
     show: true,
   },
-  {
-    label: "dashboard",
-    icon: "ph-gauge",
-    id: "sidebarDashboard",
-    link: "/dashboard",
-    show: true
-  },
+  // {
+  //   label: "dashboard",
+  //   icon: "ph-gauge",
+  //   id: "sidebarDashboard",
+  //   link: "/dashboard",
+  //   show: true
+  // },
   {
     label: "site",
     icon: "ph-browser",
@@ -44,13 +44,13 @@ export const menuItems: MenuItemType[] = [
     link: "/fb-page",
     show: true
   },
-  {
-    label: "proxy",
-    icon: "ph-line-segments",
-    id: "sidebarProxy",
-    link: "/proxy",
-    show: true
-  },
+  // {
+  //   label: "proxy",
+  //   icon: "ph-line-segments",
+  //   id: "sidebarProxy",
+  //   link: "/proxy",
+  //   show: true
+  // },
   {
     label: "user",
     icon: "ph-users",
@@ -71,27 +71,27 @@ export const menuItems: MenuItemType[] = [
     id: "sidebarPages",
     show: !!localStorage.getItem(LS_KEY_SITE)
   },
-  {
-    label: "dashboard",
-    icon: "ph-gauge",
-    id: "sidebarDashboards",
-    link: "/site-stats",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
-  {
-    label: "bot",
-    icon: "ph-robot",
-    id: "sidebarBot",
-    link: "/bots",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
-  {
-    label: "url",
-    icon: "ph-link",
-    id: "sidebarUrl",
-    link: "/urls",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
+  // {
+  //   label: "dashboard",
+  //   icon: "ph-gauge",
+  //   id: "sidebarDashboards",
+  //   link: "/site-stats",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
+  // {
+  //   label: "bot",
+  //   icon: "ph-robot",
+  //   id: "sidebarBot",
+  //   link: "/bots",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
+  // {
+  //   label: "url",
+  //   icon: "ph-link",
+  //   id: "sidebarUrl",
+  //   link: "/urls",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
 
   // {
   //   label: "proxy",
@@ -100,13 +100,13 @@ export const menuItems: MenuItemType[] = [
   //   link: "/proxies",
   //   show: !!localStorage.getItem(LS_KEY_SITE)
   // },
-  {
-    label: "keyword",
-    icon: "ph-key",
-    id: "sidebarKeyword",
-    link: "/keywords",
-    show: !!localStorage.getItem(LS_KEY_SITE)
-  },
+  // {
+  //   label: "keyword",
+  //   icon: "ph-key",
+  //   id: "sidebarKeyword",
+  //   link: "/keywords",
+  //   show: !!localStorage.getItem(LS_KEY_SITE)
+  // },
   {
     label: "post",
     icon: "ph-article",

@@ -49,7 +49,7 @@ export class SiteContent extends Document {
     site: String | Types.ObjectId | Site;
 
     @Transform(({ value }) => value.toString())
-    @Prop({ type: SchemaMongoose.Types.ObjectId, ref: User.name, required: true })
+    @Prop({ type: SchemaMongoose.Types.ObjectId, ref: User.name, required: false })
     user: String | Types.ObjectId | User;
 
     constructor(partial: Partial<SiteContent>) {
