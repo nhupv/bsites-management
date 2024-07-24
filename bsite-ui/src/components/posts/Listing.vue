@@ -9,18 +9,10 @@ import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
 import {format, getUnixTime} from "date-fns";
 import {useSite} from "@/store/site";
-import {KeywordType} from "@/components/keywords/types";
 import {PostReq, PostStatus, PostType} from "@/components/posts/types";
-import CreateMultiplePostDialog from "@/components/posts/CreateMultiplePostDialog.vue";
-import CreateEditPostDialog from "@/components/posts/CreateEditPostDialog.vue";
+import CreatePostDialog from "@/components/posts/CreatePostDialog.vue";
 import SendPostToFBDialog from "@/components/posts/SendPostToFBDialog.vue";
-
-// const prop = defineProps({
-//   filters: {
-//     type: Object,
-//     default: () => {},
-//   },
-// });
+import UpdatePostDialog from "@/components/posts/UpdatePostDialog.vue";
 
 const $toast = useToast({ position: 'top-right'});
 const siteStore = useSite()
@@ -37,9 +29,8 @@ const headers = ref([
   { title: 'Category', key: 'category', align: 'start', },
   { title: 'Content', key: 'content', align: 'start', width: '20%' },
   { title: 'Link', key: 'link', align: 'start', width: '15%' },
-  // { title: 'Priority', key: 'priority', align: 'start' },
   { title: 'Status', key: 'status', align: 'start', sortable: false, width: '15%' },
-  { title: 'Fb Status', key: 'fb_status', align: 'start', sortable: false, width: '15%' },
+  // { title: 'Fb Status', key: 'fb_status', align: 'start', sortable: false, width: '15%' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
@@ -51,12 +42,12 @@ const search = ref({ key: 'name', value: ''})
 const serverItems = ref([])
 const loading = ref(false);
 const readOnly = ref(false);
-const loadingPriority = ref(false)
 
 const confirmationDialog = ref(false);
 const postFbDialog = ref(false);
 const confirmationContent = ref<string>('');
 const createEditDialog = ref(false);
+const updatePostDialog = ref(false);
 const createMultiDialog = ref(false);
 const postReq = ref<PostReq | null>(null);
 const postDetail = ref<PostType | null>(null);
@@ -85,7 +76,7 @@ const onSelect = (option: string, data: any) => {
         id: data.category_id,
       }
     }
-    createEditDialog.value = true;
+    updatePostDialog.value = true;
   } else if (option === "remove") {
     confirmationDialog.value = true;
     confirmationContent.value = data._id;
@@ -99,6 +90,12 @@ const onSelect = (option: string, data: any) => {
 
 
 watch(createEditDialog, (dialog: boolean) => {
+  if (!dialog) {
+    postDetail.value = null;
+  }
+});
+
+watch(updatePostDialog, (dialog: boolean) => {
   if (!dialog) {
     postDetail.value = null;
     readOnly.value = false;
@@ -123,19 +120,6 @@ watch(postFbDialog, (dialog: boolean) => {
   }
 });
 
-const onPushData = async () => {
-  loading.value = true;
-  try {
-    const data = await httpService.get(`/sites/${siteId.value}/posts/push`)
-    const message = typeof  data.message !== 'string' ? String(data.message) : data.message
-    $toast.success(message)
-  } catch (e) {
-    handleError(e)
-  } finally {
-    loading.value = false
-  }
-};
-
 const onUpdate = async (updatedVal: PostType) => {
   try {
     const data = await httpService.patch(`/sites/${siteId.value}/posts/${updatedVal._id}`, updatedVal)
@@ -150,8 +134,13 @@ const onUpdate = async (updatedVal: PostType) => {
 
 const onCreate = async (post: any) => {
   try {
-
-    console.log(post.isPostToPage)
+    const pages = post.pages.map((item: any) => {
+      return {
+        page_id: item._id,
+        page_name: item.page_name,
+        scheduled_time: item.scheduled_time ? getUnixTime(item.scheduled_time).toString() : '',
+      }
+    })
     const form = new FormData()
     form.append('title', post.title)
     form.append('question', post.question)
@@ -161,18 +150,14 @@ const onCreate = async (post: any) => {
     if(post.category_id) {
       form.append('category', post.category)
     }
-    form.append('is_post_to_page', post.isPostToPage)
+    form.append('pages', JSON.stringify(pages))
 
-    if(post.isPostToPage) {
+    if(pages.length > 0) {
       form.append('caption', post.caption)
       if(post.comment) {
         form.append('comment', post.comment)
       }
       form.append('file', post.image[0])
-      form.append('page_id', post.page_id)
-      if(post.schedule_time) {
-        form.append('schedule_time', getUnixTime(post.schedule_time).toString())
-      }
     }
     const data = await httpService.postForm(`/sites/${siteId.value}/posts`, form)
     $toast.success('Post save successfully!')
@@ -182,19 +167,6 @@ const onCreate = async (post: any) => {
     handleError(e)
   }
 };
-
-const updatePostPriority = async (value: boolean, item: any) => {
-  loadingPriority.value = true
-  try {
-    await httpService.post(`/sites/${siteId.value}/posts/${item._id}/priority`, {priority: value})
-    $toast.success('Update priority successfully!')
-    await siteStore.getSites()
-  } catch (e) {
-    handleError(e)
-  } finally {
-    loadingPriority.value = false
-  }
-}
 
 const onRewrite = async (id: string) => {
   loading.value = true;
@@ -220,14 +192,6 @@ const onRecreate = async (id: string) => {
   } finally {
     loading.value = false
   }
-};
-
-const onAddMutiClick = () => {
-  postReq.value = {
-    titles: "",
-    category: null,
-  };
-  createMultiDialog.value = true;
 };
 
 const onAddClick = () => {
@@ -259,7 +223,13 @@ const onConfirmDelete = async () => {
 const showPost = (data: any) => {
   readOnly.value = true;
   postDetail.value = data;
-  createEditDialog.value = true;
+  if(postDetail.value && data.category && data.category_id) {
+    postDetail.value.categoryObj = {
+      name: data.category,
+      id: data.category_id,
+    }
+  }
+  updatePostDialog.value = true;
 }
 
 const deletePortal = async () => {
@@ -276,16 +246,6 @@ const deleteBoth = async () => {
   await loadItems(tableOptions.value)
 }
 
-// const onConfirmDeleteAll = async () => {
-//   try {
-//     await httpService.delete(`/sites/${siteId.value}/keywords/delete-all`)
-//     $toast.success('All keywords deleted successfully!')
-//     confirmationRemoveAllDialog.value = false;
-//     await loadItems(tableOptions.value)
-//   } catch (e) {
-//     handleError(e)
-//   }
-// }
 </script>
 <template>
   <v-card>
@@ -317,17 +277,6 @@ const deleteBoth = async () => {
             </v-list-item>
           </v-list>
         </v-menu>
-<!--        <v-btn-->
-<!--            :disabled="totalItems === 0"-->
-<!--            :loading="loading"-->
-<!--            color="primary"-->
-<!--            variant="outlined"-->
-<!--            elevation="0"-->
-<!--            class="my-2 mr-4"-->
-<!--            @click="onPushData"-->
-<!--        >-->
-<!--          <i class="ph-paper-plane-tilt mx-1" /> Push data-->
-<!--        </v-btn>-->
         <v-btn
             color="primary"
             elevation="0"
@@ -351,16 +300,6 @@ const deleteBoth = async () => {
           item-value="name"
           @update:options="loadItems"
       >
-        <template v-slot:item.priority="{item}: any">
-          <v-switch
-              v-model="item.priority"
-              :loading="loadingPriority"
-              hide-details
-              color="primary"
-              size="sm"
-              @update:modelValue="(value) => updatePostPriority(value, item)"
-          ></v-switch>
-        </template>
         <template v-slot:item.fb_status="{item}: any">
           <template v-for="s in item.fb_status" :key="s">
             <v-tooltip height="30" contained location="top" :text="getVariantStatus(s).text">
@@ -444,13 +383,19 @@ const deleteBoth = async () => {
 
     </v-card-text>
   </v-card>
-  <CreateEditPostDialog
+  <CreatePostDialog
     v-if="postDetail"
     v-model="createEditDialog"
     :itemDetail="postDetail"
+    @onCreate="onCreate"
+  />
+
+  <UpdatePostDialog
+    v-if="postDetail"
+    v-model="updatePostDialog"
+    :itemDetail="postDetail"
     :readonly="readOnly"
     @onUpdate="onUpdate"
-    @onCreate="onCreate"
   />
 
   <SendPostToFBDialog
@@ -461,12 +406,6 @@ const deleteBoth = async () => {
       @onUpdate="onUpdate"
       @onCreate="onCreate"
   />
-<!--  <CreateMultiplePostDialog-->
-<!--      v-if="postReq"-->
-<!--      v-model="createMultiDialog"-->
-<!--      :itemDetail="postReq"-->
-<!--      @onCreate="onCreate"-->
-<!--  />-->
 
   <RemoveItemConfirmationDialog
     v-if="confirmationContent"
@@ -474,10 +413,4 @@ const deleteBoth = async () => {
     @onConfirm="onConfirmDelete"
   />
 
-<!--  <RemoveItemConfirmationDialog-->
-<!--      v-if="confirmationRemoveAllDialog"-->
-<!--      delete-all-->
-<!--      v-model="confirmationRemoveAllDialog"-->
-<!--      @onConfirm="onConfirmDeleteAll"-->
-<!--  />-->
 </template>

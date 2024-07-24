@@ -1,14 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { CreateFbPageDto } from './dto/create-fb-page.dto';
-import { UpdateFbPageDto } from './dto/update-fb-page.dto';
+import {Injectable} from '@nestjs/common';
+import {CreateFbPageDto} from './dto/create-fb-page.dto';
+import {UpdateFbPageDto} from './dto/update-fb-page.dto';
 import {InjectModel} from "@nestjs/mongoose";
 import {Model, ObjectId} from "mongoose";
 import {FbPage, FbPageDocument} from "./entities/fb-page.entity";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
 import {PaginationResultInterface} from "../common/pagination/interface/pagination-result.interface";
-import {SiteKeyword} from "../site-keyword/entities/site-keyword.entity";
-import {Site} from "../sites/entities/site.entity";
-import {UpdateSiteDto} from "../sites/dto/update-site.dto";
 
 @Injectable()
 export class FbPageService {
@@ -42,8 +39,15 @@ export class FbPageService {
     return { data, total };
   }
 
-  async findAllNoPaging() {
-    return this.fbPageDocumentModel.find()
+  async findAllNoPaging( paginationParams: PaginationParams, filter: Array<any>) {
+    const { skip, perPage, sortBy, sortType } = paginationParams;
+    const query = this.fbPageDocumentModel.find();
+    if (filter.length > 0) {
+      query.and(filter);
+    }
+    return await query
+        .sort({[sortBy]: [sortType]})
+        .exec()
   }
 
   findOne(id: ObjectId | string): Promise<FbPage> {

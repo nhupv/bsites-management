@@ -45,35 +45,35 @@ export class PostFbConsumer {
   async sendPostToFBGroup(job: Job<any>) {
     const { payload: post, post: postContent, site } = job.data
 
-    let postCreate = await this.siteContentService.updateStatus(postContent._id, {
-      fb_status: [ContentStatus.PROCESSING]
-    })
+    // let postCreate = await this.siteContentService.updateStatus(postContent._id, {
+    //   fb_status: [ContentStatus.PROCESSING]
+    // })
     await this.telegramService.sendLogToTelegram(`==== Start to send post to fb page ====`)
 
     const page = await this.pageService.findOne(post.page_id)
 
     if(!page) {
-      await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
-      })
+      // await this.siteContentService.updateStatus(postContent._id, {
+      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
+      // })
       await this.telegramService.sendLogToTelegram(`Page is not existed with id ${post.page_id}`)
 
       throw new Error(`Page is not existed with id ${post.page_id}`);
     }
 
-    const dataUpload = await this.sendUploadImage(page, post, postCreate)
+    const dataUpload = await this.sendUploadImage(page, post)
 
     if(dataUpload.id && dataUpload.post_id && !post.schedule_time) {
-      postCreate = await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_SUCCESS]
-      })
+      // postCreate = await this.siteContentService.updateStatus(postContent._id, {
+      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_SUCCESS]
+      // })
       if(!!post.comment) {
         await this.siteContentService.sendCommentToPost({
           payload: {
             post_id: dataUpload.post_id, page_id: post.page_id, comment: post.comment
           },
-          post: postCreate,
-          site
+          // post: postCreate,
+          // site
         })
       }
       return
@@ -95,9 +95,9 @@ export class PostFbConsumer {
         }
       }).toPromise()
 
-      postCreate = await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_SUCCESS]
-      })
+      // postCreate = await this.siteContentService.updateStatus(postContent._id, {
+      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_SUCCESS]
+      // })
       await this.telegramService.sendLogToTelegram(`Created a SCHEDULED POST to group ${page.page_name}, Title: ${post.title}`)
 
 
@@ -106,56 +106,22 @@ export class PostFbConsumer {
           payload: {
             post_id: data.id, page_id: post.page_id, comment: post.comment
           },
-          post: postCreate,
+          // post: postCreate,
           site
         })
       }
 
     } catch (e) {
-      await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
-      })
+      // await this.siteContentService.updateStatus(postContent._id, {
+      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
+      // })
       await this.telegramService.sendLogToTelegram(`Cannot create a SCHEDULED POST to group ${page.page_name}, Title: ${post.title}, Error: ${e.toString()}`)
 
       throw new Error(`Cannot send post to group ${page.page_name}, Error: ${e}`);
     }
   }
 
-
-  @Process({
-    name: POSTS_SEND_TO_FB_QUEUE.SEND_COMMENT_TO_POST,
-    concurrency: +process.env.JOB_CONCURRENCY,
-  })
-  async sendCommentToPost(job: Job<any>) {
-    const { payload: data, post: postContent, site } = job.data
-    const page = await this.pageService.findOne(data.page_id)
-
-    const url = `https://graph.facebook.com/${data.post_id}/comments?access_token=${page.access_token}&message=${data.comment}`
-
-    try {
-      await this.httpService.post(url, null, {
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      }).toPromise()
-
-
-      await this.telegramService.sendLogToTelegram(`Send COMMENT: ${data.comment} success to post ${data.post_id} on page: ${page.page_name}`)
-
-      await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postContent.fb_status, ContentStatus.SEND_COMMENT_TO_POST_SUCCESS]
-      })
-
-    } catch (e) {
-      await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postContent.fb_status, ContentStatus.SEND_COMMENT_TO_POST_FAILED]
-      })
-      await this.telegramService.sendLogToTelegram(`Cannot send COMMENT to post ${data.post_id} in page: ${page.page_name} with comment: ${data.comment}, Error: ${e.toString()}`)
-      throw new Error(`Cannot send comment to post ${data.post_id} in page ${page.page_name}, Error: ${e}`);
-    }
-  }
-
-  async sendUploadImage(page: FbPage, payload: any, postContent: SiteContent) {
+  async sendUploadImage(page: FbPage, payload: any) {
 
     const url = `https://graph.facebook.com/${page.page_id}/photos`
     const imageContent = fs.createReadStream(payload.imagePath)
@@ -179,9 +145,9 @@ export class PostFbConsumer {
       return data
 
     } catch (e) {
-      await this.siteContentService.updateStatus(postContent._id, {
-        fb_status: [...postContent.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
-      })
+      // await this.siteContentService.updateStatus(postContent._id, {
+      //   fb_status: [...postContent.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
+      // })
       await this.telegramService.sendLogToTelegram(`Cannot create A POST using image on page: ${page.page_name}, Title: ${payload.title}, Error: ${e.toString()}`)
 
       throw new Error(`Cannot upload image to post fb, Error: ${e}`);

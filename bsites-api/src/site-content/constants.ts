@@ -13,8 +13,12 @@ export const POSTS_SEND_TO_SITE_QUEUE = {
 };
 
 export const POSTS_SEND_TO_FB_QUEUE = {
-  INSERT_STATS_QUEUE: 'insert-post-send-to-fb-queue',
+  INSERT_STATS_QUEUE: 'post-send-to-fb-page-queue',
   SEND_UPLOAD_IMAGE_POST: 'send-upload-image-post-job',
-  SEND_POST_TO_GROUP: 'send-post-to-group-job',
+  SEND_POST_TO_GROUP: 'send-post-to-page-job',
+};
+
+export const COMMENT_SEND_TO_POST_QUEUE = {
+  INSERT_COMMENT_QUEUE: 'comment-send-to-post-queue',
   SEND_COMMENT_TO_POST: 'send-comment-to-post-job',
 };

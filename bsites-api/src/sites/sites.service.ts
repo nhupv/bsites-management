@@ -30,9 +30,9 @@ export class SitesService {
   ): Promise<PaginationResultInterface<Site>> {
     const { skip, perPage, sortBy, sortType } = paginationParams;
     const query = this.siteModel.find();
-    // if (filter.length > 0) {
-    //   query.and(filter);
-    // }
+    if (filter.length > 0) {
+      query.and(filter);
+    }
     const data = await query
         .skip(skip)
         .limit(perPage)

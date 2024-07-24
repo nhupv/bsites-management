@@ -6,9 +6,11 @@ import {useSite} from "@/store/site";
 import {addDays, format, getUnixTime} from "date-fns";
 import {useToast} from "vue-toast-notification";
 import ImageUploader from "@/app/common/components/ImageUploader.vue";
+import PageSelectedComponent from "@/components/job-fb-page/PageSelectedComponent.vue";
 
 const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
 const $toast = useToast({ position: 'top-right'});
+const step = ref(1)
 
 const refForm = ref<any>()
 const formRules = {
@@ -54,15 +56,24 @@ const onCreateUpdate = async () => {
   const { valid } = await refForm.value?.validate()
   if(!valid) return
 
+  if(step.value === 1) {
+    step.value = step.value + 1;
+    return
+  }
+
+  const pages = pageSelected.value.map((item: any) => {
+    return {
+      page_id: item._id,
+      scheduled_time: item.scheduled_time ? getUnixTime(item.scheduled_time).toString() : '',
+    }
+  })
+
   const form = new FormData()
   form.append('title', title.value)
   form.append('caption', caption.value)
-  form.append('page_id', page.value)
+  form.append('pages', JSON.stringify(pages))
   form.append('file', image.value[0])
   form.append('comment', comment.value)
-  if(schedule_time.value) {
-    form.append('schedule_time', getUnixTime(schedule_time.value).toString())
-  }
 
   try {
     const data = await httpService.postForm(`/sites/${siteId.value}/posts/${prop.itemDetail?._id}/create-post`, form)
@@ -76,11 +87,15 @@ const onCreateUpdate = async () => {
 
 const loadItems = async () => {
   try {
-    const data = await httpService.get('/fb-page/all')
+    const data = await httpService.post('/fb-page/all', {})
     pageList.value = data
   } catch (e) {
     handleError(e)
   }
+}
+
+const onChangePage = (pages:any) => {
+  pageSelected.value = pages
 }
 
 onMounted(() => {
@@ -89,10 +104,9 @@ onMounted(() => {
 
 const title = ref(prop.itemDetail?.title || "");
 const caption = ref( "");
-const page = ref();
 const comment = ref(`See more: ${prop.itemDetail?.link}`);
-const schedule_time = ref();
 const image = ref()
+const pageSelected = ref([])
 
 </script>
 <template>
@@ -107,73 +121,81 @@ const image = ref()
             @click="dialogValue = false"
           />
         </template>
-        <v-card-text data-simplebar>
-          <h6 class="mb-2">Title</h6>
-          <v-text-field
-              variant="solo"
-              class="text-field-component"
-              density="compact"
-              v-model="title"
-              :rules="formRules.requiredRule"
-              placeholder="Enter title here"
-          />
-          <v-row>
-            <v-col cols="12" md="6">
-              <h6 class="mb-2">Page</h6>
-              <v-select
-                  variant="solo"
-                  :items="pageList"
-                  item-value="_id"
-                  item-title="page_name"
-                  class="text-field-component"
-                  density="compact"
-                  :rules="formRules.requiredRule"
-                  v-model="page"
-              >
-              </v-select>
-            </v-col>
-            <v-col cols="12" md="6">
-              <h6 class="mb-2">Schedule time</h6>
-              <VueDatePicker
-                  v-model="schedule_time"
-                  :min-date="new Date()"
-                  :teleport="true"
-                  auto-apply
-                  time-picker-inline
-                  :format="(date: Date) => date && format(date, 'LLLL dd, yyyy HH:mm')"
-                  :enable-time-picker="true"
-              />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" md="6">
-              <h6 class="mb-2">Caption</h6>
-              <v-textarea
-                  variant="solo"
-                  class="text-field-component"
-                  density="compact"
-                  v-model="caption"
-                  :rules="formRules.requiredRule"
-                  placeholder="Enter caption here"
-              />
-            </v-col>
-            <v-col cols="12" md="6">
-              <h6 class="mb-2">Comment</h6>
-              <v-textarea
-                  variant="solo"
-                  class="text-field-component"
-                  density="compact"
-                  v-model="comment"
-                  placeholder="Enter comment here"
-              />
-            </v-col>
-          </v-row>
-          <h6 class="mb-2">Image</h6>
-          <ImageUploader :multiple="false" v-model="image" :rules="formRules.requiredRule" />
-<!--          <v-file-input v-model="image"></v-file-input>-->
+        <v-card-text data-simplebar class="pa-0">
+          <v-stepper
+              class="bg-transparent"
+              v-model="step"
+              show-actions
+              elevation="0"
+          >
+            <template v-slot:default="{ prev, next }">
+
+              <v-stepper-header class="d-none">
+                <v-stepper-item
+                    :value="1"
+                >
+                </v-stepper-item>
+
+                <v-stepper-item
+                    :value="2"
+                >
+                </v-stepper-item>
+              </v-stepper-header>
+              <v-stepper-window>
+                <v-stepper-window-item
+                    :value="1"
+                >
+                  <v-card color="transparent" class="px-1">
+                    <h6 class="mb-2">Title</h6>
+                    <v-text-field
+                        variant="solo"
+                        class="text-field-component"
+                        density="compact"
+                        v-model="title"
+                        :rules="formRules.requiredRule"
+                        placeholder="Enter title here"
+                    />
+                    <v-row>
+                      <v-col cols="12" md="6">
+                        <h6 class="mb-2">Caption</h6>
+                        <v-textarea
+                            variant="solo"
+                            class="text-field-component"
+                            density="compact"
+                            v-model="caption"
+                            :rules="formRules.requiredRule"
+                            placeholder="Enter caption here"
+                        />
+                      </v-col>
+                      <v-col cols="12" md="6">
+                        <h6 class="mb-2">Comment</h6>
+                        <v-textarea
+                            variant="solo"
+                            class="text-field-component"
+                            density="compact"
+                            v-model="comment"
+                            placeholder="Enter comment here"
+                        />
+                      </v-col>
+                    </v-row>
+                    <h6 class="mb-2">Image</h6>
+                    <ImageUploader :multiple="false" v-model="image" :rules="formRules.requiredRule" />
+                  </v-card>
+                </v-stepper-window-item>
+                <v-stepper-window-item
+                    :value="2"
+                >
+                  <v-card color="transparent" class="px-1">
+                    <v-card-text class="px-0 pt-1">
+                      <page-selected-component @on-change="onChangePage" />
+                    </v-card-text>
+                  </v-card>
+                </v-stepper-window-item>
+              </v-stepper-window>
+            </template>
+          </v-stepper>
         </v-card-text>
         <v-card-actions class="me-3 mb-2">
-          <v-spacer />
           <v-btn
             variant="text"
             color="danger"
@@ -182,15 +204,24 @@ const image = ref()
           >
             <i class="ph-x me-1" /> Close
           </v-btn>
+          <v-spacer />
           <v-btn
-            v-if="!readonly"
-            class=""
+              variant="text"
+              color="danger"
+              class=""
+              :disabled="step === 1"
+              @click="step = step - 1"
+          >
+            Previous
+          </v-btn>
+          <v-btn
             color="primary"
             variant="elevated"
             elevation="0"
+            :disabled="step === 2 && pageSelected.length === 0"
             @click="onCreateUpdate"
           >
-            Send
+            Next
           </v-btn>
         </v-card-actions>
       </Card>

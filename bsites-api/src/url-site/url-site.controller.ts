@@ -20,7 +20,6 @@ import {ObjectId, Types} from "mongoose";
 import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
 import {SitesService} from "../sites/sites.service";
 import {FilterParams} from "../common/decorator/filter.decorator";
-import {FilterDomain} from "../domain/dto/filter-domain.dto";
 import {Pagination} from "../common/decorator/pagination.decorator";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
 import {CreateUrlSiteDto} from "./dto/create-url-site.dto";
@@ -57,7 +56,7 @@ export class UrlSiteController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+  findAll(@FilterParams() filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
     return this.urlSiteService.findAll(pagination, filter );
   }
 

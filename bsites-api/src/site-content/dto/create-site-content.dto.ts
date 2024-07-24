@@ -28,13 +28,13 @@ export class CreateSiteContentDto {
     })
     category_id?: number;
 
-    @IsBoolean()
-    @IsNotEmpty()
-    @Transform(({value} ) => value === 'true')
-    is_post_to_page?: boolean;
+    // @IsBoolean()
+    // @IsNotEmpty()
+    // @Transform(({value} ) => value === 'true')
+    // is_post_to_page?: boolean;
 
-    @IsOptional()
-    page_id?: number;
+    // @IsOptional()
+    // page_id?: number;
 
     @IsOptional()
     caption?: string;
@@ -42,8 +42,12 @@ export class CreateSiteContentDto {
     @IsOptional()
     comment?: string;
 
-    @IsOptional()
-    schedule_time?: number;
+    @IsString()
+    @IsNotEmpty()
+    pages?: string;
+
+    // @IsOptional()
+    // schedule_time?: number;
 
     @IsOptional()
     @IsMongoId({ message: 'site id is not a mongodb id'})

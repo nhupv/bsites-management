@@ -1,9 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ConsoleService } from 'nestjs-console';
-import { InjectConnection } from '@nestjs/mongoose';
-import mongoose, { Types } from 'mongoose';
-import { PaginationParams } from '../common/pagination/dto/papgination-params.dto';
-import { DomainService } from '../domain/domain.service';
 import {SitesService} from "../sites/sites.service";
 import {SiteContentService} from "../site-content/site-content.service";
 import {UrlSiteService} from "../url-site/url-site.service";

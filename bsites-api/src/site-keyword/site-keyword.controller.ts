@@ -20,7 +20,6 @@ import {Role} from "../roles/role.enum";
 import {ObjectId, Types} from "mongoose";
 import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
 import {FilterParams} from "../common/decorator/filter.decorator";
-import {FilterDomain} from "../domain/dto/filter-domain.dto";
 import {Pagination} from "../common/decorator/pagination.decorator";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
 import {SiteIdGuard} from "../common/guard/siteId.guard";
@@ -57,7 +56,7 @@ export class SiteKeywordController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+  findAll(@FilterParams() filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
     return this.siteKeywordService.findAll(pagination,filter );
   }
 

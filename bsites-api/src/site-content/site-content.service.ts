@@ -11,7 +11,7 @@ import {PaginationResultInterface} from "../common/pagination/interface/paginati
 import {Site} from "../sites/entities/site.entity";
 import {InjectQueue} from "@nestjs/bull";
 import {Queue} from "bull";
-import {POSTS_QUEUE, POSTS_SEND_TO_FB_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from "./constants";
+import {COMMENT_SEND_TO_POST_QUEUE, POSTS_QUEUE, POSTS_SEND_TO_FB_QUEUE, POSTS_SEND_TO_SITE_QUEUE} from "./constants";
 import {UpdatePostStatusDto} from "./dto/update-post-status.dto";
 import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
 import {HttpService} from "@nestjs/axios";
@@ -25,7 +25,10 @@ export class SiteContentService {
               @InjectQueue(POSTS_SEND_TO_SITE_QUEUE.INSERT_STATS_QUEUE)
               private queueSend: Queue,
               @InjectQueue(POSTS_SEND_TO_FB_QUEUE.INSERT_STATS_QUEUE)
-              private queueFB: Queue
+              private queueFB: Queue,
+              @InjectQueue(COMMENT_SEND_TO_POST_QUEUE.INSERT_COMMENT_QUEUE)
+              private queueCommentFB: Queue
+
              ) {
   }
   create(createSiteContentDto: CreateSiteContentDto) {
@@ -212,7 +215,7 @@ export class SiteContentService {
   }
 
   async sendCommentToPost(data: any) {
-    await this.queueFB.add(POSTS_SEND_TO_FB_QUEUE.SEND_COMMENT_TO_POST, data);
+    await this.queueCommentFB.add(COMMENT_SEND_TO_POST_QUEUE.SEND_COMMENT_TO_POST, data);
   }
 
 }

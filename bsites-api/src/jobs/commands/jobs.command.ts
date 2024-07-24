@@ -10,7 +10,6 @@ import {JobsService} from "../jobs.service";
 export class JobsCommand {
   constructor(
     private readonly consoleService: ConsoleService,
-    private readonly jobsService: JobsService,
   ) {
     const cli = this.consoleService.getCli();
 
@@ -52,7 +51,7 @@ export class JobsCommand {
 
   async startCronJobsStats(options, command: commander.Command){
     // const spin = createSpinner();
-    this.jobsService.createDynamicCron()
+    // this.jobsService.createDynamicCron()
     //   const job = this.schedulerRegistry.getCronJob('insertStats');
     //   job.start();
     //   console.log(job.lastDate());

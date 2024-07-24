@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 import { DashboardController } from './dashboard.controller';
-import { DomainModule } from '../domain/domain.module';
 import {HttpModule} from "@nestjs/axios";
 import {SitesModule} from "../sites/sites.module";
 import {MongooseModule} from "@nestjs/mongoose";
@@ -12,7 +11,7 @@ import {DashboardStatsConsumer} from "./dashboard-stats.consumer";
 import {TelegramBotModule} from "../telegram/telegram.module";
 
 @Module({
-  imports: [DomainModule, HttpModule, SitesModule, TelegramBotModule,
+  imports: [ HttpModule, SitesModule, TelegramBotModule,
     BullModule.registerQueue({
       name: DASHBOARD_QUEUE.INSERT_STATS_QUEUE,
     }),

@@ -42,7 +42,6 @@ export class PostSendConsumer {
   })
   async sendPost(job: Job<any>) {
     const { post, postFb, site, direct } = job.data
-    console.log(postFb)
 
     let postCreate = {...post}
     if(direct) {
@@ -66,11 +65,20 @@ export class PostSendConsumer {
     }
     try {
       const data = await this.sendPostToSite(postCreate, site)
-      if(postFb.is_post_to_page) {
+      if(postFb.pageList.length > 0) {
         if(postFb.comment) {
           postFb.comment = postFb.comment.replace("{link}", data.link)
         }
-        await this.siteContentService.sendPostToFbGroup({payload: postFb, post: postCreate, site})
+
+        postFb.pageList.forEach((item: any) => {
+          const data = {
+            ...postFb,
+            schedule_time: item?.scheduled_time,
+            page_id: item.page_id,
+            page_name: item.page_name,
+          }
+          this.siteContentService.sendPostToFbGroup({payload: data })
+        })
       }
     } catch (e) {
       throw new Error(e);

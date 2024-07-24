@@ -3,7 +3,6 @@ import { BreadcrumbType } from "@/app/common/types/breadcrumb.type";
 import { FilterType } from "@/components/products/types";
 import { TableHeaderType } from "@/app/common/types/table.types";
 import { OptionType } from "@/app/common/types/option.type";
-import {ref} from "vue";
 
 export const productBreadcrumb: BreadcrumbType[] = [
   {
@@ -11,7 +10,7 @@ export const productBreadcrumb: BreadcrumbType[] = [
     disabled: false,
   },
   {
-    title: "fb-page",
+    title: "page-job",
     disabled: true,
   },
 ];
@@ -65,35 +64,6 @@ export const productsHeader: TableHeaderType[] = [
   { title: "Action" },
 ];
 
-export const pageHeaderSelect = [
-  {
-    title: '#',
-    align: 'start',
-    key: 'stt',
-  },
-  {
-    title: 'Page name',
-    align: 'start',
-    key: 'page_name',
-  },
-  { title: 'Page id', key: 'page_id', align: 'start', },
-] as any
-
-export const pageHeaderSelected = [
-  {
-    title: '#',
-    align: 'start',
-    key: 'stt',
-  },
-  {
-    title: 'Page name',
-    align: 'start',
-    key: 'page_name',
-  },
-  { title: 'Scheduled Time', key: 'scheduled_time', align: 'start', },
-  { title: 'Action', key: 'action', align: 'start', },
-] as any
-
 export const pageAction: OptionType[] = [
   // {
   //   title: "View",
@@ -106,11 +76,11 @@ export const pageAction: OptionType[] = [
   //   icon: "ph-paper-plane-tilt",
   //   value: "push",
   // },
-  {
-    title: "Edit",
-    icon: "ph-pencil",
-    value: "edit",
-  },
+  // {
+  //   title: "Edit",
+  //   icon: "ph-pencil",
+  //   value: "edit",
+  // },
   {
     title: "Remove",
     icon: "ph-trash",

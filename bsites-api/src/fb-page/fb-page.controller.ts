@@ -19,12 +19,12 @@ import {Role} from "../roles/role.enum";
 import {ContextParamsInterceptor} from "../common/interceptors/context-params.interceptor";
 import {CreateSiteDto} from "../sites/dto/create-site.dto";
 import {FilterParams} from "../common/decorator/filter.decorator";
-import {FilterDomain} from "../domain/dto/filter-domain.dto";
 import {Pagination} from "../common/decorator/pagination.decorator";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
 import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
 import {ObjectId} from "mongoose";
 import {UpdateSiteDto} from "../sites/dto/update-site.dto";
+import {FilterFbPageDto} from "./dto/filter-fb-page.dto";
 
 @UseInterceptors(PaginationInterceptor)
 @Roles(Role.Admin, Role.SuperUser)
@@ -41,14 +41,14 @@ export class FbPageController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+  findAll(@FilterParams() filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
     return this.fbPageService.findAll(pagination, filter);
   }
 
   @HttpCode(200)
-  @Get('all')
-  findAllNoPaging() {
-    return this.fbPageService.findAllNoPaging()
+  @Post('all')
+  findAllNoPaging(@FilterParams(FilterFbPageDto) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+    return this.fbPageService.findAllNoPaging(pagination, filter)
   }
 
   @Get(':id')

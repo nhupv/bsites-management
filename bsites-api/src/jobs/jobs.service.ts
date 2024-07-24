@@ -1,11 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import {Cron, SchedulerRegistry} from '@nestjs/schedule';
-import { TelegramBotService } from '../telegram/telegram.service';
-import moment from 'moment-timezone';
-import {SitesService} from "../sites/sites.service";
-import {DashboardService} from "../dashboard/dashboard.service";
-import {CronJob} from "cron";
 import { Console, Command } from 'nestjs-console';
+import {JOBS_NAME, JOBS_QUEUE} from "./constants";
+import {InjectQueue} from "@nestjs/bull";
+import {JobStatus, Queue} from "bull";
+import {POSTS_SEND_TO_FB_QUEUE} from "../site-content/constants";
 
 @Console()
 @Injectable()
@@ -13,69 +11,31 @@ export class JobsService {
   private readonly logger = new Logger(JobsService.name);
 
   constructor(
-    private readonly telegramService: TelegramBotService,
-    private readonly siteService: SitesService,
-    private readonly dashboardService: DashboardService,
-    // @Inject('Moment') private momentService: moment.Moment,
-    private schedulerRegistry: SchedulerRegistry,
+      @InjectQueue(JOBS_QUEUE.CHATGPT_QUEUE)
+      private addChatGptJob: Queue,
+      @InjectQueue(JOBS_QUEUE.ADD_POST_QUEUE)
+      private addPostJob: Queue,
+      @InjectQueue(POSTS_SEND_TO_FB_QUEUE.INSERT_STATS_QUEUE)
+      private postToPageQueue: Queue,
 
 ) {}
-
-  @Command({
-    command: 'add:cron-stats',
-    description: 'Run Stats Job'
-  })
-  async createDynamicCron (): Promise<void> {
-      const job = new CronJob(`* * * * *`, () => {
-        this.logger.warn(`Create for cron job stats to run!`);
-        this.handleCron()
-      });
-
-      this.schedulerRegistry.addCronJob('insertStats', job);
-      job.start();
-      this.logger.warn(
-          `Cron job insertStats added for each minute!`,
-      );
+  async addChatGPTJob(data: any) {
+    return await this.addChatGptJob.add(JOBS_NAME.CHATGPT_JOB, data);
   }
 
-  @Command({
-    command: 'stop:cron-stats',
-    description: 'Stop Stats Job'
-  })
-  stopCronStats () {
-    const job = this.schedulerRegistry.getCronJob('insertStats');
-    job.stop()
-    this.logger.log(`Stop insertStats cron job success`)
+  async addPostJobToQueue(data: any) {
+    return await this.addPostJob.add(JOBS_NAME.ADD_POST_JOB, data);
   }
 
-  @Command({
-    command: 'start:cron-stats',
-    description: 'Restart Stats Job'
-  })
-  reStartCronStats () {
-    const job = this.schedulerRegistry.getCronJob('insertStats');
-    job.start()
-    this.logger.log(`Start insertStats cron job success`)
+  async getPostQueueList(types: Array<JobStatus>) {
+    return await this.addPostJob.getJobs(types);
   }
 
-  @Cron(process.env.CRON_JOB_TIME, {
-    name: 'insertStats',
-    timeZone: process.env.TZ,
-  })
-  async handleCron() {
-    this.logger.log('Cron job run every 10 minute', new Date());
-    // this.telegramService.sendLogToTelegram('Start job run every 10 minute')
+  async getChatGptQueueList(types: Array<JobStatus>) {
+    return await this.addChatGptJob.getJobs(types);
+  }
 
-    const sites = await this.siteService.findAllWithoutPagination()
-
-    if(sites.length === 0){
-      this.logger.error('No sites is active.');
-      await this.telegramService.sendLogToTelegram('No sites is active.')
-      return
-    }
-
-    sites.forEach(site => {
-      this.dashboardService.insertStatsJob(site, new Date())
-    })
+  async getPostToPageQueueList(types: Array<JobStatus>) {
+    return await this.postToPageQueue.getJobs(types);
   }
 }

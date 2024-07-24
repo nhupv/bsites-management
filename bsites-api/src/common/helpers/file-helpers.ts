@@ -84,3 +84,11 @@ export const getParseLinkPrompt = (text: string) => {
   }
   return matches;
 }
+
+export const parseJsonFromString = (str: string) => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    throw new Error(`Unable to parse json string: ${e}`);
+  }
+}

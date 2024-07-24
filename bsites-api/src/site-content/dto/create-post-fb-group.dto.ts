@@ -8,15 +8,12 @@ export class CreatePostFbGroupDto {
     title: string;
 
     @IsNotEmpty()
-    page_id: number;
+    pages: string;
 
     @IsNotEmpty()
     caption: string;
 
     @IsOptional()
     comment?: string;
-
-    @IsOptional()
-    schedule_time?: number;
 
 }

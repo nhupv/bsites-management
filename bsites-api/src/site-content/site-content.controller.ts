@@ -17,17 +17,20 @@ import { UpdateSiteContentDto } from './dto/update-site-content.dto';
 import {ParseObjectIdPipe} from "../common/pipes/validation.ObjectId.pipe";
 import {CreateBulkSiteContentDto} from "./dto/create-bulk-site-content.dto";
 import {FilterParams} from "../common/decorator/filter.decorator";
-import {FilterDomain} from "../domain/dto/filter-domain.dto";
 import {Pagination} from "../common/decorator/pagination.decorator";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
 import {ObjectId} from "mongoose";
 import {PaginationInterceptor} from "../common/pagination/interceptor/pagination.interceptor";
 import {SiteIdGuard} from "../common/guard/siteId.guard";
-import {ContentStatus} from "./enum/content-status-enum";
 import {SiteParam} from "../common/decorator/site.decorator";
 import {Site} from "../sites/entities/site.entity";
-import {fileFilter, getParseLinkPrompt, getTitle, getValueTitle} from "../common/helpers/file-helpers";
-import {ChangeSiteStatusDto} from "../sites/dto/change-site-status.dto";
+import {
+  fileFilter,
+  getParseLinkPrompt,
+  getTitle,
+  getValueTitle,
+  parseJsonFromString
+} from "../common/helpers/file-helpers";
 import {UpdatePostPriorityDto} from "./dto/update-post-priority.dto";
 import {CreatePostFbGroupDto} from "./dto/create-post-fb-group.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
@@ -38,7 +41,6 @@ import {diskStorage} from "multer";
 @UseGuards(SiteIdGuard)
 export class SiteContentController {
   constructor(private readonly siteContentService: SiteContentService) {}
-
 
   @UseInterceptors(
       FileInterceptor('file', {
@@ -52,16 +54,18 @@ export class SiteContentController {
   @Post()
   async create(@UploadedFile() file: Express.Multer.File, @Request() req, @Param('siteId', ParseObjectIdPipe) siteId: string, @Body() createSiteContentDto: CreateSiteContentDto) {
 
-    if(createSiteContentDto.is_post_to_page && !file) {
+    const pageList = parseJsonFromString(createSiteContentDto.pages)
+
+    if(pageList.length > 0 && !file) {
       throw new BadRequestException('Image is required!');
     }
 
     createSiteContentDto.site = siteId
     const post = await this.siteContentService.create(createSiteContentDto);
     if(getParseLinkPrompt(post.question).length > 0) {
-      await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, imagePath: file?.path}, site: req.site})
+      await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path}, site: req.site})
     } else {
-      await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, imagePath: file?.path}, site: req.site})
+      await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path}, site: req.site})
     }
     return post
   }
@@ -73,7 +77,6 @@ export class SiteContentController {
     const urlList : CreateSiteContentDto[] = createBulkSiteContentDto.titles.map(title => ({
       title : getTitle(title).length > 0 ? getTitle(title)[0] : title,
       question : title,
-      // status : [ContentStatus.PROCESSING],
       site: siteId,
       category_id: createBulkSiteContentDto.category_id,
       category: createBulkSiteContentDto.category,
@@ -96,7 +99,7 @@ export class SiteContentController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@SiteParam() site: Site, @FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
+  findAll(@SiteParam() site: Site, @FilterParams() filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
     return this.siteContentService.findAll(pagination, site, filter );
   }
 
@@ -140,7 +143,6 @@ export class SiteContentController {
 
   }
 
-
   @Get(':id/rewrite')
   async reWrite(@SiteParam() site: Site, @Param('id', ParseObjectIdPipe) id: ObjectId) {
     const post = await this.siteContentService.findOne(id, site);
@@ -174,13 +176,27 @@ export class SiteContentController {
       throw new BadRequestException(`Image is required!`);
     }
 
+    const pageList = parseJsonFromString(createPostGround.pages)
+
+    if(pageList.length === 0) {
+      throw new BadRequestException('Pages is required!');
+    }
+
     const post = await this.siteContentService.findOne(id, site);
 
     if (!post) {
       throw new NotFoundException(`Post with id ${id} was not found!`);
     }
 
-    await this.siteContentService.sendPostToFbGroup({payload: {...createPostGround, imagePath: file.path}, post, site})
+    pageList.foreach((item: any) => {
+      const payload = {
+        ...createPostGround,
+        page_id: item.page_id,
+        schedule_time: item?.schedule_time,
+        imagePath: file.path
+      }
+      this.siteContentService.sendPostToFbGroup({ payload })
+    })
 
     return post
 

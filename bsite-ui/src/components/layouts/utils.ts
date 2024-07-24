@@ -44,6 +44,13 @@ export const menuItems: MenuItemType[] = [
     link: "/fb-page",
     show: true
   },
+  {
+    label: "page-job",
+    icon: "ph-stack",
+    id: "sidebarJob",
+    link: "/page-job",
+    show: true
+  },
   // {
   //   label: "proxy",
   //   icon: "ph-line-segments",

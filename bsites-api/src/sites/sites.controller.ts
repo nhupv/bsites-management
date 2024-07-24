@@ -17,7 +17,6 @@ import { UpdateSiteDto } from './dto/update-site.dto';
 import {Pagination} from "../common/decorator/pagination.decorator";
 import {PaginationParams} from "../common/pagination/dto/papgination-params.dto";
 import {FilterParams} from "../common/decorator/filter.decorator";
-import {FilterDomain} from "../domain/dto/filter-domain.dto";
 import {PaginationInterceptor} from "../common/pagination/interceptor/pagination.interceptor";
 import {Roles} from "../common/decorator/roles.decorator";
 import {Role} from "../roles/role.enum";
@@ -49,8 +48,8 @@ export class SitesController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@FilterParams(FilterDomain) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
-    return this.sitesService.findAll(pagination, filter);
+  findAll(@Pagination(PaginationParams) pagination: PaginationParams) {
+    return this.sitesService.findAll(pagination, []);
   }
 
   @Post('/items')

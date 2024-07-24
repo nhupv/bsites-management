@@ -36,7 +36,7 @@ import {SiteContentController} from "./site-content/site-content.controller";
 @Module({
   imports: [
     HttpModule,
-    ScheduleModule.forRoot(),
+    // ScheduleModule.forRoot(),
     UsersModule,
     AuthModule,
     ConfigModule.forRoot({
@@ -69,7 +69,7 @@ import {SiteContentController} from "./site-content/site-content.controller";
     }),
     ConsoleModule,
     TelegramBotModule,
-    DashboardModule,
+    // DashboardModule,
     // JobsModule,
     // CsvModule,
     MulterModule.register({
@@ -77,9 +77,9 @@ import {SiteContentController} from "./site-content/site-content.controller";
     }),
     MigrateModule,
     SitesModule,
-    UrlSiteModule,
+    // UrlSiteModule,
     // SiteProxyModule,
-    SiteKeywordModule,
+    // SiteKeywordModule,
     RouterModule.register([
       {
         path: 'sites/:siteId',
@@ -111,10 +111,11 @@ import {SiteContentController} from "./site-content/site-content.controller";
         ]
       },
     ]),
-    BotModule,
-    ProxyModule,
+    // BotModule,
+    // ProxyModule,
     SiteContentModule,
     FbPageModule,
+    JobsModule
     // MailModule,
   ],
   controllers: [AppController],
