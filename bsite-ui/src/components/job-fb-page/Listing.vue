@@ -45,7 +45,7 @@ const headers = ref([
 
 const dynamicHeaders = computed(() => {
   return types.value === 'failed' ? [...headers.value,
-    { title: 'Reason', key: 'reason', align: 'start' }] :
+    { title: 'Error', key: 'reason', align: 'start' }] :
       headers.value
 })
 

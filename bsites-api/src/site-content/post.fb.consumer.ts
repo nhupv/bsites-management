@@ -115,9 +115,9 @@ export class PostFbConsumer {
       // await this.siteContentService.updateStatus(postContent._id, {
       //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
       // })
-      await this.telegramService.sendLogToTelegram(`Cannot create a SCHEDULED POST to group ${page.page_name}, Title: ${post.title}, Error: ${e.toString()}`)
+      await this.telegramService.sendLogToTelegram(`Cannot create a SCHEDULED POST to page ${page.page_name}, Title: ${post.title}, Error: ${e.toString()}`)
 
-      throw new Error(`Cannot send post to group ${page.page_name}, Error: ${e}`);
+      throw new Error(`Cannot send post to page ${page.page_name}, Error: ${e}`);
     }
   }
 
