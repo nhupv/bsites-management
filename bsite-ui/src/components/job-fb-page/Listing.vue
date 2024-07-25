@@ -43,9 +43,14 @@ const headers = ref([
   // { title: 'Action', key: 'action', align: 'start', sortable: false },
 ]) as any
 
+const dynamicHeaders = computed(() => {
+  return types.value === 'failed' ? [...headers.value,
+    { title: 'Reason', key: 'reason', align: 'start' }] :
+      headers.value
+})
+
 const serverItems = ref([])
 const loading = ref(false);
-const pageList = ref([]);
 const types = ref('completed');
 
 const confirmationDialog = ref(false);
@@ -204,7 +209,7 @@ onMounted(() => {
       <v-data-table-virtual
           :header-props="{ class: 'font-weight-bold bg-light'}"
           height="550"
-          :headers="headers"
+          :headers="dynamicHeaders"
           :items="serverItems"
           :loading="loading"
           sticky
@@ -220,10 +225,16 @@ onMounted(() => {
           <span class="text-muted">{{ item.data?.payload?.title}}</span>
         </template>
         <template v-slot:item.scheduled_time="{item}: any">
-          <span class="text-muted">{{item.data?.payload?.scheduled_time && format(item.data?.payload?.scheduled_time, 'LLLL dd, yyyy')}}</span>
+          <span class="text-muted">
+            {{item.data?.payload?.schedule_time && format(item.data?.payload?.schedule_time, 'LLLL dd, yyyy')}}
+          </span>
         </template>
         <template v-slot:item.comment="{item}: any">
           {{item.data?.payload?.comment}}
+        </template>
+
+        <template v-slot:item.reason="{item}: any">
+          {{item.failedReason}}
         </template>
         <template v-slot:item.action="{item}">
           <ListMenuWithIcon :menu-items="pageAction" @onSelect="onSelect($event, item)" />
