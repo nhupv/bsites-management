@@ -226,7 +226,7 @@ onMounted(() => {
         </template>
         <template v-slot:item.scheduled_time="{item}: any">
           <span class="text-muted">
-            {{item.data?.payload?.schedule_time && format(item.data?.payload?.schedule_time, 'LLLL dd, yyyy')}}
+            {{item.data?.payload?.schedule_time && format(parseInt(item.data?.payload?.schedule_time )*1000, 'LLLL dd, yyyy HH:mm')}}
           </span>
         </template>
         <template v-slot:item.comment="{item}: any">
@@ -234,7 +234,7 @@ onMounted(() => {
         </template>
 
         <template v-slot:item.reason="{item}: any">
-          {{item.failedReason}}
+          <span class="text-error">{{item.failedReason}}</span>
         </template>
         <template v-slot:item.action="{item}">
           <ListMenuWithIcon :menu-items="pageAction" @onSelect="onSelect($event, item)" />
