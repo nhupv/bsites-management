@@ -171,6 +171,19 @@ const onConfirmDelete = async () => {
   }
 };
 
+const json_fields = ref({
+    "Page": "data.payload.page_name",
+    "Page ID": "data.payload.page_id",
+    "Caption": "data.payload.title",
+    "Link": "data.payload.link",
+    "Scheduled Time": {
+      field: "data.payload.schedule_time",
+      callback: (value: any) => {
+        return value ? format(new Date(parseInt(value) * 1000), 'LLLL dd yyyy HH:mm') : ''
+      },
+    },
+})
+
 onMounted(() => {
   loadItems()
 })
@@ -196,6 +209,24 @@ onMounted(() => {
         <v-btn size="x-small" value="completed">Completed</v-btn>
         <v-btn size="x-small" value="failed">Failed</v-btn>
       </v-btn-toggle>
+      <download-excel
+          worksheet="My Worksheet"
+          :data="serverItems"
+          :fields="json_fields"
+          type="csv"
+          name="fb-page-job.xls"
+          :escapeCsv="false"
+      >
+        <v-btn
+            color="primary"
+            variant="outlined"
+            elevation="0"
+            class="mt-2 mr-2"
+        >
+          <i class="ph-file-arrow-down mx-1" /> CSV
+        </v-btn>
+      </download-excel>
+
       <v-btn
         color="primary"
         elevation="0"

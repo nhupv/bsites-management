@@ -16,6 +16,12 @@ export class FbPageService {
     return newPage.save()
   }
 
+
+  async find(options = {}) {
+    const query = this.fbPageDocumentModel.find(options);
+    return await query.exec()
+  }
+
   async findAll(
       paginationParams: PaginationParams,
       filter: Array<any>,

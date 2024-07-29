@@ -89,7 +89,7 @@ const category = ref(prop.itemDetail?.categoryObj);
 const title = ref(prop.itemDetail?.title || "");
 const question = ref(prop.itemDetail?.question || "");
 const caption = ref( "");
-const comment = ref(`See more: {link}`);
+const comment = ref(`Readmore: {link}`);
 const image = ref();
 const pageSelected = ref([])
 </script>

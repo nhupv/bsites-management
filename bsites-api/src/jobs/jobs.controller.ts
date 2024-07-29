@@ -47,7 +47,6 @@ export class JobsController {
       return 'Add job success!'
   }
 
-
   @Post('list')
   @HttpCode(200)
   async getJobList(@Body() filterJobType: FilterPageJobsDto){

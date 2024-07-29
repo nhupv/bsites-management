@@ -10,7 +10,7 @@ export const productBreadcrumb: BreadcrumbType[] = [
     disabled: false,
   },
   {
-    title: "page-job",
+    title: "fb-page-job",
     disabled: true,
   },
 ];

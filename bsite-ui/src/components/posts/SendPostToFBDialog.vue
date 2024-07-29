@@ -104,7 +104,7 @@ onMounted(() => {
 
 const title = ref(prop.itemDetail?.title || "");
 const caption = ref( "");
-const comment = ref(`See more: ${prop.itemDetail?.link}`);
+const comment = ref(`Readmore: ${prop.itemDetail?.link}`);
 const image = ref()
 const pageSelected = ref([])
 

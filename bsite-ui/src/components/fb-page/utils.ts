@@ -4,6 +4,7 @@ import { FilterType } from "@/components/products/types";
 import { TableHeaderType } from "@/app/common/types/table.types";
 import { OptionType } from "@/app/common/types/option.type";
 import {ref} from "vue";
+import {getUnixTime} from "date-fns";
 
 export const productBreadcrumb: BreadcrumbType[] = [
   {
@@ -117,3 +118,8 @@ export const pageAction: OptionType[] = [
     value: "remove",
   },
 ];
+
+export const checkDateExpired = (value: number) => {
+  const unixNow = getUnixTime(new Date())
+  return unixNow > value
+}

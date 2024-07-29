@@ -29,8 +29,8 @@ export class FbPage extends Document {
     @Prop({ type: String, required: true })
     page_id: string;
 
-    @Prop({ type: Date, required: true })
-    expired_date: Date;
+    @Prop({ type: Number, required: true })
+    expired_date: number;
 
     @Prop({ type: String, required: false })
     url: string;

@@ -71,13 +71,14 @@ export class PostSendConsumer {
         }
 
         postFb.pageList.forEach((item: any) => {
-          const data = {
+          const payload = {
             ...postFb,
+            link: data.link,
             schedule_time: item?.scheduled_time,
             page_id: item.page_id,
             page_name: item.page_name,
           }
-          this.siteContentService.sendPostToFbGroup({payload: data })
+          this.siteContentService.sendPostToFbGroup({ payload })
         })
       }
     } catch (e) {

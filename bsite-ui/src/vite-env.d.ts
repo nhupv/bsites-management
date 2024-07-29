@@ -5,3 +5,9 @@ declare module '*.vue' {
   const component: DefineComponent<{}, {}, any>
   export default component
 }
+
+
+declare var JsonExcel: any;
+declare module "vue-json-excel3" {
+  export = JsonExcel;
+}

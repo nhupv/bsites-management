@@ -7,10 +7,10 @@ import ListMenuWithIcon from "@/app/common/components/ListMenuWithIcon.vue";
 import {FBPageType} from "@/components/fb-page/types";
 import {handleError} from "@/app/helpers";
 import {useToast} from 'vue-toast-notification';
-import { format } from "date-fns";
+import {format, getUnixTime} from "date-fns";
 import {useSite} from "@/store/site";
 import CreateEditFBPageDialog from "@/components/fb-page/CreateEditFBPageDialog.vue";
-import {pageAction} from "@/components/fb-page/utils";
+import {checkDateExpired, pageAction} from "@/components/fb-page/utils";
 
 // const prop = defineProps({
 //   filters: {
@@ -29,7 +29,7 @@ const headers = ref([
   },
   { title: 'Page url', key: 'url', align: 'start' },
   { title: 'Page id', key: 'page_id', align: 'start' },
-  // { title: 'Access token', key: 'access_token', align: 'start', width: '200' },
+  { title: 'Token status', key: 'status', align: 'start' },
   { title: 'Expired date', key: 'expired_date', align: 'start' },
   { title: 'Created at', key: 'createdAt', align: 'start' },
   { title: 'Action', key: 'action', align: 'start', sortable: false },
@@ -125,26 +125,12 @@ const onCreate = async (newVal: FBPageType) => {
   }
 };
 
-// const updateSiteStatus = async (value: boolean, item: any) => {
-//   loadingStatus.value = true
-//   try {
-//     await httpService.post(`/fb-page/${item._id}/status`, {status: value})
-//     $toast.success('Change site status updated successfully!')
-//     await siteStore.getSites()
-//   } catch (e) {
-//     handleError(e)
-//   } finally {
-//     loadingStatus.value = false
-//   }
-// }
-
 const onAddProductClick = () => {
   pageDetail.value = {
     via_name: "",
     access_token: "",
     page_id: "",
     page_name: "",
-    expired_date: "",
     url: "",
   };
   createEditDialog.value = true;
@@ -160,6 +146,7 @@ const onConfirmDelete = async () => {
     console.log(e)
   }
 };
+
 </script>
 <template>
   <v-card>
@@ -199,10 +186,15 @@ const onConfirmDelete = async () => {
           <span class="text-muted">{{ format(item.createdAt, 'MM-dd-yyyy HH:mm')}}</span>
         </template>
         <template v-slot:item.expired_date="{item}: any">
-          <span class="text-muted">{{ format(item.expired_date, 'LLLL dd, yyyy')}}</span>
+          <span class="text-muted">{{ format(new Date(item.expired_date * 1000), 'LLLL dd, yyyy HH:mm')}}</span>
         </template>
         <template v-slot:item.url="{item}: any">
           <a class="text-primary text-decoration-underline" target="_blank" :href="item.url">{{item.url}}</a>
+        </template>
+        <template v-slot:item.status="{item}: any">
+          <span :class="`text-${checkDateExpired(item.expired_date) ? 'error' : 'success'}`">
+          {{checkDateExpired(item.expired_date) ? 'Expired' : 'Active'}}
+          </span>
         </template>
         <template v-slot:item.action="{item}">
           <ListMenuWithIcon :menu-items="pageAction" @onSelect="onSelect($event, item)" />

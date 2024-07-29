@@ -60,7 +60,8 @@ export class PostJobConsumer {
         page_id: item.page_id,
         page_name: item.page_name,
         imagePath: job.data.imagePath,
-        comment: job.data.url
+        comment: `Readmore: ${job.data.url}`,
+        link: `${job.data.url}`
       }
       this.siteContentService.sendPostToFbGroup({ payload })
     })

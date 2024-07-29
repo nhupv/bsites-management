@@ -12,6 +12,6 @@ export type FBPageType = {
   page_name: string;
   page_id: string;
   url?: string;
-  expired_date: string;
+  expired_date?: number | string;
   access_token: string;
 };

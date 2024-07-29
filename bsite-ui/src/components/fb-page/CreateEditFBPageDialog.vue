@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
 import { formateDate } from "@/app/common/dateFormate";
-import {format} from "date-fns";
+import {format, getUnixTime} from "date-fns";
 
 const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
 
@@ -71,7 +71,7 @@ const via_name = ref(prop.itemDetail?.via_name || "");
 const page_name = ref(prop.itemDetail?.page_name || "");
 const page_id = ref(prop.itemDetail?.page_id || "");
 const url = ref(prop.itemDetail?.url || "");
-const expired_date = ref(prop.itemDetail?.expired_date || new Date());
+const expired_date = ref(prop.itemDetail?.expired_date);
 const access_token = ref(prop.itemDetail?.access_token);
 const showPass = ref(false);
 </script>
@@ -160,13 +160,26 @@ const showPass = ref(false);
           <v-row>
             <v-col cols="12">
               <h6 class="mb-2">Expired Date</h6>
-              <VueDatePicker
+              <v-text-field
+                  variant="solo"
+                  type="number"
+                  class="text-field-component"
+                  density="compact"
+                  :rules="formRules.requiredRule"
                   v-model="expired_date"
+                  hide-details="auto"
+                  placeholder="Enter expired date"
+              />
+            </v-col>
+            <v-col v-if="expired_date" cols="12">
+              <VueDatePicker
+                  :model-value="new Date(expired_date*1000)"
                   :min-date="new Date()"
                   :teleport="true"
                   :clearable="false"
+                  readonly
                   auto-apply
-                  :format="(date: Date) => format(date, 'LLLL dd, yyyy')"
+                  :format="(date: Date) => format(date, 'LLLL dd, yyyy HH:mm')"
                   :enable-time-picker="false"
               />
             </v-col>

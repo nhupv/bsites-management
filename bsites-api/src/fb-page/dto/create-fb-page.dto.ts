@@ -6,26 +6,26 @@ export class CreateFbPageDto {
 
     @IsString()
     @IsNotEmpty()
-    via_name: string;
+    via_name?: string;
 
     @IsString()
     @IsNotEmpty()
-    page_name: string;
+    page_name?: string;
 
     @IsNotEmpty()
     @IsString()
-    page_id: string;
+    page_id?: string;
 
     @IsString()
     @IsNotEmpty()
-    access_token: string;
+    access_token?: string;
 
     @IsNotEmpty()
     @IsString()
     url?: boolean;
 
-    @IsISO8601()
-    @IsString()
-    expired_date: Date;
+    // @IsISO8601()
+    @IsNotEmpty()
+    expired_date?: number;
 
 }

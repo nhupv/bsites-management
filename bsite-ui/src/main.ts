@@ -30,6 +30,8 @@ import TextArea from "@/app/common/validationComponents/TextArea.vue";
 import ToastPlugin from 'vue-toast-notification';
 import 'vue-toast-notification/dist/theme-default.css';
 
+import JsonExcel from "vue-json-excel3";
+
 const app: App = createApp(AppMain);
 registerPlugins(app);
 
@@ -49,6 +51,9 @@ app.component("ListMenuWithIcon", ListMenuWithIcon);
 app.component("Breadcrumb", Breadcrumb);
 app.component("TextField", TextField);
 app.component("TextArea", TextArea);
+
+app.component("downloadExcel", JsonExcel);
+
 // app.directive("maska", vMaska);
 // app.component("MazPhoneNumberInput", MazPhoneNumberInput);
 

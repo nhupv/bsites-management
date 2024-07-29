@@ -3,6 +3,7 @@ import { ConsoleService } from 'nestjs-console';
 import {SitesService} from "../sites/sites.service";
 import {SiteContentService} from "../site-content/site-content.service";
 import {UrlSiteService} from "../url-site/url-site.service";
+import {FbPageService} from "../fb-page/fb-page.service";
 @Injectable()
 export class MigrateCommand {
   constructor(
@@ -10,7 +11,7 @@ export class MigrateCommand {
     private readonly sitesService: SitesService,
     private readonly postService: SiteContentService,
     private readonly urlService: UrlSiteService,
-    // @InjectConnection() private readonly connection: mongoose.Connection,
+    private readonly fbService: FbPageService,
   ) {
     const cli = this.consoleService.getCli();
 
@@ -21,6 +22,15 @@ export class MigrateCommand {
       },
       this.addStatusSite.bind(this),
       cli,
+    );
+
+    this.consoleService.createCommand(
+        {
+          command: 'migrate:expired-date',
+          description: 'Convert expired date to unix timestamp',
+        },
+        this.convertExpiredDate.bind(this),
+        cli,
     );
 
     this.consoleService.createCommand(
@@ -94,5 +104,18 @@ export class MigrateCommand {
     } catch (e) {
       console.log(e);
     }
+  }
+
+  async convertExpiredDate() {
+    const pages = await this.fbService.find({ expired_date: { $not: { $type: 'number'}}})
+    if(pages.length === 0 ) {
+      console.log('No page in db')
+      return
+    }
+    console.log('pages need to convert')
+
+    // for(const page of pages) {
+    //
+    // }
   }
 }

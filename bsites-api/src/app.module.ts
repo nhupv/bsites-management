@@ -31,6 +31,7 @@ import {JobsModule} from "./jobs/jobs.module";
 import { SiteContentModule } from './site-content/site-content.module';
 import { FbPageModule } from './fb-page/fb-page.module';
 import {SiteContentController} from "./site-content/site-content.controller";
+import { CronsModule } from './crons/crons.module';
 
 @Global()
 @Module({
@@ -67,6 +68,7 @@ import {SiteContentController} from "./site-content/site-content.controller";
       }),
       inject: [ConfigService],
     }),
+    MigrateModule,
     ConsoleModule,
     TelegramBotModule,
     // DashboardModule,
@@ -75,7 +77,6 @@ import {SiteContentController} from "./site-content/site-content.controller";
     MulterModule.register({
       dest: './uploads',
     }),
-    MigrateModule,
     SitesModule,
     // UrlSiteModule,
     // SiteProxyModule,
@@ -115,7 +116,8 @@ import {SiteContentController} from "./site-content/site-content.controller";
     // ProxyModule,
     SiteContentModule,
     FbPageModule,
-    JobsModule
+    JobsModule,
+    // CronsModule
     // MailModule,
   ],
   controllers: [AppController],
