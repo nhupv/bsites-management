@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import {computed, onMounted, ref, watch} from "vue";
 import {format} from "date-fns";
-import ImageUploader from "@/app/common/components/ImageUploader.vue";
 import SelectPageDialog from "@/components/fb-page/SelectPageDialog.vue";
 import {pageHeaderSelect, pageHeaderSelected} from "@/components/fb-page/utils";
 import {httpService} from "@/app/http/httpServiceProvider";

@@ -1,8 +1,6 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import { v4 as uuidv4 } from "uuid";
-import { formateDate } from "@/app/common/dateFormate";
-import {format, getUnixTime} from "date-fns";
+import {format} from "date-fns";
 
 const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
 
