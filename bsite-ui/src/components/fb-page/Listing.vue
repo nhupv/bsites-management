@@ -41,7 +41,6 @@ const totalItems = ref<number>(0)
 const search = ref({ key: 'name', value: ''})
 const serverItems = ref([])
 const loading = ref(false);
-const siteStore = useSite()
 
 const confirmationDialog = ref(false);
 const confirmationSite = ref<string>('');
@@ -115,6 +114,7 @@ const onUpdate = async (updatedVal: FBPageType) => {
 };
 
 const onCreate = async (newVal: FBPageType) => {
+  console.log(newVal)
   try {
     await httpService.post('/fb-page', newVal)
     $toast.success('Page created successfully!')

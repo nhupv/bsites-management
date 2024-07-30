@@ -31,7 +31,6 @@ import {JobsModule} from "./jobs/jobs.module";
 import { SiteContentModule } from './site-content/site-content.module';
 import { FbPageModule } from './fb-page/fb-page.module';
 import {SiteContentController} from "./site-content/site-content.controller";
-import { CronsModule } from './crons/crons.module';
 
 @Global()
 @Module({
@@ -117,7 +116,6 @@ import { CronsModule } from './crons/crons.module';
     SiteContentModule,
     FbPageModule,
     JobsModule,
-    // CronsModule
     // MailModule,
   ],
   controllers: [AppController],
