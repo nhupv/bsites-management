@@ -12,6 +12,11 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['js-big-decimal']
   },
+  build: {
+    rollupOptions: {
+      external: ["vue-json-excel3"]
+    }
+  },
   plugins: [
     VueI18nPlugin({
       runtimeOnly: false,

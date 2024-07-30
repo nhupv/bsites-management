@@ -34,7 +34,6 @@ watch(pageIdSelected, (value: any) => {
       pageSelected.value = [{ ...pageInList }, ...pageSelected.value]
     }
   })
-
 })
 
 const deletePageSelected = (page: any) => {
