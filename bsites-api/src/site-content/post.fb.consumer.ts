@@ -6,11 +6,9 @@ import {SiteContentService} from "./site-content.service";
 import {TelegramBotService} from "../telegram/telegram.service";
 import {HttpService} from "@nestjs/axios";
 import {FbPageService} from "../fb-page/fb-page.service";
-import {ContentStatus} from "./enum/content-status-enum";
 import {FbPage} from "../fb-page/entities/fb-page.entity";
 import * as fs from "fs";
 import FormData from "form-data"
-import {SiteContent} from "./entities/site-content.entity";
 
 @Processor({
   name: POSTS_SEND_TO_FB_QUEUE.INSERT_STATS_QUEUE,
@@ -45,17 +43,11 @@ export class PostFbConsumer {
   async sendPostToFBGroup(job: Job<any>) {
     const { payload: post, post: postContent, site } = job.data
 
-    // let postCreate = await this.siteContentService.updateStatus(postContent._id, {
-    //   fb_status: [ContentStatus.PROCESSING]
-    // })
     await this.telegramService.sendLogToTelegram(`==== Start to send post to fb page ====`)
 
     const page = await this.pageService.findOne(post.page_id)
 
     if(!page) {
-      // await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
-      // })
       await this.telegramService.sendLogToTelegram(`Page is not existed with id ${post.page_id}`)
 
       throw new Error(`Page is not existed with id ${post.page_id}`);
@@ -64,16 +56,11 @@ export class PostFbConsumer {
     const dataUpload = await this.sendUploadImage(page, post)
 
     if(dataUpload.id && dataUpload.post_id && !post.schedule_time) {
-      // postCreate = await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_SUCCESS]
-      // })
       if(!!post.comment) {
         await this.siteContentService.sendCommentToPost({
           payload: {
             post_id: dataUpload.post_id, page_id: post.page_id, comment: post.comment
           },
-          // post: postCreate,
-          // site
         })
       }
       return
@@ -95,9 +82,6 @@ export class PostFbConsumer {
         }
       }).toPromise()
 
-      // postCreate = await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_SUCCESS]
-      // })
       await this.telegramService.sendLogToTelegram(`Created a SCHEDULED POST to group ${page.page_name}, Title: ${post.title}`)
 
 
@@ -105,19 +89,15 @@ export class PostFbConsumer {
         await this.siteContentService.sendCommentToPost({
           payload: {
             post_id: data.id, page_id: post.page_id, comment: post.comment
-          },
-          // post: postCreate,
-          site
+          }
         })
       }
 
     } catch (e) {
-      // await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postCreate.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
-      // })
-      await this.telegramService.sendLogToTelegram(`Cannot create a SCHEDULED POST to page ${page.page_name}, Title: ${post.title}, Error: ${e.toString()}`)
+      const msg = e.response?.data?.error?.message ?? e.toString()
+      await this.telegramService.sendLogToTelegram(`Cannot create a SCHEDULED POST to page ${page.page_name}, Title: ${post.title}, Error: ${msg}`)
 
-      throw new Error(`Cannot send post to page ${page.page_name}, Error: ${e}`);
+      throw new Error(`Cannot send post to page ${page.page_name}, Error: ${msg}`);
     }
   }
 
@@ -145,12 +125,11 @@ export class PostFbConsumer {
       return data
 
     } catch (e) {
-      // await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postContent.fb_status, ContentStatus.SEND_POST_TO_GROUP_FAILED]
-      // })
-      await this.telegramService.sendLogToTelegram(`Cannot create A POST using image on page: ${page.page_name}, Title: ${payload.title}, Error: ${e.toString()}`)
+      const msg = e.response?.data?.error?.message ?? e.toString()
 
-      throw new Error(`Cannot upload image to post fb, Error: ${e}`);
+      await this.telegramService.sendLogToTelegram(`Cannot create A POST using image on page: ${page.page_name}, Title: ${payload.title}, Error: ${msg}`)
+
+      throw new Error(`Cannot upload image to post fb, Error: ${msg}`);
     }
   }
 }

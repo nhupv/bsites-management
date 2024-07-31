@@ -45,25 +45,36 @@ export class PostJobConsumer {
   async addPostJob(job: Job<any>) {
     const compressJob = await this.jobService.addChatGPTJob({prompt: job.data.caption_prompt})
     const caption = await compressJob.finished()
-    console.log(caption)
 
-    const pages: Array<any> = parseJsonFromString(job.data.pages)
-    if(pages.length === 0) {
-      throw new Error('Page list is empty!')
+    // const pages: Array<any> = parseJsonFromString(job.data.pages)
+    // if(pages.length === 0) {
+    //   throw new Error('Page list is empty!')
+    // }
+
+    const payload = {
+      title: caption,
+      caption: '',
+      schedule_time: job.data.scheduled_time,
+      page_id: job.data.page_id,
+      page_name: job.data.page_name,
+      imagePath: job.data.imagePath,
+      comment: `Readmore: ${job.data.url}`,
+      link: `${job.data.url}`
     }
 
-    pages.forEach((item:any) => {
-      const payload = {
-        title: caption,
-        caption: '',
-        schedule_time: item.scheduled_time,
-        page_id: item.page_id,
-        page_name: item.page_name,
-        imagePath: job.data.imagePath,
-        comment: `Readmore: ${job.data.url}`,
-        link: `${job.data.url}`
-      }
-      this.siteContentService.sendPostToFbGroup({ payload })
-    })
+    await this.siteContentService.sendPostToFbGroup({payload})
+
+    // pages.forEach((item:any) => {
+    //   const payload = {
+    //     title: caption,
+    //     caption: '',
+    //     schedule_time: item.scheduled_time,
+    //     page_id: item.page_id,
+    //     page_name: item.page_name,
+    //     imagePath: job.data.imagePath,
+    //     comment: `Readmore: ${job.data.url}`,
+    //     link: `${job.data.url}`
+    //   }
+    // })
   }
 }

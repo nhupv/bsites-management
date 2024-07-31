@@ -95,6 +95,9 @@ export const postsAction: OptionType[] = [
 ];
 
 export const clip = (text: string, length: number) => {
+  if(!text) {
+    return ''
+  }
   return text.length > length ? text.substring(0, length - 3) + '...' : text;
 };
 

@@ -71,20 +71,22 @@ watch(sideBarSize, () => {
       <div class="navbar-brand-box">
         <router-link to="/" class="logo logo-dark">
           <span class="logo-sm">
-            <i class="ph-kanban-bold ph-2x"></i>
+            <i class="ph-currency-dollar ph-2x"></i>
           </span>
           <span class="logo-lg d-flex align-center ga-2">
-            <i class="ph-kanban-bold ph-2x"></i>
-            <h1 class="text-h5 font-weight-bold text-black">BotM</h1>
+            <i class="ph-currency-dollar ph-2x"></i>
+<!--            <h1 class="text-h5 font-weight-bold text-black">Make</h1>-->
           </span>
         </router-link>
         <router-link to="/" class="logo logo-light">
           <span class="logo-sm">
-           <i class="ph-kanban-bold ph-2x"></i>
+             <i class="ph-currency-dollar ph-2x"></i>
           </span>
           <span class="logo-lg d-flex align-center ga-2">
-            <i class="ph-kanban-bold ph-2x"></i>
-            <h1 class="text-h5 font-weight-bold text-white">BotM</h1>
+<!--            <h1 class="text-h5 font-weight-bold text-white">Make</h1>-->
+            <i class="ph-currency-dollar ph-2x"></i>
+            <i class="ph-currency-dollar ph-2x"></i>
+            <i class="ph-currency-dollar ph-2x"></i>
           </span>
         </router-link>
         <v-btn text="" class="header-item btn-vertical-sm-hover">
@@ -126,10 +128,10 @@ watch(sideBarSize, () => {
         </router-link>
         <router-link to="/" class="logo logo-light">
           <span class="logo-sm">
-            <i class="ph-kanban-bold ph-2x"></i>
+           <i class="ph-currency-dollar ph-2x"></i>
           </span>
           <span class="logo-lg">
-            <i class="ph-kanban-bold ph-2x"></i>
+            <i class="ph-currency-dollar ph-2x"></i>
           </span>
         </router-link>
         <v-btn text="" class="header-item btn-vertical-sm-hover">
@@ -165,7 +167,7 @@ watch(sideBarSize, () => {
   >
     <div class="d-flex justify-center navbar-brand-box">
       <v-btn icon href="/" class="logo" variant="text">
-        <i class="ph-kanban-bold ph-2x"></i>
+        <i class="ph-currency-dollar ph-2x"></i>
       </v-btn>
     </div>
     <v-divider />

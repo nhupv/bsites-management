@@ -1,6 +1,7 @@
 import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
-import {Document} from "mongoose";
+import {Document, SchemaTypes, Types} from "mongoose";
 import {Transform} from "class-transformer";
+import {User} from "../../users/entities/user.entity";
 
 export type FbPageDocument = FbPage & Document;
 
@@ -34,6 +35,9 @@ export class FbPage extends Document {
 
     @Prop({ type: String, required: false })
     url: string;
+
+    @Prop({ type: SchemaTypes.ObjectId, ref: User.name})
+    user: String | Types.ObjectId | User
 
     constructor(partial: Partial<FbPage>) {
         super();

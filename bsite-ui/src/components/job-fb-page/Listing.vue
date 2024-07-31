@@ -11,6 +11,7 @@ import {format, getUnixTime} from "date-fns";
 import {useSite} from "@/store/site";
 import CreatePostPageDialog from "@/components/job-fb-page/CreatePostPageDialog.vue";
 import {pageAction} from "@/components/job-fb-page/utils";
+import {clip} from "../posts/utils";
 
 // const prop = defineProps({
 //   filters: {
@@ -253,7 +254,7 @@ onMounted(() => {
           <span class="text-muted">{{ item.data?.payload?.page_name}}</span>
         </template>
         <template v-slot:item.title="{item}: any">
-          <span class="text-muted">{{ item.data?.payload?.title}}</span>
+          <span class="text-muted">{{ clip(item.data?.payload?.title, 150) }}</span>
         </template>
         <template v-slot:item.scheduled_time="{item}: any">
           <span class="text-muted">

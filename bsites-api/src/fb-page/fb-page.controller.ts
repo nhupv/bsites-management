@@ -8,6 +8,7 @@ import {
   Delete,
   UseInterceptors,
   HttpCode,
+  Request,
   NotFoundException
 } from '@nestjs/common';
 import { FbPageService } from './fb-page.service';
@@ -41,25 +42,25 @@ export class FbPageController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@FilterParams() filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
-    return this.fbPageService.findAll(pagination, filter);
+  findAll(@FilterParams() filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams, @Request() req) {
+    return this.fbPageService.findAll(pagination, filter, req.user._id);
   }
 
   @HttpCode(200)
   @Post('all')
-  findAllNoPaging(@FilterParams(FilterFbPageDto) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams) {
-    return this.fbPageService.findAllNoPaging(pagination, filter)
+  findAllNoPaging(@FilterParams(FilterFbPageDto) filter: Array<any>, @Pagination(PaginationParams) pagination: PaginationParams, @Request() req) {
+    return this.fbPageService.findAllNoPaging(pagination, filter, req.user._id)
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseObjectIdPipe) id: ObjectId) {
-    return this.fbPageService.findOne(id);
+  findOne(@Param('id', ParseObjectIdPipe) id: ObjectId, @Request() req) {
+    return this.fbPageService.findOneByID(id, req.user._id);
   }
 
 
   @Patch(':id')
-  async update(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updateFbPageDto: UpdateFbPageDto) {
-    const pageUpdate = await this.fbPageService.findOne(id);
+  async update(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updateFbPageDto: UpdateFbPageDto, @Request() req) {
+    const pageUpdate = await this.fbPageService.findOneByID(id, req.user._id);
     if (!pageUpdate) {
       throw new NotFoundException(`Fb page with id ${id} was not found!`);
     }
@@ -67,9 +68,9 @@ export class FbPageController {
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseObjectIdPipe) id: ObjectId) {
+  async remove(@Param('id', ParseObjectIdPipe) id: ObjectId, @Request() req) {
 
-    const page = await this.fbPageService.findOne(id);
+    const page = await this.fbPageService.findOneByID(id, req.user._id);
     if (!page) {
       throw new NotFoundException(`Fb page with id ${id} was not found!`);
     }

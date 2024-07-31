@@ -32,7 +32,7 @@ export class UsersService {
     return { data, total };
   }
 
-  findOne(id: ObjectId): Promise<User> {
+  findOne(id: ObjectId | string): Promise<User> {
     return this.userModel.findOne({ _id: id }).exec();
   }
 

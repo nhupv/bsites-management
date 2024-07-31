@@ -25,9 +25,10 @@ export class FbPageService {
   async findAll(
       paginationParams: PaginationParams,
       filter: Array<any>,
+      userId: string,
   ): Promise<PaginationResultInterface<FbPage>> {
     const { skip, perPage, sortBy, sortType } = paginationParams;
-    const query = this.fbPageDocumentModel.find();
+    const query = this.fbPageDocumentModel.find({ user: userId});
     // if (filter.length > 0) {
     //   query.and(filter);
     // }
@@ -45,9 +46,9 @@ export class FbPageService {
     return { data, total };
   }
 
-  async findAllNoPaging( paginationParams: PaginationParams, filter: Array<any>) {
+  async findAllNoPaging( paginationParams: PaginationParams, filter: Array<any>, userId: string) {
     const { skip, perPage, sortBy, sortType } = paginationParams;
-    const query = this.fbPageDocumentModel.find();
+    const query = this.fbPageDocumentModel.find({ user: userId});
     if (filter.length > 0) {
       query.and(filter);
     }
@@ -58,6 +59,14 @@ export class FbPageService {
 
   findOne(id: ObjectId | string): Promise<FbPage> {
     return this.fbPageDocumentModel.findById(id).exec();
+  }
+
+  findOneByID(id: ObjectId | string, userId: string): Promise<FbPage> {
+    return this.fbPageDocumentModel.findOne({_id: id, user: userId}).exec();
+  }
+
+  updateMany(filter: any, updateFbPageDto: UpdateFbPageDto) {
+    return this.fbPageDocumentModel.updateMany(filter, {$set: updateFbPageDto}).exec()
   }
 
   update(

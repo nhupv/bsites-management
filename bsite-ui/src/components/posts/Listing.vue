@@ -65,6 +65,8 @@ const loadItems = async (options: any) => {
     loading.value = false
   } catch (e) {
     handleError(e)
+  } finally {
+    loading.value = false
   }
 }
 const onSelect = (option: string, data: any) => {

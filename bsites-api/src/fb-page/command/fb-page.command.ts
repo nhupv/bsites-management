@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { ConsoleService } from 'nestjs-console';
 import {FbPageService} from "../fb-page.service";
+import {UsersService} from "../../users/users.service";
 @Injectable()
 export class FbPageCommand {
   constructor(
     private readonly consoleService: ConsoleService,
     private readonly fbService: FbPageService,
+    private readonly userService: UsersService,
   ) {
     const cli = this.consoleService.getCli();
 
@@ -17,6 +19,31 @@ export class FbPageCommand {
         this.convertExpiredDate.bind(this),
         cli,
     );
+
+    this.consoleService.createCommand(
+        {
+          command: 'migrate:user-fb-page <userId>',
+          description: 'Add user field to fb page',
+        },
+        this.addOwnerCreatedPage.bind(this),
+        cli,
+    );
+  }
+
+  async addOwnerCreatedPage(userId: string) {
+
+    if(!userId) {
+      console.log('User is required')
+      return
+    }
+
+    try {
+      const user = await this.userService.findOne(userId)
+      const pages = await this.fbService.updateMany({ user: {$exists: false}}, {user: user._id})
+      console.log('Add owner created page successfully!')
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async convertExpiredDate() {

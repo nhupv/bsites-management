@@ -12,7 +12,7 @@ import { JobsService } from './jobs.service';
 import {SchedulerRegistry} from "@nestjs/schedule";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
-import {fileFilter} from "../common/helpers/file-helpers";
+import {fileFilter, parseJsonFromString} from "../common/helpers/file-helpers";
 import {CreatePostFbGroupDto} from "../site-content/dto/create-post-fb-group.dto";
 import {CreatePageJobsDto} from "./dto/create-page-jobs.dto";
 import {InjectQueue} from "@nestjs/bull";
@@ -42,7 +42,16 @@ export class JobsController {
           throw new BadRequestException(`Image is required!`);
       }
 
-      await this.jobsService.addPostJobToQueue({...createPageJobDto, imagePath: file.path})
+      const pages: Array<any> = parseJsonFromString(createPageJobDto.pages)
+      if(pages.length === 0) {
+          throw new BadRequestException('Page is empty!')
+      }
+
+      pages.forEach((item:any) => {
+          this.jobsService.addPostJobToQueue({...createPageJobDto, imagePath: file.path, ...item})
+      })
+
+      // await this.jobsService.addPostJobToQueue({...createPageJobDto, imagePath: file.path})
 
       return 'Add job success!'
   }

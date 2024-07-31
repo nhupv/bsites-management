@@ -9,7 +9,7 @@ import {
   HttpCode,
   Request,
   UseInterceptors,
-  NotFoundException, ValidationPipe, UsePipes, BadRequestException
+  NotFoundException, ValidationPipe, UsePipes, BadRequestException, Res
 } from '@nestjs/common';
 import { SitesService } from './sites.service';
 import { CreateSiteDto } from './dto/create-site.dto';
@@ -48,28 +48,28 @@ export class SitesController {
 
   @HttpCode(200)
   @Get('list')
-  findAll(@Pagination(PaginationParams) pagination: PaginationParams) {
-    return this.sitesService.findAll(pagination, []);
+  findAll(@Request() req, @Pagination(PaginationParams) pagination: PaginationParams) {
+    return this.sitesService.findAll(pagination, [], req.user._id);
   }
 
-  @Post('/items')
-  findOneByUrl(@Body() findByUrl: FindByUrlDto) {
-    return this.sitesService.findByUrl(findByUrl.url);
-  }
+  // @Post('/items')
+  // findOneByUrl(@Body() findByUrl: FindByUrlDto) {
+  //   return this.sitesService.findByUrl(findByUrl.url);
+  // }
 
   @Post(':id/status')
-  changeSiteStatus(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() changeStatusDto: ChangeSiteStatusDto) {
-    return this.sitesService.changeStatus(id, changeStatusDto);
+  changeSiteStatus(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() changeStatusDto: ChangeSiteStatusDto, @Request() req) {
+    return this.sitesService.changeStatus(id, req.user._id, changeStatusDto);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseObjectIdPipe) id: ObjectId) {
-    return this.sitesService.findOne(id);
+  findOne(@Param('id', ParseObjectIdPipe) id: ObjectId, @Request() req) {
+    return this.sitesService.findOne(id, req.user._id);
   }
 
   @Get(':id/categories')
-  async getCategory(@Param('id', ParseObjectIdPipe) id: ObjectId) {
-    const site = await this.sitesService.findOne(id);
+  async getCategory(@Param('id', ParseObjectIdPipe) id: ObjectId, @Request() req) {
+    const site = await this.sitesService.findOne(id, req.user._id);
     if (!site) {
       throw new NotFoundException(`Site with id ${id} was not found!`);
     }
@@ -86,42 +86,42 @@ export class SitesController {
     }
   }
 
-  @Get(':id/push')
-  async pushData(@Param('id', ParseObjectIdPipe) id: ObjectId) {
-    const site = await this.sitesService.findOne(id);
-
-    if(!site) {
-      throw new NotFoundException(`Site with id ${id} was not found!`);
-    }
-
-    const urls = await this.urlSiteService.findBySiteId(site._id)
-
-    try {
-      const { data } = await this.http
-          .post(
-              `http://${site.ip}:5000/push_data`,
-              {
-                ctr: site.ctr,
-                site_url: site.siteUrl,
-                list_url: urls.map(url => url.url)
-              },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              },
-          )
-          .toPromise();
-      return data
-    } catch (e) {
-      throw new BadRequestException(e.message || e.toString())
-    }
-
-  }
+  // @Get(':id/push')
+  // async pushData(@Param('id', ParseObjectIdPipe) id: ObjectId) {
+  //   const site = await this.sitesService.findOne(id);
+  //
+  //   if(!site) {
+  //     throw new NotFoundException(`Site with id ${id} was not found!`);
+  //   }
+  //
+  //   const urls = await this.urlSiteService.findBySiteId(site._id)
+  //
+  //   try {
+  //     const { data } = await this.http
+  //         .post(
+  //             `http://${site.ip}:5000/push_data`,
+  //             {
+  //               ctr: site.ctr,
+  //               site_url: site.siteUrl,
+  //               list_url: urls.map(url => url.url)
+  //             },
+  //             {
+  //               headers: {
+  //                 'Content-Type': 'application/json',
+  //               },
+  //             },
+  //         )
+  //         .toPromise();
+  //     return data
+  //   } catch (e) {
+  //     throw new BadRequestException(e.message || e.toString())
+  //   }
+  //
+  // }
 
   @Patch(':id')
-  async update(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updateSiteDto: UpdateSiteDto) {
-    const siteUpdate = await this.sitesService.findOne(id);
+  async update(@Param('id', ParseObjectIdPipe) id: ObjectId, @Body() updateSiteDto: UpdateSiteDto, @Request() req) {
+    const siteUpdate = await this.sitesService.findOne(id, req.user._id);
     if (!siteUpdate) {
       throw new NotFoundException(`Site with id ${id} was not found!`);
     }
@@ -129,9 +129,9 @@ export class SitesController {
   }
 
   @Delete(':id')
-  async remove(@Param('id', ParseObjectIdPipe) id: ObjectId) {
+  async remove(@Param('id', ParseObjectIdPipe) id: ObjectId, @Request() req) {
 
-    const siteUpdate = await this.sitesService.findOne(id);
+    const siteUpdate = await this.sitesService.findOne(id, req.user._id);
     if (!siteUpdate) {
       throw new NotFoundException(`Site with id ${id} was not found!`);
     }

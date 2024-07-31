@@ -27,9 +27,10 @@ export class SitesService {
   async findAll(
       paginationParams: PaginationParams,
       filter: Array<any>,
+      id: string
   ): Promise<PaginationResultInterface<Site>> {
     const { skip, perPage, sortBy, sortType } = paginationParams;
-    const query = this.siteModel.find();
+    const query = this.siteModel.find({user: id});
     if (filter.length > 0) {
       query.and(filter);
     }
@@ -46,22 +47,22 @@ export class SitesService {
   }
 
 
-  findOne(id: ObjectId | string): Promise<Site> {
-    return this.siteModel.findById(id).exec();
+  findOne(id: ObjectId | string, userId: string): Promise<Site> {
+    return this.siteModel.findOne({_id: id, user: userId}).exec();
   }
 
-  findOneSiteActive(id: ObjectId | string): Promise<Site> {
-    return this.siteModel.findOne({ _id: id, status: true }).exec();
+  findOneSiteActive(id: ObjectId | string, userId: string): Promise<Site> {
+    return this.siteModel.findOne({ _id: id, status: true, user: userId }).exec();
   }
 
   findByUrl(url: string): Promise<Site> {
     return this.siteModel.findOne({siteUrl: url}).populate(['urls', 'keywords','proxies']).exec();
   }
 
-  changeStatus(id: ObjectId | string, changeStatus: ChangeSiteStatusDto): Promise<Site> {
+  changeStatus(id: ObjectId | string, userId: string, changeStatus: ChangeSiteStatusDto): Promise<Site> {
     return this.siteModel
         .findOneAndUpdate(
-            { _id: id },
+            { _id: id, user: userId },
             { $set: changeStatus },
             {
               new: true,
@@ -69,13 +70,6 @@ export class SitesService {
         )
         .exec();
   }
-
-
-  // update(id: ObjectId, updateSiteDto: UpdateSiteDto) {
-  //   return this.siteModel.findOneAndUpdate({ _id: id }, updateSiteDto, {
-  //     new: true,
-  //   });
-  // }
 
   update(
       id: ObjectId | string,

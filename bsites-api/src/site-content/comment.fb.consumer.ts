@@ -42,7 +42,7 @@ export class CommentFbConsumer {
     concurrency: +process.env.JOB_CONCURRENCY,
   })
   async sendCommentToPost(job: Job<any>) {
-    const { payload: data, post: postContent } = job.data
+    const { payload: data } = job.data
     const page = await this.pageService.findOne(data.page_id)
 
     const url = `https://graph.facebook.com/${data.post_id}/comments?access_token=${page.access_token}&message=${data.comment}`
@@ -54,19 +54,14 @@ export class CommentFbConsumer {
         }
       }).toPromise()
 
-
       await this.telegramService.sendLogToTelegram(`Send COMMENT: ${data.comment} success to post ${data.post_id} on page: ${page.page_name}`)
 
-      // await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postContent.fb_status, ContentStatus.SEND_COMMENT_TO_POST_SUCCESS]
-      // })
-
     } catch (e) {
-      // await this.siteContentService.updateStatus(postContent._id, {
-      //   fb_status: [...postContent.fb_status, ContentStatus.SEND_COMMENT_TO_POST_FAILED]
-      // })
-      await this.telegramService.sendLogToTelegram(`Cannot send COMMENT to post ${data.post_id} in page: ${page.page_name} with comment: ${data.comment}, Error: ${e.toString()}`)
-      throw new Error(`Cannot send comment to post ${data.post_id} in page ${page.page_name}, Error: ${e}`);
+      const msg = e.response?.data?.error?.message ?? e.toString()
+
+      await this.telegramService.sendLogToTelegram(`Cannot send COMMENT to post ${data.post_id} in page: ${page.page_name} with comment: ${data.comment}, Error: ${msg}`)
+
+      throw new Error(`Cannot send comment to post ${data.post_id} in page ${page.page_name}, Error: ${msg}`);
     }
   }
 }

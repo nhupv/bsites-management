@@ -1,8 +1,10 @@
-import {IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, Validate} from "class-validator";
+import {Allow, IsISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, Validate} from "class-validator";
 import {CheckSiteUrlExisted} from "../../common/validator/CheckSiteUrlExisted";
 import {Transform} from "class-transformer";
+import {ContextAwareDto} from "../../sites/dto/context-aware-site.dto";
+import {Types} from "mongoose";
 
-export class CreateFbPageDto {
+export class CreateFbPageDto extends ContextAwareDto{
 
     @IsString()
     @IsNotEmpty()
@@ -27,5 +29,8 @@ export class CreateFbPageDto {
     // @IsISO8601()
     @IsNotEmpty()
     expired_date?: number;
+
+    @Allow()
+    user?: String | Types.ObjectId
 
 }
