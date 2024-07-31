@@ -59,7 +59,8 @@ export class PostJobConsumer {
       page_name: job.data.page_name,
       imagePath: job.data.imagePath,
       comment: `Readmore: ${job.data.url}`,
-      link: `${job.data.url}`
+      link: `${job.data.url}`,
+      user: job.data.user,
     }
 
     await this.siteContentService.sendPostToFbGroup({payload})

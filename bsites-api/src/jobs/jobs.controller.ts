@@ -4,7 +4,7 @@ import {
     Controller,
     Get,
     HttpCode,
-    Post,
+    Post, Request,
     UploadedFile,
     UseInterceptors
 } from '@nestjs/common';
@@ -13,11 +13,7 @@ import {SchedulerRegistry} from "@nestjs/schedule";
 import {FileInterceptor} from "@nestjs/platform-express";
 import {diskStorage} from "multer";
 import {fileFilter, parseJsonFromString} from "../common/helpers/file-helpers";
-import {CreatePostFbGroupDto} from "../site-content/dto/create-post-fb-group.dto";
 import {CreatePageJobsDto} from "./dto/create-page-jobs.dto";
-import {InjectQueue} from "@nestjs/bull";
-import {Queue} from "bull";
-import {JOBS_NAME, JOBS_QUEUE} from "./constants";
 import {FilterPageJobsDto} from "./dto/filter-page-jobs.dto";
 
 @Controller('jobs')
@@ -37,7 +33,7 @@ export class JobsController {
   )
   @Post('fb-pages')
   @HttpCode(200)
-  async createAddFbPage(@UploadedFile() file: Express.Multer.File, @Body() createPageJobDto: CreatePageJobsDto){
+  async createAddFbPage(@UploadedFile() file: Express.Multer.File, @Body() createPageJobDto: CreatePageJobsDto, @Request() req){
       if(!file) {
           throw new BadRequestException(`Image is required!`);
       }
@@ -48,7 +44,7 @@ export class JobsController {
       }
 
       pages.forEach((item:any) => {
-          this.jobsService.addPostJobToQueue({...createPageJobDto, imagePath: file.path, ...item})
+          this.jobsService.addPostJobToQueue({...createPageJobDto, imagePath: file.path, ...item, user: req.user._id})
       })
 
       // await this.jobsService.addPostJobToQueue({...createPageJobDto, imagePath: file.path})
@@ -58,8 +54,11 @@ export class JobsController {
 
   @Post('list')
   @HttpCode(200)
-  async getJobList(@Body() filterJobType: FilterPageJobsDto){
-    return await this.jobsService.getPostToPageQueueList(filterJobType.types)
+  async getJobList(@Body() filterJobType: FilterPageJobsDto, @Request() req){
+    const jobList = await this.jobsService.getPostToPageQueueList(filterJobType.types)
+      return jobList.filter((item, index) => {
+          return item.data.payload.user === req.user._id.toString();
+      })
   }
   //
   // @Get('stop-cron')

@@ -63,9 +63,9 @@ export class SiteContentController {
     createSiteContentDto.site = siteId
     const post = await this.siteContentService.create(createSiteContentDto);
     if(getParseLinkPrompt(post.question).length > 0) {
-      await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path}, site: req.site})
+      await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path, user: req.user._id}, site: req.site})
     } else {
-      await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path}, site: req.site})
+      await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path, user: req.user._id}, site: req.site})
     }
     return post
   }
