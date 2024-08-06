@@ -11,6 +11,7 @@ const emit = defineEmits(["update:modelValue", "onUpdate", "onCreate"]);
 
 const refForm = ref<any>()
 const step = ref(1)
+const sendToPage = ref(true)
 
 const formRules = {
   requiredRule: [
@@ -52,7 +53,7 @@ const onCreateUpdate = async () => {
   const { valid } = await refForm.value?.validate()
   if(!valid) return
 
-  if(step.value === 1) {
+  if(step.value === 1 && sendToPage.value) {
     step.value = step.value + 1
     return
   }
@@ -159,17 +160,28 @@ const pageSelected = ref([])
                       </v-col>
                     </v-row>
                     <div>
-                      <h6 class="mb-2">Prompt</h6>
+                      <h6>Prompt</h6>
                       <v-textarea
                           variant="solo"
                           class="text-field-component"
                           density="compact"
                           rows="3"
+                          hide-details="auto"
                           v-model="question"
                           :rules="formRules.requiredRule"
                           placeholder="Enter prompt here"
                       />
                     </div>
+                    <div class="my-3">
+                      <v-switch
+                          v-model="sendToPage"
+                          hide-details="auto"
+                          color="primary"
+                      ><template #label>
+                        <span class="font-weight-bold">Send to fb page</span>
+                      </template></v-switch>
+                    </div>
+                    <div v-if="sendToPage">
                       <v-row>
                         <v-col cols="12" md="6">
                           <h6 class="mb-2">Caption</h6>
@@ -197,6 +209,7 @@ const pageSelected = ref([])
                       </v-row>
                       <h6 class="mb-2">Image</h6>
                       <ImageUploader :multiple="false" v-model="image" :rules="formRules.requiredRule" />
+                    </div>
                   </v-card>
                 </v-stepper-window-item>
                 <v-stepper-window-item
@@ -223,6 +236,7 @@ const pageSelected = ref([])
           </v-btn>
           <v-spacer />
           <v-btn
+              v-if="sendToPage"
               variant="text"
               color="danger"
               :disabled="step === 1"
@@ -232,12 +246,22 @@ const pageSelected = ref([])
             Previous
           </v-btn>
           <v-btn
+              v-if="sendToPage"
               color="primary"
               variant="elevated"
               elevation="0"
               @click="onCreateUpdate"
           >
             Next
+          </v-btn>
+          <v-btn
+              v-if="!sendToPage"
+              color="primary"
+              variant="elevated"
+              elevation="0"
+              @click="onCreateUpdate"
+          >
+            Create
           </v-btn>
         </v-card-actions>
       </Card>

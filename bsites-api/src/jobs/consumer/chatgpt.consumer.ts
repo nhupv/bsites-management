@@ -51,7 +51,7 @@ export class ChatgptConsumer {
       const data = {
         model: process.env.CHATGPT_MODEL,
         messages: [
-          { role: "system", content: "You are a helpful assistant." },
+          { role: "system", content: "You are a content writer." },
           { role: "user", content: prompt }
         ]
       };
