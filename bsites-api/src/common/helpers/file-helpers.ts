@@ -94,7 +94,5 @@ export const parseJsonFromString = (str: string) => {
 }
 
 export const checkURLIsImage = (url: string) => {
-  // return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
-
-  return (url.match(/^http[^\?]*.(jpg|jpeg|gif|png|tiff|bmp)(\?(.*))?$/gmi) != null) !== null
+  return (url.match(/^http[^\?]*.(jpg|jpeg|gif|png|tiff|bmp)(\?(.*))?$/gmi) != null)
 }
