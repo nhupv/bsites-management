@@ -92,3 +92,9 @@ export const parseJsonFromString = (str: string) => {
     throw new Error(`Unable to parse json string: ${e}`);
   }
 }
+
+export const checkURLIsImage = (url: string) => {
+  // return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+
+  return (url.match(/^http[^\?]*.(jpg|jpeg|gif|png|tiff|bmp)(\?(.*))?$/gmi) != null) !== null
+}

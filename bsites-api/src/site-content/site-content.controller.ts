@@ -25,6 +25,7 @@ import {SiteIdGuard} from "../common/guard/siteId.guard";
 import {SiteParam} from "../common/decorator/site.decorator";
 import {Site} from "../sites/entities/site.entity";
 import {
+  checkURLIsImage,
   fileFilter,
   getParseLinkPrompt,
   getTitle,
@@ -62,8 +63,15 @@ export class SiteContentController {
 
     createSiteContentDto.site = siteId
     const post = await this.siteContentService.create(createSiteContentDto);
-    if(getParseLinkPrompt(post.question).length > 0) {
-      await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path, user: req.user._id}, site: req.site})
+    const urlList = getParseLinkPrompt(post.question)
+    if(urlList.length > 0) {
+      const linkList = urlList.map(item => item[0])
+      const isUrlIsImage = linkList.every(item => checkURLIsImage(item))
+      if(isUrlIsImage) {
+        await this.siteContentService.insertParseLinkJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path, user: req.user._id}, site: req.site})
+      } else {
+        await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path, user: req.user._id}, site: req.site})
+      }
     } else {
       await this.siteContentService.insertPostJob({post, postFb: {...createSiteContentDto, pageList, imagePath: file?.path, user: req.user._id}, site: req.site})
     }
